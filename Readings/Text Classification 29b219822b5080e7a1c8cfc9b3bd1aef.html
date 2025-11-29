@@ -1,0 +1,754 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Text Classification</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="29b21982-2b50-80e7-a1c8-cfc9b3bd1aef" class="page sans"><header><h1 class="page-title">Text Classification</h1><p class="page-description"></p></header><div class="page-body"><nav id="29b21982-2b50-80ea-97e7-e2a6b3d50e2e" class="block-color-gray table_of_contents"><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#29b21982-2b50-8003-bf0d-d65b431da2d4">Classification task</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#29b21982-2b50-8059-bc46-f71b9ee4cb3d">Classification</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#29b21982-2b50-8055-b45a-f467a1a59dec"><strong>Evaluation</strong></a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#29b21982-2b50-80b9-83e5-ea10941a52e4">Learning with limited labels</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#29b21982-2b50-80e8-9454-fa41daf0aef4">1. Semi-Supervised learning</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#29b21982-2b50-8015-bef1-ceb8ea9a1a00">1-1. Pseudo labeling</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#29b21982-2b50-801b-9c8b-c9a38108c959">1-2. Consistency regularization </a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#29b21982-2b50-80ed-9102-e3d191745586">1-3. Consistency regularization- Temporal ensemble</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#29b21982-2b50-8091-9209-cd2415c1c406">2. Multi-task learning (MTL)</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#29b21982-2b50-808f-8aa4-e19891e56d90">2-1. Multigate Mixture of Experts (MMoE)</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#29b21982-2b50-8061-bafa-e563f3577fa4">2-2. GradNorm (Adaptive loss balancing for MTL)</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#29b21982-2b50-803c-b641-da5cf6b067b9">3. Domain Adaptation</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#29b21982-2b50-80df-ac62-d5d5f31d40f5">3-1. Data reweighting</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#29b21982-2b50-80ec-beeb-c894a8637439">3-2. Adversarial Learning</a></div></nav><h1 id="29b21982-2b50-8003-bf0d-d65b431da2d4" class="">Classification task</h1><p id="29b21982-2b50-8045-9b44-d313e1f2ebeb" class="">text classification은 결국에 data를 분석하고 label을 붙이는데에 중요함 ⇒ 앞에서 text를 vector로 만들었고 해당 vector들을 이용해 classification을 수행 ⇒ <code>pretrain &amp; fine-tune</code> 을 이용해 일반적인 언어의 지식(<code>pretrain</code>)을 특정한 classification task(<code>fine tune</code>)에 사용할 수 있도록 만든다</p><p id="29b21982-2b50-808f-8df8-e27d3691ce51" class="">
+</p><h2 id="29b21982-2b50-8059-bc46-f71b9ee4cb3d" class="">Classification</h2><p id="29b21982-2b50-800d-b7e8-eae56f24675f" class=""><code>pretraining</code> </p><ul id="29b21982-2b50-8003-a7fd-d829713bb3f7" class="bulleted-list"><li style="list-style-type:disc">motivation: 실세계에는 많은 양의 text data와 언어학적 패턴이 존재 </li></ul><ul id="29b21982-2b50-8061-a5ba-c5d62ab4d208" class="bulleted-list"><li style="list-style-type:disc">goal: <strong>human labelling없이 일반적인 representation을 학습</strong><ul id="29b21982-2b50-808c-b505-d36332985876" class="bulleted-list"><li style="list-style-type:circle">Word2Vec / Bert</li></ul></li></ul><p id="29b21982-2b50-80b6-833d-da62b536d1d6" class=""><code>fine-tuning</code> </p><ul id="29b21982-2b50-801c-a140-e6ea6c92af39" class="bulleted-list"><li style="list-style-type:disc">motivation: pretrained model은 일반적인 지식을 포착하지만, <strong>classification과 같은 작업은 구체적인 knowledge가 필요로 함</strong></li></ul><ul id="29b21982-2b50-80d6-91c9-f067c069c467" class="bulleted-list"><li style="list-style-type:disc">goal: <strong>pretrained model의 parameter을 특정 downstream task에 알맞도록 학습</strong><ul id="29b21982-2b50-80c1-8f29-fc5d3aecbb53" class="bulleted-list"><li style="list-style-type:circle">Sentiment classification using Bert</li></ul></li></ul><p id="29b21982-2b50-8069-a955-ed0b67d5b714" class="">
+</p><p id="29b21982-2b50-80a9-afe1-c64a65aed523" class=""><code>pretraining &amp; fine-tuning</code> </p><ul id="29b21982-2b50-80bb-9a0d-d37af0b0ac48" class="bulleted-list"><li style="list-style-type:disc"><strong>pretraining</strong>: 좋은 initialization ⇒ <code><strong>SGD</strong></code><strong> 는 initialization에 큰 영향을 받음 , </strong></li></ul><ul id="29b21982-2b50-809f-b830-ffc647f41891" class="bulleted-list"><li style="list-style-type:disc"><strong>fine tuning</strong>: pretrained model을 특정 task에 사용이 가능하도록 학습 </li></ul><p id="29b21982-2b50-8084-ae7a-da40fd77f67a" class="">👍 <strong>효율적인 수렴 &amp; 더 적은 data를 가지고 일반화 가능</strong></p><p id="29b21982-2b50-80f0-a56d-d8890c525caf" class="">
+</p><p id="29b21982-2b50-8027-a2eb-dc8aea453f3e" class="">ex) pretrained BERT ⇒ 1) CLS Representation 2) Average all contextual embedding을 represent vector로 선택 ⇒ small classification head 추가 ⇒ labeled data로 fine-tuning</p><ol type="1" id="29b21982-2b50-80c9-a578-cbd36038709a" class="numbered-list" start="1"><li>full fine-tuning : 모든 parameter 업데이트</li></ol><ol type="1" id="29b21982-2b50-80b9-8407-fa28a6d250fd" class="numbered-list" start="2"><li>partial fine-tuning: 일부분의 parameter만 업데이트 (head만 update 시키거나 encoder에 일부분만 update)</li></ol><p id="29b21982-2b50-8090-ac0a-d66c01214d99" class="">
+</p><p id="29b21982-2b50-8000-90e4-c34df5eca362" class=""><strong>classification task</strong></p><ol type="1" id="29b21982-2b50-80ce-bd5d-dece0472dfac" class="numbered-list" start="1"><li>Binary classification ⇒ <code>Bernoulli RV</code> → Binary Cross Entropy loss function</li></ol><ol type="1" id="29b21982-2b50-8033-87c7-f109f1a7cdca" class="numbered-list" start="2"><li>Multi-class classification ⇒ <code>Categorical RV</code>  → Cross Entropy loss function</li></ol><ol type="1" id="29b21982-2b50-80e8-825b-f6d0cd00ee83" class="numbered-list" start="3"><li>Multi-label classification ⇒ <code>independent Bernoulli RV</code> → BCE loss function independently per class<ul id="29b21982-2b50-80c4-b4d1-eeb21109d66d" class="bulleted-list"><li style="list-style-type:disc">각 logit마다 각각 sigmoid를 사용 ⇒ softmax를 사용하지 않음 (다른 class에 영향을 미치지 않음)</li></ul><ul id="29b21982-2b50-803e-9446-f09038b743ff" class="bulleted-list"><li style="list-style-type:disc">각 class마다 threshold를 적용하여 해당 class에 적용되는지 확인</li></ul></li></ol><figure id="29b21982-2b50-80c4-8d2c-d8a68eeafe3c" class="image"><a href="Text%20Classification/image.png"><img style="width:710px" src="Text%20Classification/image.png"/></a></figure><h2 id="29b21982-2b50-8055-b45a-f467a1a59dec" class=""><strong>Evaluation</strong></h2><ul id="29b21982-2b50-8022-95ba-d1e7af4e18ab" class="bulleted-list"><li style="list-style-type:disc">accuracy <ul id="29b21982-2b50-80c3-81f6-c6be39b46e2a" class="bulleted-list"><li style="list-style-type:circle">👎 class가 imbalance하거나 희귀할 때 문제 ⇒ accuracy는 높아보일 수 있어도 제대로 detect하지 못함</li></ul></li></ul><ul id="29b21982-2b50-807b-9f86-eeee72f1d4fe" class="bulleted-list"><li style="list-style-type:disc"><code>precision</code> : TP/(TP+FP) ⇒ <strong>Positive라고 예측한 것 중</strong>에 실제 Positive일 확률</li></ul><ul id="29b21982-2b50-8049-a193-f27677315d2a" class="bulleted-list"><li style="list-style-type:disc"><code>recaㅣl</code> : TP/(TP+FN) ⇒ <strong>실제 Positivie 중</strong>에 Positive라고 예측한 확률<ul id="29b21982-2b50-8050-8d46-ef1a896b1b1d" class="bulleted-list"><li style="list-style-type:circle">일반적으로 precision과 recall은 trade-off 관계를 가짐 → threshold의 sensitivity를 조절해보면 알 수 있음!</li></ul><ul id="29b21982-2b50-80c6-b84e-d7c90dcda443" class="bulleted-list"><li style="list-style-type:circle">threshold가 높을 때 ⇒ precision이 좋음 (내가 <strong>예측한</strong> 것 대부분이 실제 positive)</li></ul><ul id="29b21982-2b50-8081-9858-c68919122f7a" class="bulleted-list"><li style="list-style-type:circle">threshold가 낮을 떄 ⇒ recall이 좋음 (실제 <strong>positive</strong>가 내 예측에 들어감)</li></ul></li></ul><ul id="29b21982-2b50-805c-baaa-eae6b619d8f2" class="bulleted-list"><li style="list-style-type:disc"><code>f1 score</code>: 2PR/(P+R) ⇒ Precision과 Recall 모두 다 높을 때만 높음<ul id="29b21982-2b50-8058-ba28-e887414eecf3" class="bulleted-list"><li style="list-style-type:circle">비율간의 평균으로 생각! ⇒ 속도- 시간 예시를 생각해보면 좋음 (둘다 분자 TP는 같고 분모가 다른 경우)</li></ul></li></ul><p id="29b21982-2b50-80da-be0e-cdcc6341f0ff" class="">
+</p><p id="29b21982-2b50-807b-8e85-eec1364dc36d" class="">multi-class classification</p><p id="29b21982-2b50-80ea-807e-ef1c2a09e185" class="">class가 C개일때는 confusion matrix가 CXC table이 되며 이때 <code>diagonal cell</code> 이 각 class마다 TP가 된다. ⇒ 해당 confusion matrix를 특정 class에 대한 confusion matrix로 설계가 가능</p><figure id="29b21982-2b50-80d4-b1fe-d9017760448c" class="image"><a href="Text%20Classification/image%201.png"><img style="width:710px" src="Text%20Classification/image%201.png"/></a></figure><figure id="29b21982-2b50-8073-b610-eafdf6c48975" class="image"><a href="Text%20Classification/image%202.png"><img style="width:710px" src="Text%20Classification/image%202.png"/></a></figure><p id="29b21982-2b50-8049-8481-c43fa5efd511" class="">🤔 각 class마다 accuracy, recall, precision이 나오는데 우리가 원하는 건 <strong>전체적인 성능을 보여주는 단일 metric!</strong></p><ol type="1" id="29b21982-2b50-80fa-97a1-e2593fd08f74" class="numbered-list" start="1"><li><strong>Macro averaging : 각 class마다 계산 후 평균 ⇒ class size와 상관없이 모든 class를 동일하게 고려</strong><ul id="29b21982-2b50-802c-bf01-d6eeb8927704" class="bulleted-list"><li style="list-style-type:disc">👍 모든 class를 동일하게 고려 ⇒ 소수 class 대한 성능도 강조</li></ul><ul id="29b21982-2b50-80dd-b062-ee5bd4c2f562" class="bulleted-list"><li style="list-style-type:disc">👎 소수 class에 대해서 성능 안좋음 ⇒ 전체적인 성능이 과소 평가 </li></ul></li></ol><figure id="29b21982-2b50-80b8-b0df-f8c12222315a" class="image"><a href="Text%20Classification/image%203.png"><img style="width:710px" src="Text%20Classification/image%203.png"/></a></figure><ol type="1" id="29b21982-2b50-80f3-ba36-cecc7aaa0c81" class="numbered-list" start="2"><li><strong>Micro averaging: 모든 class에서 TP, FP, FN을 구한 뒤에 precision, recall, f1을 계산 ⇒ 빈도수에 따라 class에 weight를 부여</strong><ul id="29b21982-2b50-809e-9d94-c5a2c2cab1c6" class="bulleted-list"><li style="list-style-type:disc">👍 imbalance에 강건하며 전체적인 성능을 반영</li></ul><ul id="29b21982-2b50-8090-af89-dfae4f0055d6" class="bulleted-list"><li style="list-style-type:disc">👎 다수 class에 의해 값이 결정되어, 소수 class에 대한 성능 반영이 안됨</li></ul></li></ol><figure id="29b21982-2b50-80a1-8004-e39d63e8c3f8" class="image"><a href="Text%20Classification/image%204.png"><img style="width:710px" src="Text%20Classification/image%204.png"/></a></figure><p id="29b21982-2b50-80fb-bea2-c24cf44b705a" class="">⭐️ class imbalance가 걱정이 될 경우 ⇒ <code>Macro</code> , 전체적인 성능이 중요 ⇒ <code>Micro</code> </p><p id="29b21982-2b50-80ab-ba27-c3c2ebb128d7" class="">
+</p><p id="29b21982-2b50-802e-b35b-f64c70e3d729" class="">지금까지는 모든 data에 label이 있는 경우에 대해서만 다룸 ⇒ 그렇다면 모든 data instance에 label이 존재할까?</p><p id="29b21982-2b50-80da-ae52-c593b50cde5e" class="">
+</p><h1 id="29b21982-2b50-80b9-83e5-ea10941a52e4" class="">Learning with limited labels</h1><p id="29b21982-2b50-807e-bb62-fc779b6d0913" class="">실제 세계에서는 data instance들에 대해 label이 없는 경우가 매우 많다 ⇒ 이럴 때 어떤 방법을 사용할 수 있을지 알아볼 예정!</p><ol type="1" id="29b21982-2b50-8070-b8b4-d423794d5928" class="numbered-list" start="1"><li><strong>Semi Supervised learning : 어떻게 unlabeled data들을 효과적으로 이용할 수 있을까?</strong></li></ol><ol type="1" id="29b21982-2b50-804a-9ac3-c1918bb9832c" class="numbered-list" start="2"><li><strong>Multi-task learning: 특정 task에 label이 부족할 경우, 유사한 task에서 signal을 빌릴 수 있지 않을까?</strong></li></ol><ol type="1" id="29b21982-2b50-80ba-9d8a-da8777d8f1ac" class="numbered-list" start="3"><li><strong>Adversarial learning : 만약에 labeled data와 unlabeled data가 다른 분포에서 온 것이면 어떻게 할까?</strong></li></ol><p id="29b21982-2b50-80e0-8972-df5530f9e40d" class="">
+</p><h2 id="29b21982-2b50-80e8-9454-fa41daf0aef4" class="">1. Semi-Supervised learning</h2><p id="29b21982-2b50-80c0-855d-cc7ad79e3f4e" class=""><code>Semi-supervised learning</code> : labeled와 unlabeled 된 data 모두를 이용하여 학습을 진행</p><p id="29b21982-2b50-8075-a991-f1531ff80e64" class="">⇒ <strong>적은 수의 data들로 supervsied learning을 했을 때 일반화가 되지 않을 수 있음</strong> (최적의 decision boundary 찾기 힘듦)</p><ul id="29b21982-2b50-8053-9323-d15793c26c19" class="bulleted-list"><li style="list-style-type:disc"><code>labeled data</code> : supervision에 대한 정보를 제공</li></ul><ul id="29b21982-2b50-8037-adcc-ec73203f0dd3" class="bulleted-list"><li style="list-style-type:disc"><code>unlabeled data</code> : 모델이 일반화가 되도록 도와줌</li></ul><figure id="29b21982-2b50-80d3-b932-d900e42b01d6" class="image"><a href="Text%20Classification/image%205.png"><img style="width:710px" src="Text%20Classification/image%205.png"/></a></figure><p id="29b21982-2b50-807c-a3ba-c3ce845f244d" class="">
+</p><p id="29b21982-2b50-80be-8370-d084345d756e" class="">⭐️ <strong>주요 assumption!</strong></p><ol type="1" id="29b21982-2b50-80de-b752-e9ea0f87e0fc" class="numbered-list" start="1"><li><strong>smoothness assumption</strong> : input space에서 가까이 있는 data point는 같은 label일 것 이다!</li></ol><ol type="1" id="29b21982-2b50-806f-82bb-efa9a191cd8e" class="numbered-list" start="2"><li><strong>Low-density assumption</strong>: 좋은 decision boundary는 많은 데이터들이 포함되어 있는 지역을 피해야한다! (위 그림 처럼 data point들이 모여있지 않은 low-density area를 지나야한다)</li></ol><p id="29b21982-2b50-8049-985a-f1b66df3748e" class="">
+</p><p id="29b21982-2b50-806a-b958-e9f63e42bd7d" class="">
+</p><h3 id="29b21982-2b50-8015-bef1-ceb8ea9a1a00" class="">1-1. Pseudo labeling</h3><p id="29b21982-2b50-80b9-bc9f-e071339a3117" class=""><code>Pseudo labeling</code> : <strong>confident prediction</strong>을 이용하여 unlabeled data에 label을 할당하는 방식</p><ul id="29b21982-2b50-8079-a92b-fb7bf1314da6" class="bulleted-list"><li style="list-style-type:disc">label data로 학습이 되는 동안에 model은 점점 특정 unlabeled sample에 대해서 confident해지게 됨</li></ul><figure id="29b21982-2b50-806e-b6f3-e60391d9e14a" class="image"><a href="Text%20Classification/image%206.png"><img style="width:710px" src="Text%20Classification/image%206.png"/></a></figure><p id="29b21982-2b50-8094-88be-d9a30bdf2354" class=""><strong>process</strong></p><ol type="1" id="29b21982-2b50-8067-b6cc-ff16e9a64ba4" class="numbered-list" start="1"><li>label data로 학습 (맨 처음에는 일부분의 label data만 존재 ⇒ supervised way로 학습)</li></ol><ol type="1" id="29b21982-2b50-80f8-8f32-cbfafdcc65a5" class="numbered-list" start="2"><li>unlabel data에 대해서 label 예측 ⇒ 여러가지 confidence level로 예측을 진행</li></ol><ol type="1" id="29b21982-2b50-80b8-9c41-ee777726dc8e" class="numbered-list" start="3"><li>pseudo-labeled data 생성 ⇒ <strong>특정 confidence를 넘는 data에 대해서 실제 true-labeled sample로 다룸</strong></li></ol><ol type="1" id="29b21982-2b50-8043-a1ae-ead7e2b1fce9" class="numbered-list" start="4"><li>model retrain</li></ol><p id="29b21982-2b50-80df-be9f-e37357edcd62" class="">
+</p><p id="29b21982-2b50-8062-8476-df73ac2dd88f" class="">👍 간단하고 효과적인 방식</p><p id="29b21982-2b50-809f-b751-f4e6d3119d5f" class="">👎 문제점<div class="indented"><ul id="29b21982-2b50-804b-9785-df4f36133873" class="bulleted-list"><li style="list-style-type:disc">사람이 label을 만든 것보다 정확하지 않음 ⇒ 오히려 labeled data만으로 학습한 것보다 성능이 안좋을 수 있음 &amp; <strong>local pattern 만을 포착</strong></li></ul><ul id="29b21982-2b50-8017-932d-e73edd8ca9df" class="bulleted-list"><li style="list-style-type:disc"><strong>error propagation</strong>: 잘못된 pseudo-label이 계속해서 존재할 수 있음</li></ul><ul id="29b21982-2b50-804b-b844-d2a8cb665e77" class="bulleted-list"><li style="list-style-type:disc"><strong>overconfidence</strong>: 잘못된 예측임에도 모델이 매우 confident 할 수 있음</li></ul></div></p><figure id="29b21982-2b50-801b-8a3c-dcafca308a96" class="image"><a href="Text%20Classification/image%207.png"><img style="width:710px" src="Text%20Classification/image%207.png"/></a></figure><figure id="29b21982-2b50-80af-b813-f8868f0f4bbf" class="image"><a href="Text%20Classification/image%208.png"><img style="width:710px" src="Text%20Classification/image%208.png"/></a></figure><p id="29b21982-2b50-80e8-a12f-dea4f4f988a2" class="">
+</p><p id="29b21982-2b50-80fd-b3cb-f729e78f29ff" class="">
+</p><h3 id="29b21982-2b50-801b-9c8b-c9a38108c959" class="">1-2. Consistency regularization </h3><p id="29b21982-2b50-8097-9091-d3a49ce0bddc" class=""><code>consistency regularization</code> : 같은 <strong>input에 조금만한 변화가 있더라도 모델은 계속해서 일관된 예측</strong>을 해야함 ⇒ small perturbation이 있더라도 예측은 안정적이어야함<div class="indented"><ul id="29b21982-2b50-807e-be58-f361ef17552b" class="bulleted-list"><li style="list-style-type:disc">embedding에 random noise 추가</li></ul><ul id="29b21982-2b50-80df-bf22-ff3d559f2a36" class="bulleted-list"><li style="list-style-type:disc">word dropout or masking</li></ul><ul id="29b21982-2b50-80a0-bce6-c11573276928" class="bulleted-list"><li style="list-style-type:disc">data augmentation</li></ul></div></p><figure id="29b21982-2b50-8086-814a-c1a7231607fd" class="image"><a href="Text%20Classification/image%209.png"><img style="width:710px" src="Text%20Classification/image%209.png"/></a></figure><p id="29b21982-2b50-80f3-b5ac-c4315b859a1b" class="">
+</p><p id="29b21982-2b50-8021-8986-d2a14a2c021e" class="">⭐️ r<strong>egularization 항을 추가하여 모델이 perturbation이 있더라도 일관된 예측을 하도록 학습을 진행</strong></p><ol type="1" id="29b21982-2b50-806d-83a3-efa852c92358" class="numbered-list" start="1"><li>regularization 효과로 noise에 강건해져 overfitting을 막을 수 있다 (perturbation이 있을 때 결과가 크게 달라지면 해당 모델이 불안정 ⇒ overfitting)</li></ol><ol type="1" id="29b21982-2b50-800f-9915-db2026237fd6" class="numbered-list" start="2"><li><code>pseudo labeling</code> 이 오직 high-confidence sample만을 사용하는 반면에 모든 unlabeled data를 사용 ⇒ dataset에 더 많은 부분을 사용하게 됨 <ul id="29b21982-2b50-80fb-8174-e6f6705a3b29" class="bulleted-list"><li style="list-style-type:disc"><strong>unlabel sample이라고 하더라도, 해당 sample에 perturbation을 준 것과 비슷한 확률 분포를 가지게 만들도록 하기 때문</strong>에 모든 unlabeled data들을 사용한다고 볼 수 있음</li></ul></li></ol><p id="29b21982-2b50-8015-a25f-c5e828fc166d" class="">
+</p><p id="29b21982-2b50-80b4-af2f-ebbd89f12bb7" class="">👎 다만, 모델이 unlabeled data들에 대해서 불안정한 예측을 내릴 수 있음 ⇒ <strong>해당 data들이 gold label이 없으므로 epoch이 증가하면서 확률 분포가 계속해서 바뀔 수 있다</strong></p><figure id="29b21982-2b50-8043-bac1-ec3076dcc352" class="image"><a href="Text%20Classification/image%2010.png"><img style="width:710px" src="Text%20Classification/image%2010.png"/></a></figure><figure id="29b21982-2b50-805e-92b5-c6f3f20b6c9f" class="image"><a href="Text%20Classification/image%2011.png"><img style="width:710px" src="Text%20Classification/image%2011.png"/></a></figure><p id="29b21982-2b50-80b1-9511-d4b99048317d" class="">
+</p><p id="29b21982-2b50-80f6-8ffa-c2c8ed7f4ea1" class="">
+</p><p id="29b21982-2b50-80c8-a5bc-eec9b78160b2" class="">
+</p><h3 id="29b21982-2b50-80ed-9102-e3d191745586" class="">1-3. Consistency regularization- Temporal ensemble</h3><p id="29b21982-2b50-80bd-95e8-df771073e006" class="">🤔 그렇다면 불안정한 unlabeled data들에 대해 어떻게 model 예측을 안정화시킬 수 있을까?</p><p id="29b21982-2b50-8052-9197-cc2afa53c124" class="">🅰️ <code>model ensemble</code> : 하나의 단일 모델이 아닌 여러 모델을 학습시킨 후 예측을 합치는 방법 ⇒ <strong>variance가 감소하고 더 안정적인 예측이 가능해짐</strong></p><p id="29b21982-2b50-800c-a404-e04d471ff80c" class="">👎 하지만 여러 모델들을 학습시키는 건 비쌈</p><p id="29b21982-2b50-802f-bf01-d49d8af92c8f" class="">
+</p><p id="29b21982-2b50-80dc-af6b-e6573bb74980" class="">💡 <strong>하나의 모델에서 서로 다른 epoch에서의 결과를 모아서 ensemble을 만들자!</strong> ⇒ model ensemble과 같은 방식!</p><p id="29b21982-2b50-8032-b712-c42f3d5ce01f" class="">⇒ model parameter들을 <code>EMA(exponential moving average)</code> 를 통해 ensemble을 진행</p><p id="29b21982-2b50-802d-8134-e5dd588740ec" class="">즉, 1) 현재 model과 2) temporal ensemble model 2개가 존재하게 되며, <strong>temporal ensemble model은 현재 모델을 느리게 따라가면서 안정적으로 학습하게 된다</strong></p><figure id="29b21982-2b50-8031-bbe3-c1ce30b4ff71" class="image"><a href="Text%20Classification/image%2012.png"><img style="width:710px" src="Text%20Classification/image%2012.png"/></a></figure><p id="29b21982-2b50-803a-acd3-dfd37f3d6273" class="">👍 이렇게 함으로써 <strong>unlabled data에 대해서도 안정적으로 학습이 가능</strong>하게 만들 수 있다<div class="indented"><ul id="29b21982-2b50-80da-a7d0-c6ff104228cd" class="bulleted-list"><li style="list-style-type:disc"><strong>effective use of unlabeled data</strong>: perturbation만 추가하여 unlabled data에 대해서 폭넓게 적용 가능</li></ul><ul id="29b21982-2b50-800a-abff-d0e8dfeea69e" class="bulleted-list"><li style="list-style-type:disc"><strong>simple concept</strong> : 해당 모델에 regularizer만 추가</li></ul></div></p><p id="29b21982-2b50-80f9-9854-fae5d159c3ec" class="">👎 그럼에도 본질적인 문제점들이 존재<div class="indented"><ul id="29b21982-2b50-80dd-b110-fa4e54813ad3" class="bulleted-list"><li style="list-style-type:disc"><strong>perturbation sensitivity</strong>: noise나 augmentation을 어떻게 하는지에 따라 성능이 달라지게 됨<ul id="29b21982-2b50-80ff-955a-c133f382c67f" class="bulleted-list"><li style="list-style-type:circle">CV에서 crop은 효과적일 수 있지만 text에서는 효과적이지 않을 수 있음 (like→dislike가 되면 문맥이 완전히 달라짐)</li></ul></li></ul><ul id="29b21982-2b50-8011-8ea3-da2b08ae6c4c" class="bulleted-list"><li style="list-style-type:disc"><strong>weak direct guidance </strong>: label이 제공되지 않기 때문에 여전히 boundary가 불확실함</li></ul></div></p><figure id="29b21982-2b50-801a-a1ad-c09e91aa32f9" class="image"><a href="Text%20Classification/image%2013.png"><img style="width:710px" src="Text%20Classification/image%2013.png"/></a></figure><p id="29b21982-2b50-8071-bf44-f8be49f04be1" class="">
+</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="29b21982-2b50-80bb-971a-cfe1cc43f8f6"><div style="font-size:1.5em"><span class="icon">📖</span></div><div style="width:100%"><p id="29b21982-2b50-80bd-a659-cf2703d24293" class=""><strong>Pseuo labeling VS Consistency regularization</strong></p><p id="29b21982-2b50-80a9-adfe-e59e556ab8a5" class=""><code>pseudo-labeling</code>은 강하지만 noisy한 signal을 제공하는데 반해, <code>consistency regularization</code> 은 해당 noise를 안정화시키는 역할을 함</p><p id="29b21982-2b50-805e-b639-c318ab0cea69" class="">⇒ 최근 SSL은 2가지 방식을 모두 합쳐서 같이 사용함! <strong>서로 보완적인 관계!</strong></p><figure id="29b21982-2b50-8005-b422-da10259251ad" class="image"><a href="Text%20Classification/image%2014.png"><img style="width:644px" src="Text%20Classification/image%2014.png"/></a></figure></div></figure><p id="29b21982-2b50-802f-b2d7-e92ddadbbefb" class="">
+</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="29b21982-2b50-8015-9639-eb66d28256fb"><div style="font-size:1.5em"><span class="icon">📖</span></div><div style="width:100%"><p id="29b21982-2b50-8048-9175-ebddd9b9ac16" class="">Recommend </p><ul id="29b21982-2b50-80a9-8c99-fb9c38f32af6" class="bulleted-list"><li style="list-style-type:disc">⭐️ <a href="https://wikidocs.net/255169">https://wikidocs.net/255169</a> ⇒ 강력 추천</li></ul><ul id="29b21982-2b50-805d-861b-f7080c67c7e8" class="bulleted-list"><li style="list-style-type:disc"><a href="https://arxiv.org/abs/1703.01780">https://arxiv.org/abs/1703.01780</a> : consistency regularization</li></ul><ul id="29b21982-2b50-802b-9b5c-e1d697915a30" class="bulleted-list"><li style="list-style-type:disc"><a href="https://arxiv.org/abs/2202.07136">https://arxiv.org/abs/2202.07136</a> : beyond the scope</li></ul></div></figure><p id="29b21982-2b50-80a1-8b68-ef307d7ae171" class="">
+</p><p id="29b21982-2b50-80ca-8bc4-fab3a57e11ef" class="">
+</p><h2 id="29b21982-2b50-8091-9209-cd2415c1c406" class="">2. Multi-task learning (MTL)</h2><p id="29b21982-2b50-8095-8485-d2ad9e7cc79d" class="">이번에는 단순히 unlabeled data를 어떻게 효과적으로 사용할 것인지 알아보는 것이 아닌, <strong>하나의 task에는 충분한 label이 없을 때</strong> 다른 task에서의 signal을 가져와서 학습을 진행할 수 있는 방법에 대해서 알아보고자 함!</p><p id="29b21982-2b50-80d2-b971-d977b74d1239" class="">
+</p><p id="29b21982-2b50-8000-b19c-d5b808ea5724" class="">ex) 추천시스템에서 2가지 예측 task를 진행하고자 함 ⇒ <code>engagement</code> , <code>satisfaction</code> (사용자가 item을 click하는지 / 사용자가 해당 item에 대해 높은 평점을 주는지)</p><ul id="29b21982-2b50-8076-bc50-d7325f683d76" class="bulleted-list"><li style="list-style-type:disc">두가지 모델을 각각 학습시킬 수 있지만…</li></ul><ul id="29b21982-2b50-8017-bd30-cdf1be5fa90b" class="bulleted-list"><li style="list-style-type:disc"><strong>Assumption: item을 클릭한다는 것 자체가 이미 관심이 있기 때문에 만족할 가능성이 높다고 볼 수 있다! ⇒ 즉, 하나의 task를 해결하는 것이 다른 task를 해결하는데 도움이 될 수 있다!!</strong></li></ul><figure id="29b21982-2b50-80d8-8f1b-d593b23dbd64" class="image"><a href="Text%20Classification/image%2015.png"><img style="width:710px" src="Text%20Classification/image%2015.png"/></a></figure><p id="29b21982-2b50-80cc-abc9-cace5e5b74b9" class="">결국 <strong>두 task가 independet 하지 않을 때, 하나의 단일 모델을 사용</strong>하여 label이 희소하게 있는 문제를 해결할 수 있음 (shared parameter)</p><ul id="29b21982-2b50-80f4-9637-d665eade3d5f" class="bulleted-list"><li style="list-style-type:disc">👍 다양한 task의 supervision(label data)들을 사용 가능</li></ul><ul id="29b21982-2b50-8094-ab55-e7d7df4ebd8b" class="bulleted-list"><li style="list-style-type:disc">👍 generalization 향상과 label sparsity를 줄이는데 도움이 됨</li></ul><p id="29b21982-2b50-8098-be5e-e565461189c2" class="">
+</p><p id="29b21982-2b50-80e7-b229-e5fd3834c1c9" class="">👎 <code>negative transfer</code> : 지식을 서로 공유한느 것이 오히려 성능이 안좋아지는 현상을 의미하며, 때로는 각각 독립적으로 모델을 만드는 것이 더 효과적일 수 있음</p><ol type="1" id="29b21982-2b50-8065-a14d-c41f05153cbf" class="numbered-list" start="1"><li><strong>Task discrepancy</strong> : task들이 관련이 있다고 해도 여전히 차이점이 존재 ⇒<strong> task들이 여러개 있을 때 특정 task들끼리 무관하거나 혹은 아예 상출될 수 있음</strong><ul id="29b21982-2b50-80df-86e7-d9e8b7bd8824" class="bulleted-list"><li style="list-style-type:disc">💡 task similarity를 통해 parameter sharing의 정도를 조절 ⇒ <code>MMoE</code></li></ul></li></ol><ol type="1" id="29b21982-2b50-80e0-99ad-e653cce6bff0" class="numbered-list" start="2"><li><strong>optimization challenge: </strong>특정 task는 빠르게 학습이 되어 shared parameter의 대부분에 영향을 미칠 수 있음 ⇒ <strong>빠르게 학습이 되는 task에 대해 편향이 생겨, 느린 task에 대한 학습을 방해</strong><ul id="29b21982-2b50-8081-a4fe-ecfbb3926410" class="bulleted-list"><li style="list-style-type:disc">💡 balancing coefficient를 추가해 task의 학습 속도를 조절 ⇒ <code>GradNorm</code></li></ul></li></ol><p id="29b21982-2b50-806f-a034-e58e09c9b96f" class="">
+</p><p id="29b21982-2b50-807e-ad90-f4c97dac4292" class="">
+</p><p id="29b21982-2b50-80ca-91dc-df2f7e188dbe" class="">
+</p><h3 id="29b21982-2b50-808f-8aa4-e19891e56d90" class="">2-1. Multigate Mixture of Experts (MMoE)</h3><p id="29b21982-2b50-802f-8cd3-f9de5ac41652" class=""><a href="https://dl.acm.org/doi/pdf/10.1145/3219819.3220007">https://dl.acm.org/doi/pdf/10.1145/3219819.3220007</a> : Multitask learning에서 <strong>task discrepancy에 따른 negative transfer 문제를 해결하기 위해 parameter sharing 정도를 조절하는 방법론</strong> </p><p id="29b21982-2b50-80ab-bd29-c40bee7f6b18" class="">🤔 그렇다면 어떻게 공유하는 정도를 자동적으로 조절할 수 있을까?</p><p id="29b21982-2b50-804b-8e77-ca57632b03a5" class="">
+</p><p id="29b21982-2b50-808e-8852-d8bc16a7a29c" class="">하나의 큰 large network 대신에 여러개의 작은 subnetwork를 만들며 이를 <code>expert</code> 라고 칭함 ⇒ 각각은 input의 다른 측면에 집중을 함</p><ul id="29b21982-2b50-80ab-b63b-ed6b45bef38c" class="bulleted-list"><li style="list-style-type:disc">해당 <code>expert</code> 들은 weighted sum으로 결합되며, <strong>해당 weight들은 각각의 expert들이 해당 task를 다루는데에 있어 얼마나 중요한지를 보여줌</strong></li></ul><ul id="29b21982-2b50-80fe-bc86-d5cf62b834fc" class="bulleted-list"><li style="list-style-type:disc">해당 <code>weight</code> 는 <code>gate network</code> 에 의해 결정이 되며, 각각의 gate는 expert들의 weight들을 softmax를 취해 확률적으로 만드는 작은 network를 의미한다</li></ul><figure id="29b21982-2b50-80bf-bfe8-f1d2fd2ec39a" class="image"><a href="Text%20Classification/image%2016.png"><img style="width:710px" src="Text%20Classification/image%2016.png"/></a></figure><p id="29b21982-2b50-8092-828a-d447941a01d0" class="">이후 학습은 기존 방식과 동일하게 진행된다 ⇒ 각 task마다 cross entropy loss를 취해 최적화 진행</p><figure id="29b21982-2b50-802c-b5a5-c04626d915f4" class="image"><a href="Text%20Classification/image%2017.png"><img style="width:710px" src="Text%20Classification/image%2017.png"/></a></figure><p id="29b21982-2b50-8067-a854-de1a2d6330b0" class="">
+</p><p id="29b21982-2b50-80cb-9aed-f74debbae57d" class="">🤔 1. <strong>그렇다면 해당 MMoE 구조가 어떻게 task discrepancy를 줄일 수 있을까?</strong></p><p id="29b21982-2b50-80ad-beb8-d4804907cf25" class="">🅰️ 각 <code>expert</code> 는 입력의 서로 다른 측면에 집중을 하며, 각각의 <code>task specific gate</code> 는 <strong>각각의 task에 대해 얼마나 유용한지를 기반으로 expert output을 결합</strong></p><ul id="29b21982-2b50-80a9-9c80-d17653b9af1c" class="bulleted-list"><li style="list-style-type:disc">만약 두 task가 서로 비슷하다면, gate에서의 softmax distribution이 서로 비슷 ⇒ <strong>sharing more</strong></li></ul><ul id="29b21982-2b50-800d-a30e-c1d1e2d970a2" class="bulleted-list"><li style="list-style-type:disc">만약 두 task가 서로 덜 비슷하다면, gate에서의 softmax distribution이 서로 다르게 됨 ⇒ <strong>sharing less</strong></li></ul><figure id="29b21982-2b50-80b3-a438-dbaf7891222d" class="image"><a href="Text%20Classification/image%2018.png"><img style="width:710px" src="Text%20Classification/image%2018.png"/></a></figure><p id="29b21982-2b50-8012-96d4-f33ed8bfb83b" class="">
+</p><p id="29b21982-2b50-80df-9806-c2d7f4e1d1d8" class="">🤔 <strong>2. 왜 각각의 </strong><code><strong>expert</strong></code><strong> 들은 학습이 진행됨에 따라 전문화가 되는 것일까?</strong></p><p id="29b21982-2b50-80be-a514-e6343f69c660" class="">🅰️ 각각의 <code>task specific gate</code> 는 task loss를 가장 효과적으로 줄일 수 있게 만드는 expert에 더 많은 weight를 주게 됨 ⇒ 특정 expert들이 특정 task에 대해 매우 많이 이용이 되게 됨</p><p id="29b21982-2b50-8039-a497-e791b7872d27" class="">
+</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="29b21982-2b50-80ff-8d99-dd23534c6374"><div style="font-size:1.5em"><span class="icon">📖</span></div><div style="width:100%"><p id="29b21982-2b50-8062-9829-e9d5cafa3a82" class="">처음에 무작위하게 학습이 될 텐데 각각의 expert가 어떻게 특정 task 역할을 하게 되나?</p><p id="29b21982-2b50-80aa-a933-cd0572a3e992" class="">처음에는 무작위하지만 , <strong>각 gate가 학습이 되면서 특정 expert가 특정 task의 gradient를 더 자주, 강하게 받게 됨</strong> ⇒ 자연스럽게 해당 task에 유리한 representation으로 업데이트 됨 (soft specialization)</p><p id="29b21982-2b50-800d-8e1f-c3db7d0e2c01" class=""><strong>별도의 label이 없이도 gate 학습 과정에서 자동으로 분화되게 됨!</strong></p></div></figure><p id="29b21982-2b50-80cf-bab3-dc3a610140bd" class="">
+</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="29b21982-2b50-8039-8155-f18e85d816d8"><div style="font-size:1.5em"><span class="icon">📖</span></div><div style="width:100%"><p id="29b21982-2b50-802e-b3ef-c4bdbe1acb4c" class="">MMoE 활용 (Youtube)</p><p id="29b21982-2b50-80e3-a442-fd189f047bd0" class=""><a href="https://daiwk.github.io/assets/youtube-multitask.pdf">https://daiwk.github.io/assets/youtube-multitask.pdf</a> : 해당 논문</p><p id="29b21982-2b50-8064-b889-c47ea7a69826" class="">video의<strong> 최종 점수</strong>가 각각의 task-specific 점수의 가중합이 됨 </p><p id="29b21982-2b50-8003-9baa-e206fdf1ad61" class=""><strong>output</strong>: 1. engagement task (click, watch..) 2. Statisfaction task (like, subscribe..)</p><p id="29b21982-2b50-803a-946b-fa64a2b3dee0" class=""><strong>input</strong>: 1. query video(최근 본 video), candidate video, other feature(age, location..)</p><p id="29b21982-2b50-80ba-955a-c1cc198856d3" class="">👎 여러가지 task score (click,like..)이 존재하지만, 각각의<strong> task label은 불충분 &amp; task마다 discrepancy 존재</strong></p><p id="29b21982-2b50-802f-9b74-d1ffc0fed54c" class="">💡 <code>MMoE</code> 를 사용해 각 task 사이의 공유하는 정도를 조절</p><figure id="29b21982-2b50-8071-98e0-e1b2deb1a240" class="image"><a href="Text%20Classification/image%2019.png"><img style="width:644px" src="Text%20Classification/image%2019.png"/></a></figure><figure id="29b21982-2b50-800d-8e3d-c6001e16992c" class="image"><a href="Text%20Classification/image%2020.png"><img style="width:644px" src="Text%20Classification/image%2020.png"/></a></figure></div></figure><p id="29b21982-2b50-80e0-a9bf-df2ce77adf8f" class="">
+</p><h3 id="29b21982-2b50-8061-bafa-e563f3577fa4" class="">2-2. GradNorm (Adaptive loss balancing for MTL)</h3><p id="29b21982-2b50-8097-b6fd-f15f51d547a1" class=""><a href="https://arxiv.org/abs/1711.02257">https://arxiv.org/abs/1711.02257</a> : 각 task마다 학습 난이도가 달라 학습 속도에 차이가 존재 ⇒ 다른 task 학습 속도 저하 및 parameter 이용에 문제를 만들 수 있음</p><p id="29b21982-2b50-80e5-a352-e457e6a78fb7" class="">💡 각 task마다 <code>balancing coefficient</code> 를 이용해 조절을 진행 ⇒ 학습속도가 빠르면 coefficient를 줄임 (weight 줄임)</p><p id="29b21982-2b50-8044-87fa-fd66eaf824ef" class="">
+</p><figure id="29b21982-2b50-80cb-a7cb-e01d693ea496" class="image"><a href="Text%20Classification/image%2021.png"><img style="width:710px" src="Text%20Classification/image%2021.png"/></a></figure><p id="29b21982-2b50-8040-afab-d3fa77034727" class="">결국 중요한건 전체 task 중에서 해당 task가 얼마나 빠르고 느린지이기 때문에 분모에 평균값이 들어가게 됨</p><p id="29b21982-2b50-80dc-a066-cacb883f8fb0" class="">⇒ 가장 쉽게 task 속도를 조절하는 방식: <style>@import url('https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex-swap.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>λ</mi><mi>i</mi></msub><mo>=</mo><msub><mi>λ</mi><mi>i</mi></msub><mo>∗</mo><msub><mi>r</mi><mi>I</mi></msub></mrow><annotation encoding="application/x-tex">\lambda_i = \lambda_i*r_I</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8444em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">λ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8444em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">λ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.0278em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.07847em;">I</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></span><span>﻿</span></span> (다른 방식도 있지만 해당 수업에서는 다루지 않음)</p><p id="29b21982-2b50-80e2-93f5-f22185ad8b18" class="">
+</p><figure id="29b21982-2b50-80e1-a271-d98e4cda9138" class="image"><a href="Text%20Classification/image%2022.png"><img style="width:710px" src="Text%20Classification/image%2022.png"/></a></figure><p id="29b21982-2b50-80f4-8048-e13c5c88334c" class="">결국 <style>@import url('https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex-swap.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>L</mi><mrow><mi>t</mi><mi>o</mi><mi>t</mi><mi>a</mi><mi>l</mi></mrow></msub><mo>=</mo><msub><mi>λ</mi><mn>1</mn></msub><msub><mi>L</mi><mn>1</mn></msub><mo>+</mo><msub><mi>λ</mi><mn>2</mn></msub><msub><mi>L</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">L_{total}=\lambda_1L_1+\lambda_2L_2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">t</span><span class="mord mathnormal mtight">o</span><span class="mord mathnormal mtight">t</span><span class="mord mathnormal mtight">a</span><span class="mord mathnormal mtight" style="margin-right:0.01968em;">l</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8444em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">λ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8444em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">λ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></span><span>﻿</span></span> (각 task에 대한 loss가 존재함) 이 됨 </p><p id="29b21982-2b50-80f8-a0cc-d7c76510a474" class="">만약 L1의 gradient norm이 훨씬 클 경우 Task A가 shared parameter을 거의 독점 ⇒ L2의 gradient가 작아서 shared parameter에 거의 영향이 없게 됨 : <code>negative transfer!</code> </p><p id="29b21982-2b50-806c-b382-ffef0aaadfb2" class=""><strong>각 task의 shared parameter에 대한 </strong><code><strong>gradient norm</strong></code><strong> 을 구한 뒤에 lambda의 값을 조절해 G1=G2가 되도록 만들어 학습 속도를 일정하게 만드는 역할을 수행!</strong></p><p id="29b21982-2b50-8066-9450-cc82fb5b7eab" class="">⭐️ 즉, 위에 사진에서 loss가 얼마나 줄었는지를 가지고 lambda의 값을 만드는데 <strong>이를 </strong><code><strong>gradient norm</strong></code><strong> 으로 측정해서 학습을 시킨다고 보면 됨!</strong></p><p id="29b21982-2b50-8055-a6da-dbdff4043c58" class="">
+</p><figure id="29b21982-2b50-804a-b4ee-d8a66fe948e5" class="image"><a href="Text%20Classification/image%2023.png"><img style="width:710px" src="Text%20Classification/image%2023.png"/></a></figure><h2 id="29b21982-2b50-803c-b641-da5cf6b067b9" class="">3. Domain Adaptation</h2><p id="29b21982-2b50-803d-b8b6-f5a5ac435074" class="">motivation example: Fake News detection! ⇒ news data와 label을 통해 모델 학습</p><p id="29b21982-2b50-80c1-95cd-e352c75c89ab" class="">⇒ <strong>새로운 event들이 계속해서 들어</strong>오게 되는데, 이는 모델이 과거 data에 의해 학습이 되었기 때문에<strong> 새로운 event에 대해 일반화하는데 실패</strong>할 수 있음</p><p id="29b21982-2b50-805e-bbde-e0ba119e6eed" class="">⇒ 또한 이러한 <strong>새로운 news data들에 대해 label을 계속해서 만드는 것이 불가능함</strong></p><p id="29b21982-2b50-8025-bca4-c2e47bc03e30" class=""><code>problem adapttion</code> : 위의 문제를 의미 ⇒ 우리는 다른 분포(<code>domain</code>)에서 온 두 data 집합을 가짐<div class="indented"><ul id="29b21982-2b50-805f-89dc-f6c43ca4d63e" class="bulleted-list"><li style="list-style-type:disc"><code>labeled source domain</code> : 해당 labeled source data에 대해서는 error를 최소화가 가능</li></ul><ul id="29b21982-2b50-8092-a4de-dfdef9852de6" class="bulleted-list"><li style="list-style-type:disc"><code>unlabeled target domain</code> : labeled source로 학습한 모델은 <code>target domain</code> 에 적용이 불가능할 수 있음 (데이터 분포 자체가 다를 수 있음)<ul id="29b21982-2b50-806f-99ec-c6b7e6a29ea2" class="bulleted-list"><li style="list-style-type:circle">SSL 방법 (pseudo labeling)을 적용할 수 있지만, 이러한 예측은 부정확하거나 편향될 수 있음</li></ul></li></ul></div></p><p id="29b21982-2b50-80d4-b876-c78581be5ed3" class="">
+</p><p id="29b21982-2b50-808b-8647-f8fe1e25a23e" class=""><mark class="highlight-red"><strong>Assumption</strong></mark><strong>:</strong> 두 <code>domain(distribution)</code> 사이에는 <strong>x에서 y로의 mapping이 되는 공통된 decision pattern이 존재한다고 가정! ⇒ domain이 다르더라도 </strong><code><strong>labeling rule</strong></code><strong> 은 같다!</strong><div class="indented"><ul id="29b21982-2b50-809c-889a-ef85b13a6d7a" class="bulleted-list"><li style="list-style-type:disc">항상 맞는 것은 아니지만 실제 많은 경우 해당 가정이 잘 들어맞는다</li></ul></div></p><figure id="29b21982-2b50-8042-86be-d25ed74a0226" class="image"><a href="Text%20Classification/image%2024.png"><img style="width:710px" src="Text%20Classification/image%2024.png"/></a></figure><p id="29b21982-2b50-80c5-8152-f97c4a980434" class="">
+</p><p id="29b21982-2b50-80a7-ab19-da75edde5fe9" class="">
+</p><p id="29b21982-2b50-8036-ac68-f007b543f235" class="">
+</p><h3 id="29b21982-2b50-80df-ac62-d5d5f31d40f5" class="">3-1. Data reweighting</h3><p id="29b21982-2b50-8047-9cf0-d1ecc46f6acd" class=""><code>source sample</code> 각각이 <code>target domain</code> 에 얼마나 중요한지 측정을 한 뒤에 이를 각각 반영한다 ⇒ 즉, <strong>target distribution과 유사한 source example에 대해 가중치를 준다</strong></p><figure id="29b21982-2b50-801f-a9c6-e1ce0bdd59a3" class="image"><a href="Text%20Classification/image%2025.png"><img style="width:710px" src="Text%20Classification/image%2025.png"/></a></figure><p id="29b21982-2b50-8043-adc6-ed0e259fb451" class=""><mark class="highlight-red_background"><strong>Assumption: 두 domain 사이에 동일한 decision pattern이 존재할 것이다</strong></mark></p><figure id="29b21982-2b50-80f1-8093-e4eb4ac8889b" class="image"><a href="Text%20Classification/image%2026.png"><img style="width:710px" src="Text%20Classification/image%2026.png"/></a></figure><figure id="29b21982-2b50-803b-96bf-c5aa2c8686a0" class="image"><a href="Text%20Classification/image%2027.png"><img style="width:710px" src="Text%20Classification/image%2027.png"/></a></figure><p id="29b21982-2b50-801e-9267-f1887d131b08" class="">⭐️ target domain에 대한 error를 최소화하는 식을 전개한 뒤, bayes rule을 사용하게 되면, <strong>결국 target domain에 대해 error를 최소화하는 것은 </strong><code><strong>binary classifier</strong></code><strong> 로 계산이 가능해진다!</strong></p><ul id="29b21982-2b50-8026-8516-c7396d96b057" class="bulleted-list"><li style="list-style-type:disc">sample이 target domain일 확률이 높을 수록 w는 증가</li></ul><ul id="29b21982-2b50-8090-a243-db6da95cb1f3" class="bulleted-list"><li style="list-style-type:disc">sample이 source domain일 확률이 높을 수록 w는 감소</li></ul><p id="29b21982-2b50-8078-98d9-f5acc380ca78" class="">⭐️ <strong>따라서 source sample과 target sample을 구별하는 binary classifier을 학습시켜 </strong><code><strong>source data</strong></code><strong> 에 대한 importance weight를 계산한 뒤, weighted loss function을 이용해 </strong><code><strong>target classifier</strong></code><strong> 을 학습시킨다!</strong></p><p id="29b21982-2b50-8016-a9d1-ca77daaefbe8" class="">⇒ <strong>Target domain과 분포가 비슷한 source sample에 더 높은 loss weight를 줘서, 모델이 target domain에 더 잘 일반화되도록 만들게 됨으로써 target sample이 오더라도 제대로 labeling을 진행</strong></p><figure id="29b21982-2b50-8000-98a5-ca8e0bd5330b" class="image"><a href="Text%20Classification/image%2028.png"><img style="width:710px" src="Text%20Classification/image%2028.png"/></a></figure><p id="29b21982-2b50-80c7-a781-ff709e46c8e8" class="">👎 <strong>문제점</strong></p><ul id="29b21982-2b50-8024-a025-f756b351f61f" class="bulleted-list"><li style="list-style-type:disc">여전히 source data만 학습에 사용</li></ul><ul id="29b21982-2b50-8044-990e-ed145596cd28" class="bulleted-list"><li style="list-style-type:disc">source/target domain이 <strong>얼마나 겹쳐져있는지에 대한 정도</strong>에 따라 효과가 달라짐<ul id="29b21982-2b50-80a9-a244-de2c5ec557ea" class="bulleted-list"><li style="list-style-type:circle"><code>highly overlap</code> : ratio (source VS target)이 안정적 ⇒ target과 유사하거나 유사하지 않은 부분이 뚜렷하여 가중치를 주어 학습하는 것이 효과적</li></ul><ul id="29b21982-2b50-80ef-a538-e16636d980b9" class="bulleted-list"><li style="list-style-type:circle"><code>low overlap</code> : <style>@import url('https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex-swap.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mi>s</mi></msub><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">P_s(x)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mclose">)</span></span></span></span></span><span>﻿</span></span>가 0에 가까워지게 되어 ratio가 폭발하여 source가 target feature을 커버하지 못함</li></ul></li></ul><h3 id="29b21982-2b50-80ec-beeb-c894a8637439" class="">3-2. Adversarial Learning</h3><p id="29b21982-2b50-80d3-9a47-dd10d2cfa24d" class=""><a href="https://arxiv.org/pdf/1505.07818">https://arxiv.org/pdf/1505.07818</a></p><p id="29b21982-2b50-8005-a9fa-dcbb5646c94b" class="">결국 위에서 알 수 있는 것은, ⭐️ <strong>두 domain의 feature space가 제대로 align 되어있다면 일반화를 향상시킬 수 있다!</strong></p><p id="29b21982-2b50-800c-8c0b-f940e468765a" class="">💡 그렇다면 <strong>두 domain의 feature distribution을 명시적으로 align시키도록 학습하면 되지 않을까? </strong></p><p id="29b21982-2b50-80ea-ba04-f66c9624179d" class="">
+</p><p id="29b21982-2b50-802a-b863-eeecc158120b" class="">현재 상황은 다음과 같다. <code>feature extractor</code> 에서 나온 결과로 <strong>task 1은 Fake/ Real (labeling)</strong>을 t<strong>ask 2 는 Source/ Target (weight)</strong>를 학습하는데에 입력으로 사용 ⇒ 해당 <strong>feature은 task 1,2에 대한 정보 둘 다 가지고 있다!</strong></p><figure id="29b21982-2b50-80c5-9201-cdf26d1cc946" class="image"><a href="Text%20Classification/image%2029.png"><img style="width:710px" src="Text%20Classification/image%2029.png"/></a></figure><p id="29b21982-2b50-80c5-835f-e42de74d8172" class="">근데 task 2에 경우는 source와 target을 구별하는 것이지만 우리가 원하는건 source와 target의 구분을 feature space 상에서 없애는 것이기 때문에 <code>Gradient Reversal Layer</code> 이 필요!</p><figure id="29b21982-2b50-8037-9a15-c8feedf12d8c" class="image"><a href="Text%20Classification/image%2030.png"><img style="width:710px" src="Text%20Classification/image%2030.png"/></a></figure><p id="29b21982-2b50-80ea-b751-e7822ac16f54" class="">
+</p><figure id="29b21982-2b50-80ea-888d-d21475d820ba" class="image"><a href="Text%20Classification/image%2031.png"><img style="width:710px" src="Text%20Classification/image%2031.png"/></a></figure><p id="29b21982-2b50-80fa-a8a5-f4c7eb67fa68" class="">GRL과 함께 learning objective과 다음과 같이 변화하게 됨</p><ul id="29b21982-2b50-8055-8103-cfcb5041a26b" class="bulleted-list"><li style="list-style-type:disc"><code>label classification loss</code> : model이 main task를 올바르게 예측하도록 만듦</li></ul><ul id="29b21982-2b50-8021-afce-ddfe5c444bad" class="bulleted-list"><li style="list-style-type:disc"><code>domain classification loss</code> : source와 target domain을 구별하고자 노력<ul id="29b21982-2b50-809a-a07e-d3908ea50bd1" class="bulleted-list"><li style="list-style-type:circle">앞에 -가 붙여있기 때문에 <code>feature extractor</code>는 domain confusion을 하도록 만들어짐</li></ul></li></ul><p id="29b21982-2b50-80ba-9469-c322dd9d8905" class="">⭐️<code>task 2 head</code> 는 <strong>domain classification을 제대로 진행</strong>하게 만듦 ⇒ 이 head가 제대로 학습이 되어야만 올바른 reverse gradient가 feature extractor에 전달되게 됨<div class="indented"><ul id="29b21982-2b50-8000-9fc9-c325b2580183" class="bulleted-list"><li style="list-style-type:disc">제대로 학습이 되지 않을 경우 training collapse가 가능 ⇒ feature extractor에 의미있는 gradient를 더 이상 제공하지 않음 </li></ul><ul id="29b21982-2b50-803a-bb74-d42af337f9c5" class="bulleted-list"><li style="list-style-type:disc">parameter가 다 0이 될 경우 classification을 못하므로 처음부터 classification loss를 최대화하고자 하면 안됨</li></ul></div></p><p id="29b21982-2b50-8085-aaf6-c037d73ce5e7" class="">
+</p><p id="29b21982-2b50-80bd-adc5-e5b04c7392eb" class="">Adversarial learning을 통해 feature alignment가 진행되게 되며 <strong>이를 통해 domain-invariant representation을 만들 수 있다!</strong></p><p id="29b21982-2b50-8080-be45-f9125a6e40d0" class="">👍 간단하고 효과적이며 source-target overlap에 less dependent (align을 하다록 학습이 진행됨</p><p id="29b21982-2b50-8007-9df0-d011aff38b76" class="">👎 <code>global alignment</code> : domain을 globally하게 정렬시키기 때문에 class 구조를 무시 ⇒ <strong>class misalignment가 생길 수 있음 ⇒ 서로 다른 class가 제대로 구별이 되어있다가 adversarial learning 이후에 class 구조가 무너질 수 있음</strong></p><p id="29b21982-2b50-80b4-a8fa-fb27a8f7da5f" class="">
+</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="29b21982-2b50-80ec-8f78-f2aeae95d381"><div style="font-size:1.5em"><span class="icon">📖</span></div><div style="width:100%"><p id="29b21982-2b50-80c9-afdf-e22af90d895c" class="">application (fake news detection)</p><p id="29b21982-2b50-808c-8bdc-ed75053b4480" class="">문제점: 과거 데이터로 학습한 모델은 새로운 event가 왔을 때 일반화하는데 실패</p><p id="29b21982-2b50-8088-8397-ca2b250c06f8" class="">해결책: <code>event-invariant feature</code> 을 adversarial learning을 통해 학습 ⇒ <strong>event-specific한 정보를 잊음</strong>으로써 오로지 fake/real만을 구분하는 feature만 남게 됨</p><figure id="29b21982-2b50-805c-b1f1-c65149538adc" class="image"><a href="Text%20Classification/image%2032.png"><img style="width:644px" src="Text%20Classification/image%2032.png"/></a></figure><p id="29b21982-2b50-80ce-8423-ff7545e66e5c" class="">⭐️ adversarial learning은 단순히 <code>reweighting</code> 을 위한 전처리가 아님!</p><ul id="29b21982-2b50-805c-9447-e65e053bdbc1" class="bulleted-list"><li style="list-style-type:disc"><code>reweighting</code> : 확률적 보정 ⇒ <strong>실제 feature space를 조정하지는 않음 (확률적 보정을 통해 일반화 성능을 확보)</strong></li></ul><ul id="29b21982-2b50-809f-b5ff-c9d7aa80b09a" class="bulleted-list"><li style="list-style-type:disc"><code>adversarial learning</code> : <strong>feature space에서의 정렬을 직접 학습</strong> ⇒ reweighting이 불가능한 상황을 해결하기 위한 대안! ⇒ <strong>이 결과로 여러 domain들에 대한 feature가 align이 됨으로써 일반화 성능을 확보 (assumption도 필요 없어서 강력함)</strong></li></ul><figure id="29b21982-2b50-8093-ab06-de7c8e2ea92f" class="image"><a href="Text%20Classification/image%2033.png"><img style="width:644px" src="Text%20Classification/image%2033.png"/></a></figure></div></figure><p id="29b21982-2b50-80f9-8b71-d46ea16c6749" class="">
+</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="29b21982-2b50-8047-adc9-e8510bb254b0"><div style="font-size:1.5em"><span class="icon">📖</span></div><div style="width:100%"><p id="29b21982-2b50-80e9-8ce2-c8dd758aeda2" class="">Recommended Readings</p><p id="29b21982-2b50-80b8-b769-c7e2201b14a4" class=""><a href="https://dl.acm.org/doi/pdf/10.1145/3219819.3219903">https://dl.acm.org/doi/pdf/10.1145/3219819.3219903</a> EANN </p></div></figure><p id="29b21982-2b50-8064-94ea-f91de8755fb7" class="">
+</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

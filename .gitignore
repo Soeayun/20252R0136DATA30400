@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+venv/
+.venv/
+env/
+.env
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+
+# IDEs
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+
+# Models
+*.pt
+*.pth
+*.ckpt
+models/
+checkpoints/
+
+# Logs
+logs/
+wandb/
+*.log
+
+# Submission files
+*.csv
+!studentID_final.csv
