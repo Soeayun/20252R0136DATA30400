@@ -35,3 +35,8 @@ wandb/
 # Submission files
 *.csv
 !studentID_final.csv
+
+# Checkpoints
+checkpoints/
+*.npy
+*.pth

@@ -42,18 +42,34 @@ def main():
     # For now, let's focus on Train Corpus for Silver Label Generation.
     
     # 4.1 BM25
-    bm25_scores, train_doc_ids = core_mining.calculate_bm25_scores(train_corpus, class2keywords, id2class)
+    BM25_CACHE = "checkpoints/bm25_scores.npy"
+    if os.path.exists(BM25_CACHE):
+        print(f"Loading cached BM25 scores from {BM25_CACHE}...")
+        bm25_scores = np.load(BM25_CACHE)
+        # We need doc_ids to be consistent. Assuming sorted keys are stable.
+        train_doc_ids = sorted(list(train_corpus.keys()))
+    else:
+        bm25_scores, train_doc_ids = core_mining.calculate_bm25_scores(train_corpus, class2keywords, id2class)
+        np.save(BM25_CACHE, bm25_scores)
+        print(f"Saved BM25 scores to {BM25_CACHE}")
     
     # Filter Top-K for NLI (e.g., Top 10 to save time)
     top_k_bm25 = 10
     top_k_indices = np.argsort(bm25_scores, axis=1)[:, -top_k_bm25:]
     
     # 4.2 NLI
-    # Warning: This takes time. 
-    nli_scores = core_mining.calculate_entailment_scores(
-        train_corpus, id2class, train_doc_ids, device, 
-        top_k_filter=top_k_indices
-    )
+    NLI_CACHE = "checkpoints/nli_scores.npy"
+    if os.path.exists(NLI_CACHE):
+        print(f"Loading cached NLI scores from {NLI_CACHE}...")
+        nli_scores = np.load(NLI_CACHE)
+    else:
+        # Warning: This takes time. 
+        nli_scores = core_mining.calculate_entailment_scores(
+            train_corpus, id2class, train_doc_ids, device, 
+            top_k_filter=top_k_indices
+        )
+        np.save(NLI_CACHE, nli_scores)
+        print(f"Saved NLI scores to {NLI_CACHE}")
     
     # 4.3 Generate Silver Labels
     core_classes = core_mining.generate_silver_labels(bm25_scores, nli_scores, alpha=0.5, top_k=1)
@@ -91,6 +107,11 @@ def main():
         parents_dict, children_dict, num_classes,
         device, num_iterations=3, epochs_per_iter=3
     )
+    
+    # Save Model
+    MODEL_PATH = "checkpoints/taxoclass_model.pth"
+    torch.save(model.state_dict(), MODEL_PATH)
+    print(f"Saved model to {MODEL_PATH}")
     
     # 7. Final Prediction on Test Set
     print("Generating predictions for Test Set...")
