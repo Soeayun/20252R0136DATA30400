@@ -37,6 +37,6 @@ wandb/
 !studentID_final.csv
 
 # Checkpoints
-checkpoints/
-*.npy
-*.pth
+checkpoints/*
+!checkpoints/.gitkeep
+
