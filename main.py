@@ -131,10 +131,25 @@ def main():
     
     predictions = []
     for i in range(len(test_doc_ids)):
-        # Get indices of top 3
-        top3 = np.argsort(probs[i])[-3:]
+        # Adaptive Thresholding
+        # 1. Select classes with prob > 0.5
+        p = probs[i]
+        selected = np.where(p > 0.5)[0]
+        
+        # 2. Constraints: At least 1, At most 3
+        if len(selected) == 0:
+            # Fallback: Top-1
+            selected = np.argsort(p)[-1:]
+        elif len(selected) > 3:
+            # Limit to Top-3
+            top3_indices = np.argsort(p)[-3:]
+            # Intersect selected with top3 to keep order or just take top3
+            selected = top3_indices
+            
         # Convert to class IDs (which are just indices here)
-        pred_str = " ".join([str(idx) for idx in top3])
+        # Sort indices to be deterministic
+        selected = sorted(selected)
+        pred_str = " ".join([str(idx) for idx in selected])
         predictions.append(pred_str)
         
     # Save to CSV
