@@ -1,7 +1,22 @@
 [project]
-name = "20252r0136data30400"
+name = "taxoclass-project"
 version = "0.1.0"
-description = "Add your description here"
+description = "Hierarchical Multi-Label Text Classification using TaxoClass"
 readme = "README.md"
-requires-python = ">=3.13"
-dependencies = []
+requires-python = ">=3.9"
+dependencies = [
+    "torch>=2.0.0",
+    "numpy>=1.23.5",
+    "pandas>=1.5.3",
+    "scikit-learn>=1.1.3",
+    "scipy>=1.9.3",
+    "transformers>=4.41.0",
+    "sentence-transformers>=3.0.0",
+    "datasets>=2.20.0",
+    "rank-bm25>=0.2.2",
+    "nltk>=3.8.1",
+    "tqdm>=4.66.0",
+]
+
+[tool.uv]
+dev-dependencies = []
