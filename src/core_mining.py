@@ -53,7 +53,7 @@ def calculate_bm25_scores(corpus, class2keywords, id2class):
 #         top_k_filter=top_k_indices
 #     )
 
-def calculate_entailment_scores(corpus, id2class, doc_ids, device, model_name="ross-encoder/nli-deberta-v3-base", batch_size=32, top_k_filter=None):
+def calculate_entailment_scores(corpus, id2class, doc_ids, device, model_name="cross-encoder/nli-deberta-v3-base", batch_size=32, top_k_filter=None):
     """
     Calculates Entailment scores.
     To save time, if top_k_filter is provided (indices of top classes from BM25), 
