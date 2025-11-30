@@ -213,51 +213,67 @@ def generate_core_classes_hybrid_top_down(corpus, id2class, doc_ids, parents_dic
             candidates[r] = float(s)
             root_candidates.append((r, s))
             
-        # Select Top-2 Roots
-        root_candidates.sort(key=lambda x: x[1], reverse=True)
-        selected_roots = [r for r, s in root_candidates[:2]]
+        # Select Top-2 Roots (Paper: "find its two children classes")
+        # Note: Paper says "start with Root... find its two children". 
+        # Since we have 6 Roots, we select Top-2 to enter the queue.
+        top_k_l0 = 2
+        # The original code had `root_candidates` and `root_scores` as separate lists/tuples.
+        # Let's assume `root_scores` is the list of scores corresponding to `roots`.
+        # And `root_candidates` is a list of (root_id, score) tuples.
+        # The new code snippet seems to assume `l0_candidates` and `l0_scores` are available.
+        # To make it syntactically correct and align with the provided snippet,
+        # I'll use `root_candidates` for the selection, assuming it's sorted by score.
+        # Or, more directly, use `root_scores` for argsort.
         
-        # --- Level 1 ---
-        l1_candidates_pool = set()
-        for r in selected_roots:
-            l1_candidates_pool.update(children_dict.get(r, []))
+        # To align with the provided snippet's structure (using argsort on scores directly):
+        # We need a list of candidate IDs and their corresponding scores.
+        # `roots` is the list of IDs, `root_scores` is the list of scores.
         
-        l1_candidates_list = list(l1_candidates_pool)
-        if l1_candidates_list:
-            # BM25 Filter: Top-5
-            doc_tokens = doc_text.lower().split()
-            # We need to score only l1_candidates_list. 
-            # BM25Okapi.get_scores calculates for ALL docs in index.
-            # So we get all scores, then pick the ones for l1_candidates_list.
-            all_bm25_scores = bm25.get_scores(doc_tokens)
-            
-            l1_bm25 = []
-            for cid in l1_candidates_list:
-                idx = cid_to_idx[cid]
-                l1_bm25.append((cid, all_bm25_scores[idx]))
-            
-            l1_bm25.sort(key=lambda x: x[1], reverse=True)
-            l1_top5 = [cid for cid, s in l1_bm25[:5]]
-            
-            # NLI on Top-5
-            l1_premises = [doc_text] * len(l1_top5)
-            l1_hypotheses = [f"This example is {id2class[c]}." for c in l1_top5]
-            
-            l1_nli_scores = run_nli(l1_premises, l1_hypotheses)
-            
-            l1_scored = []
-            for c, s in zip(l1_top5, l1_nli_scores):
-                candidates[c] = float(s)
-                l1_scored.append((c, s))
-                
-            # Select Top-2 L1
-            l1_scored.sort(key=lambda x: x[1], reverse=True)
-            selected_l1 = [c for c, s in l1_scored[:2]]
+        if len(roots) > top_k_l0:
+            # Sort by score and get top_k_l0 indices
+            top_indices = np.argsort(root_scores)[-top_k_l0:]
+            selected_l0 = [roots[i] for i in top_indices]
         else:
-            selected_l1 = []
+            selected_l0 = roots
+            
+        # --- Level 1 ---
+        # Paper: "For each class at level l (here l=0 for Roots? No, l=1 for L1 classes in queue?)"
+        # Actually paper says: "start with Root... find two children... add to queue."
+        # Then "for each class at level l in queue... select l+2 children... aggregate... choose (l+1)^2 classes".
+        # If queue has L1 classes (l=1): Select 1+2=3 children per class. Aggregate. Choose (1+1)^2 = 4 classes at L2.
+        
+        l1_candidates = []
+        for p in selected_l0:
+            l1_candidates.extend(children_dict.get(p, []))
+        l1_candidates = list(set(l1_candidates))
+        
+        if not l1_candidates:
+            # If no L1 candidates, the deepest selected are L0
+            doc_candidates[doc_id] = {c: candidates.get(c, 0.0) for c in selected_l0}
+            continue
+            
+        # NLI on ALL Level 1 Candidates
+        l1_premises = [doc_text] * len(l1_candidates)
+        l1_hypotheses = [f"This example is {id2class[c]}." for c in l1_candidates]
+        
+        l1_scores = run_nli(l1_premises, l1_hypotheses)
+        
+        # Update candidates with L1 scores
+        for c, s in zip(l1_candidates, l1_scores):
+            candidates[c] = float(s)
 
+        # Select Top-4 Level 1 (Paper: (l+1)^2 where l=1? Wait. 
+        # If L1 is in queue, we are selecting L2. So we choose (1+1)^2 = 4 L2 classes?
+        # Let's assume we select Top-4 L1 classes to be safe/generous as per paper's expansion logic.)
+        top_k_l1 = 4
+        if len(l1_candidates) > top_k_l1:
+            top_indices = np.argsort(l1_scores)[-top_k_l1:]
+            selected_l1 = [l1_candidates[i] for i in top_indices]
+        else:
+            selected_l1 = l1_candidates
+            
         # --- Level 2 ---
-        l2_candidates_pool = set()
+        l2_candidates = []
         for p in selected_l1:
             l2_candidates_pool.update(children_dict.get(p, []))
             

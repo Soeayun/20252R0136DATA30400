@@ -62,11 +62,22 @@ def main():
                 core_classes.append(core_classes_dict.get(doc_id, []))
             
     else:
-        print("Starting Core Class Mining (Hybrid Top-down)...")
+        # print("Starting Core Class Mining (Hybrid Top-down)...") # Original print statement
         
-        # 4.1 Candidate Selection (Hybrid Top-down)
-        doc_candidates = core_mining.generate_core_classes_hybrid_top_down(
-            train_corpus, id2class, train_doc_ids, parents_dict, children_dict, device, # Use train_corpus and train_doc_ids
+        # --- 3. Core Class Mining ---
+        print("Starting Core Class Mining...")
+        
+        # Option 1: Hybrid Top-down Search (BM25 + NLI) - Faster
+        # doc_candidates = core_mining.generate_core_classes_hybrid_top_down(
+        #     train_corpus, id2class, train_doc_ids, parents_dict, children_dict, device, # Use train_corpus and train_doc_ids
+        #     model_name="cross-encoder/nli-deberta-v3-base",
+        #     batch_size=32,
+        #     class2keywords=class2keywords
+        # )
+        
+        # Option 2: Full NLI Top-down Search (No BM25) - Kaggle Submission (More Accurate)
+        doc_candidates = core_mining.generate_core_classes_full_nli(
+            train_corpus, id2class, train_doc_ids, parents_dict, children_dict, device,
             model_name="cross-encoder/nli-deberta-v3-base",
             batch_size=32,
             class2keywords=class2keywords
