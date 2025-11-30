@@ -43,41 +43,54 @@ def main():
     
     # 4.1 BM25
     BM25_CACHE = "checkpoints/bm25_scores.npy"
-    if os.path.exists(BM25_CACHE):
-        print(f"Loading cached BM25 scores from {BM25_CACHE}...")
-        bm25_scores = np.load(BM25_CACHE)
-        # We need doc_ids to be consistent. Assuming sorted keys are stable.
-        train_doc_ids = sorted(list(train_corpus.keys()))
-    else:
-        bm25_scores, train_doc_ids = core_mining.calculate_bm25_scores(train_corpus, class2keywords, id2class)
-        np.save(BM25_CACHE, bm25_scores)
-        print(f"Saved BM25 scores to {BM25_CACHE}")
+    # --- 4. Core Class Mining (Hybrid Top-down) ---
+    CORE_CLASSES_CACHE = os.path.join("checkpoints", "core_classes.json")
+    train_doc_ids = sorted(list(train_corpus.keys())) # Ensure train_doc_ids is defined for the new section
     
-    # Filter Top-K for NLI (e.g., Top 10 to save time)
-    top_k_bm25 = 10
-    top_k_indices = np.argsort(bm25_scores, axis=1)[:, -top_k_bm25:]
-    
-    # 4.2 NLI
-    NLI_CACHE = "checkpoints/nli_scores.npy"
-    if os.path.exists(NLI_CACHE):
-        print(f"Loading cached NLI scores from {NLI_CACHE}...")
-        nli_scores = np.load(NLI_CACHE)
+    if os.path.exists(CORE_CLASSES_CACHE):
+        print(f"Loading Core Classes from {CORE_CLASSES_CACHE}...")
+        with open(CORE_CLASSES_CACHE, 'r') as f:
+            # Load and convert keys back to int (JSON keys are strings)
+            loaded_core = json.load(f)
+            core_classes_dict = {int(k): v for k, v in loaded_core.items()} # Renamed to avoid conflict
+            
+            # We need a list of lists for compatibility with existing code
+            # core_classes dict: {doc_id: [class_id1, ...]}
+            # We need to ensure the order matches doc_ids
+            core_classes = [] # This will be the list of lists
+            for doc_id in train_doc_ids: # Use train_doc_ids
+                core_classes.append(core_classes_dict.get(doc_id, []))
+            
     else:
-        # Warning: This takes time. 
-        nli_scores = core_mining.calculate_entailment_scores(
-            train_corpus, id2class, train_doc_ids, device, 
-            top_k_filter=top_k_indices
+        print("Starting Core Class Mining (Hybrid Top-down)...")
+        
+        # 4.1 Candidate Selection (Hybrid Top-down)
+        doc_candidates = core_mining.generate_core_classes_hybrid_top_down(
+            train_corpus, id2class, train_doc_ids, parents_dict, children_dict, device, # Use train_corpus and train_doc_ids
+            model_name="cross-encoder/nli-deberta-v3-base",
+            batch_size=32,
+            class2keywords=class2keywords
         )
-        np.save(NLI_CACHE, nli_scores)
-        print(f"Saved NLI scores to {NLI_CACHE}")
+        
+        # 4.2 Confident Core Class Identification
+        confident_core_classes = core_mining.identify_confident_core_classes(
+            doc_candidates, parents_dict, children_dict
+        )
+        
+        # Save checkpoints
+        print(f"Saved Core Classes to {CORE_CLASSES_CACHE}")
+        with open(CORE_CLASSES_CACHE, 'w') as f:
+            json.dump(confident_core_classes, f)
+            
+        # Convert to list of lists for next steps
+        core_classes = []
+        for doc_id in train_doc_ids: # Use train_doc_ids
+            core_classes.append(confident_core_classes.get(doc_id, []))
+
+    # --- 5. Label Expansion --- # Renumbered from 4.4 to 5
+    targets, masks = core_mining.expand_labels(core_classes, parents_dict, children_dict, num_classes) # Corrected num_classes
     
-    # 4.3 Generate Silver Labels
-    core_classes = core_mining.generate_silver_labels(bm25_scores, nli_scores, alpha=0.5, top_k=1)
-    
-    # 4.4 Expand Labels
-    targets, masks = core_mining.expand_labels(core_classes, parents_dict, children_dict, num_classes)
-    
-    # 5. Initialize Model
+    # 6. Initialize Model # Renumbered from 5 to 6
     print("Initializing Model...")
     # Initial Label Embeddings: Use BERT embeddings of class names
     # We compute this on the fly
@@ -149,12 +162,12 @@ def main():
         # Convert to class IDs (which are just indices here)
         # Sort indices to be deterministic
         selected = sorted(selected)
-        pred_str = " ".join([str(idx) for idx in selected])
+        pred_str = ",".join([str(idx) for idx in selected])
         predictions.append(pred_str)
         
     # Save to CSV
-    # Format: ID, Predicted
-    df = pd.DataFrame({'ID': test_doc_ids, 'Predicted': predictions})
+    # Format: pid, labels
+    df = pd.DataFrame({'pid': test_doc_ids, 'labels': predictions})
     df.to_csv('submission.csv', index=False)
     print("Submission saved to submission.csv")
 

@@ -42,7 +42,7 @@ def load_classes(filepath):
         parts = line.split('\t')
         if len(parts) >= 2:
             cid = int(parts[0])
-            cname = parts[1]
+            cname = parts[1].replace('_', ' ') # Remove underscores
             id2class[cid] = cname
             class2id[cname] = cid
     return id2class, class2id
@@ -153,6 +153,23 @@ def get_ancestors(class_id, parents_dict):
                 ancestors.add(p)
                 queue.append(p)
     return ancestors
+
+def get_siblings(class_id, parents_dict, children_dict):
+    """
+    Returns a list of sibling class IDs for a given class_id.
+    Siblings share at least one parent.
+    """
+    parents = parents_dict.get(class_id, [])
+    if not parents:
+        return [] # Root nodes might be considered siblings if they share a common virtual root, but here we assume no parents = no siblings via parents
+    
+    siblings = set()
+    for p in parents:
+        children = children_dict.get(p, [])
+        for c in children:
+            if c != class_id:
+                siblings.add(c)
+    return list(siblings)
 
 def get_descendants(class_id, children_dict):
     """Recursively find all descendants of a class."""
