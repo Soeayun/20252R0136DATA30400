@@ -310,6 +310,172 @@ def generate_core_classes_hybrid_top_down(corpus, id2class, doc_ids, parents_dic
 
     return doc_candidates
 
+def generate_core_classes_full_nli(corpus, id2class, doc_ids, parents_dict, children_dict, device, 
+                                   model_name="cross-encoder/nli-deberta-v3-base", 
+                                   batch_size=32, 
+                                   class2keywords=None):
+    """
+    Full NLI Top-down Core Class Mining (TaxoClass Original).
+    No BM25 filtering. Evaluates NLI on ALL children at each step.
+    
+    Strategy:
+    - Level 0: NLI on all Roots -> Top-2
+    - Level 1: NLI on ALL children of selected Roots -> Top-4
+    - Level 2: NLI on ALL children of selected Level 1 -> Top-9
+    """
+    print(f"\n=== Starting Full NLI Top-down Core Class Mining (No BM25) ===")
+    
+    # Load NLI Model
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForSequenceClassification.from_pretrained(model_name).to(device)
+    model.eval()
+    
+    entailment_idx = -1
+    for k, v in model.config.label2id.items():
+        if k.lower().startswith('entail'):
+            entailment_idx = v
+            break
+    if entailment_idx == -1:
+        # Fallback for DeBERTa-v3-base if not found in config
+        if "deberta" in model_name:
+            entailment_idx = 1
+        else:
+            entailment_idx = 2
+    print(f"Entailment Index: {entailment_idx}")
+
+    # 1. Identify Roots
+    all_classes = set(id2class.keys())
+    all_children = set()
+    for children in children_dict.values():
+        all_children.update(children)
+    roots = list(all_classes - all_children)
+    print(f"Identified {len(roots)} Root classes.")
+    
+    core_classes = {}
+    
+    # Helper for NLI
+    def run_nli(premises, hypotheses):
+        scores = []
+        for i in range(0, len(premises), batch_size):
+            batch_p = premises[i:i+batch_size]
+            batch_h = hypotheses[i:i+batch_size]
+            inputs = tokenizer(batch_p, batch_h, return_tensors='pt', padding=True, truncation=True, max_length=128).to(device)
+            with torch.no_grad():
+                logits = model(**inputs).logits
+                probs = torch.softmax(logits, dim=1)
+                batch_scores = probs[:, entailment_idx].cpu().numpy()
+                scores.extend(batch_scores)
+        return np.array(scores)
+
+    for doc_id in tqdm(doc_ids, desc="Full NLI Search"):
+        doc_text = corpus[doc_id]
+        
+        # --- Level 0 (Roots) ---
+        # Candidates: All Roots
+        l0_candidates = roots
+        
+        # NLI on All Roots
+        l0_premises = [doc_text] * len(l0_candidates)
+        l0_hypotheses = [f"This example is {id2class[c]}." for c in l0_candidates]
+        
+        l0_scores = run_nli(l0_premises, l0_hypotheses)
+        
+        # Select Top-2 Roots
+        top_k_l0 = 2
+        if len(l0_candidates) > top_k_l0:
+            top_indices = np.argsort(l0_scores)[-top_k_l0:]
+            selected_l0 = [l0_candidates[i] for i in top_indices]
+        else:
+            selected_l0 = l0_candidates
+            
+        # --- Level 1 ---
+        l1_candidates = []
+        for p in selected_l0:
+            l1_candidates.extend(children_dict.get(p, []))
+        l1_candidates = list(set(l1_candidates))
+        
+        if not l1_candidates:
+            core_classes[doc_id] = selected_l0
+            continue
+            
+        # NLI on ALL Level 1 Candidates (No BM25)
+        l1_premises = [doc_text] * len(l1_candidates)
+        l1_hypotheses = [f"This example is {id2class[c]}." for c in l1_candidates]
+        
+        l1_scores = run_nli(l1_premises, l1_hypotheses)
+        
+        # Select Top-4 Level 1
+        top_k_l1 = 4
+        if len(l1_candidates) > top_k_l1:
+            top_indices = np.argsort(l1_scores)[-top_k_l1:]
+            selected_l1 = [l1_candidates[i] for i in top_indices]
+        else:
+            selected_l1 = l1_candidates
+            
+        # --- Level 2 ---
+        l2_candidates = []
+        for p in selected_l1:
+            l2_candidates.extend(children_dict.get(p, []))
+        l2_candidates = list(set(l2_candidates))
+        
+        if not l2_candidates:
+            core_classes[doc_id] = selected_l1
+            continue
+            
+        # NLI on ALL Level 2 Candidates (No BM25)
+        l2_premises = [doc_text] * len(l2_candidates)
+        l2_hypotheses = [f"This example is {id2class[c]}." for c in l2_candidates]
+        
+        l2_scores = run_nli(l2_premises, l2_hypotheses)
+        
+        # Select Top-9 Level 2
+        top_k_l2 = 9
+        if len(l2_candidates) > top_k_l2:
+            top_indices = np.argsort(l2_scores)[-top_k_l2:]
+            selected_l2 = [l2_candidates[i] for i in top_indices]
+        else:
+            selected_l2 = l2_candidates
+            
+        # Final Candidates: Level 2 selections
+        # Note: We need to return a dict of {class_id: score} for identify_confident_core_classes
+        # But wait, identify_confident_core_classes expects {doc_id: {class_id: score}}
+        # And here we are just selecting classes.
+        # We should return the scores of the selected classes (and their parents/siblings if possible, but at least the candidates).
+        # Actually, identify_confident_core_classes needs scores for parents and siblings too.
+        # If we only return selected classes, we might miss scores for siblings/parents if they weren't selected.
+        # But in Top-down, we only calculate scores for selected paths.
+        # So we can only provide scores we calculated.
+        
+        # Let's construct the candidates dict with all calculated scores for this doc
+        # Or at least the ones in the selected path.
+        # For simplicity, let's return the scores of the FINAL candidates (L2) and maybe L1/L0.
+        
+        # Re-reading identify_confident_core_classes:
+        # conf(D, c) = sim(D,c) - max(sim(D, parents), sim(D, siblings))
+        # It needs sim(D, c), sim(D, parent), sim(D, sibling).
+        # If we don't have sibling score, it defaults to 0.0.
+        # So we should populate the dict with ALL scores we computed if possible, or at least the ones relevant.
+        
+        # In this function, I am not storing all scores in a dict yet.
+        # Let's collect them.
+        candidates_dict = {}
+        
+        # Add L0 scores
+        for c, s in zip(l0_candidates, l0_scores):
+            candidates_dict[c] = float(s)
+            
+        # Add L1 scores
+        for c, s in zip(l1_candidates, l1_scores):
+            candidates_dict[c] = float(s)
+            
+        # Add L2 scores
+        for c, s in zip(l2_candidates, l2_scores):
+            candidates_dict[c] = float(s)
+            
+        core_classes[doc_id] = candidates_dict
+        
+    return core_classes
+
 def identify_confident_core_classes(doc_candidates, parents_dict, children_dict):
     """
     Identifies confident core classes using Confidence Score and Median Threshold.
