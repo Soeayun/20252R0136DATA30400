@@ -90,41 +90,55 @@ def main():
     # --- 5. Label Expansion --- # Renumbered from 4.4 to 5
     targets, masks = core_mining.expand_labels(core_classes, parents_dict, children_dict, num_classes) # Corrected num_classes
     
-    # 6. Initialize Model # Renumbered from 5 to 6
+    # --- 6. Initialize Model ---
     print("Initializing Model...")
     # Initial Label Embeddings: Use BERT embeddings of class names
     # We compute this on the fly
-    bert_tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')
-    doc_encoder = models.DocumentEncoder().to(device) # Just to get the BERT model for embedding classes
+    print("Computing initial label embeddings...")
+    # Use the same model for label embedding initialization
+    bert_tokenizer = AutoTokenizer.from_pretrained("microsoft/deberta-v3-base")
+    bert_model = AutoModel.from_pretrained("microsoft/deberta-v3-base").to(device)
     
-    # Compute Class Embeddings
-    print("Computing initial class embeddings...")
-    class_texts = [id2class[i] for i in range(num_classes)]
-    # Optional: Append keywords
-    # class_texts = [f"{id2class[i]} {' '.join(class2keywords.get(id2class[i], []))}" for i in range(num_classes)]
+    label_emb_init = torch.zeros(len(id2class), 768).to(device)
     
-    class_inputs = bert_tokenizer(class_texts, return_tensors='pt', padding=True, truncation=True, max_length=32).to(device)
+    # Batch process label embeddings
+    class_names = [id2class[i] for i in range(len(id2class))]
+    batch_size_emb = 64
+    
     with torch.no_grad():
-        # Use the bert model inside doc_encoder
-        outputs = doc_encoder.bert(**class_inputs)
-        label_emb_init = outputs.last_hidden_state[:, 0, :]
+        for i in range(0, len(class_names), batch_size_emb):
+            batch_names = class_names[i:i+batch_size_emb]
+            inputs = bert_tokenizer(batch_names, return_tensors='pt', padding=True, truncation=True).to(device)
+            outputs = bert_model(**inputs)
+            # Use [CLS] embedding (first token)
+            embs = outputs.last_hidden_state[:, 0, :]
+            label_emb_init[i:i+batch_size_emb] = embs
+            
+    # Build Adjacency Matrix
+    adj = utils.build_adjacency_matrix(len(id2class), edges).to(device)
     
     # Create Full Model
-    model = models.TaxoClassModel(num_classes, label_emb_init, adj).to(device)
+    model = models.TaxoClassModel(len(id2class), label_emb_init, adj, model_name="microsoft/deberta-v3-base").to(device)
     
-    # 6. Self-Training
+    # --- 7. Self-Training ---
+    # TaxoClass uses Multi-label Self-Training with KL Divergence
+    # We use both Train and Test corpus (Transductive) as Unlabeled Data
     print("Starting Self-Training...")
     model = trainer.self_training_loop(
         model, train_corpus, test_corpus, bert_tokenizer,
-        targets, masks,
-        parents_dict, children_dict, num_classes,
-        device, num_iterations=3, epochs_per_iter=3
+        targets, masks, # Initial targets/masks from Core Classes
+        parents_dict, children_dict, len(id2class),
+        device,
+        num_iterations=3,
+        epochs_per_iter=3,
+        batch_size=32,
+        lr=1e-5 # Lower LR for self-training
     )
     
-    # Save Model
+    # Save Final Model
     MODEL_PATH = "checkpoints/taxoclass_model.pth"
     torch.save(model.state_dict(), MODEL_PATH)
-    print(f"Saved model to {MODEL_PATH}")
+    print(f"Saved final model to {MODEL_PATH}")
     
     # 7. Final Prediction on Test Set
     print("Generating predictions for Test Set...")
@@ -149,10 +163,10 @@ def main():
         p = probs[i]
         selected = np.where(p > 0.5)[0]
         
-        # 2. Constraints: At least 1, At most 3
-        if len(selected) == 0:
-            # Fallback: Top-1
-            selected = np.argsort(p)[-1:]
+        # 2. Constraints: At least 2, At most 3
+        if len(selected) < 2:
+            # Fallback: Top-2 (Requirement: at least 2 labels)
+            selected = np.argsort(p)[-2:]
         elif len(selected) > 3:
             # Limit to Top-3
             top3_indices = np.argsort(p)[-3:]

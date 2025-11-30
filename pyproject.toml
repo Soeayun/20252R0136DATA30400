@@ -16,6 +16,7 @@ dependencies = [
     "rank-bm25>=0.2.2",
     "nltk>=3.8.1",
     "tqdm>=4.66.0",
+    "sentencepiece>=0.1.99",
 ]
 
 [tool.uv]

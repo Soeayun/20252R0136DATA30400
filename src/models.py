@@ -7,7 +7,7 @@ class DocumentEncoder(nn.Module):
     """
     BERT-based Document Encoder.
     """
-    def __init__(self, model_name='bert-base-uncased', hidden_dim=768):
+    def __init__(self, model_name='microsoft/deberta-v3-base', hidden_dim=768):
         super().__init__()
         self.bert = AutoModel.from_pretrained(model_name)
         self.fc = nn.Linear(self.bert.config.hidden_size, hidden_dim)
@@ -15,6 +15,7 @@ class DocumentEncoder(nn.Module):
     def forward(self, input_ids, attention_mask):
         outputs = self.bert(input_ids=input_ids, attention_mask=attention_mask)
         # Use [CLS] token embedding
+        # DeBERTa v3 uses the first token as [CLS] equivalent
         cls_emb = outputs.last_hidden_state[:, 0, :]
         return self.fc(cls_emb)
 
