@@ -437,28 +437,34 @@ def generate_core_classes_full_nli(corpus, id2class, doc_ids, parents_dict, chil
         else:
             selected_l2 = l2_candidates
             
-        # Final Candidates: Level 2 selections
+        # --- Level 3 (Handle ID 44 and potential others) ---
+        l3_candidates = []
+        for p in selected_l2:
+            l3_candidates.extend(children_dict.get(p, []))
+        l3_candidates = list(set(l3_candidates))
+        
+        if l3_candidates:
+            # NLI on ALL Level 3 Candidates
+            l3_premises = [doc_text] * len(l3_candidates)
+            l3_hypotheses = [f"This example is {id2class[c]}." for c in l3_candidates]
+            
+            l3_scores = run_nli(l3_premises, l3_hypotheses)
+            
+            # Select Top-3 Level 3 (Arbitrary small number, usually 7 total)
+            # Since there are only 7, we can just keep them all or Top-3
+            top_k_l3 = 3
+            if len(l3_candidates) > top_k_l3:
+                top_indices = np.argsort(l3_scores)[-top_k_l3:]
+                selected_l3 = [l3_candidates[i] for i in top_indices]
+            else:
+                selected_l3 = l3_candidates
+        else:
+            selected_l3 = []
+            l3_scores = []
+            
+        # Final Candidates: Level 2 + Level 3 selections
         # Note: We need to return a dict of {class_id: score} for identify_confident_core_classes
-        # But wait, identify_confident_core_classes expects {doc_id: {class_id: score}}
-        # And here we are just selecting classes.
-        # We should return the scores of the selected classes (and their parents/siblings if possible, but at least the candidates).
-        # Actually, identify_confident_core_classes needs scores for parents and siblings too.
-        # If we only return selected classes, we might miss scores for siblings/parents if they weren't selected.
-        # But in Top-down, we only calculate scores for selected paths.
-        # So we can only provide scores we calculated.
         
-        # Let's construct the candidates dict with all calculated scores for this doc
-        # Or at least the ones in the selected path.
-        # For simplicity, let's return the scores of the FINAL candidates (L2) and maybe L1/L0.
-        
-        # Re-reading identify_confident_core_classes:
-        # conf(D, c) = sim(D,c) - max(sim(D, parents), sim(D, siblings))
-        # It needs sim(D, c), sim(D, parent), sim(D, sibling).
-        # If we don't have sibling score, it defaults to 0.0.
-        # So we should populate the dict with ALL scores we computed if possible, or at least the ones relevant.
-        
-        # In this function, I am not storing all scores in a dict yet.
-        # Let's collect them.
         candidates_dict = {}
         
         # Add L0 scores
@@ -471,6 +477,10 @@ def generate_core_classes_full_nli(corpus, id2class, doc_ids, parents_dict, chil
             
         # Add L2 scores
         for c, s in zip(l2_candidates, l2_scores):
+            candidates_dict[c] = float(s)
+            
+        # Add L3 scores
+        for c, s in zip(l3_candidates, l3_scores):
             candidates_dict[c] = float(s)
             
         core_classes[doc_id] = candidates_dict
