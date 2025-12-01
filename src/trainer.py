@@ -41,7 +41,8 @@ class TextDataset(Dataset):
         
         if self.targets is not None:
             item['targets'] = torch.tensor(self.targets[idx], dtype=torch.float)
-            item['masks'] = torch.tensor(self.masks[idx], dtype=torch.float)
+            if self.masks is not None:
+                item['masks'] = torch.tensor(self.masks[idx], dtype=torch.float)
             
         return item
 
