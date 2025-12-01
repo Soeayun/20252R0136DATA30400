@@ -75,13 +75,30 @@ def main():
         #     class2keywords=class2keywords
         # )
         
-        # Option 2: Full NLI Top-down Search (No BM25) - Kaggle Submission (More Accurate)
-        doc_candidates = core_mining.generate_core_classes_full_nli(
-            train_corpus, id2class, train_doc_ids, parents_dict, children_dict, device,
-            model_name="cross-encoder/nli-deberta-v3-base",
-            batch_size=32,
-            class2keywords=class2keywords
-        )
+        DOC_CANDIDATES_CACHE = os.path.join("checkpoints", "doc_candidates.json")
+        
+        if os.path.exists(DOC_CANDIDATES_CACHE):
+            print(f"Loading Doc Candidates from {DOC_CANDIDATES_CACHE}...")
+            with open(DOC_CANDIDATES_CACHE, 'r') as f:
+                loaded_candidates = json.load(f)
+                # Convert keys back to int (JSON keys are strings)
+                doc_candidates = {}
+                for k, v in loaded_candidates.items():
+                    # v is {class_id: score}
+                    doc_candidates[int(k)] = {int(ck): cv for ck, cv in v.items()}
+        else:
+            # Option 2: Full NLI Top-down Search (No BM25) - Kaggle Submission (More Accurate)
+            doc_candidates = core_mining.generate_core_classes_full_nli(
+                train_corpus, id2class, train_doc_ids, parents_dict, children_dict, device,
+                model_name="cross-encoder/nli-deberta-v3-base",
+                batch_size=32,
+                class2keywords=class2keywords
+            )
+            
+            # Save Candidates Checkpoint
+            print(f"Saved Doc Candidates to {DOC_CANDIDATES_CACHE}")
+            with open(DOC_CANDIDATES_CACHE, 'w') as f:
+                json.dump(doc_candidates, f)
         
         # 4.2 Confident Core Class Identification
         confident_core_classes = core_mining.identify_confident_core_classes(
