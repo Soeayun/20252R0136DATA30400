@@ -5,6 +5,7 @@ from rank_bm25 import BM25Okapi
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from torch.nn.functional import softmax
 import src.utils as utils
+from collections import defaultdict
 
 
 # bm25_scores, train_doc_ids = core_mining.calculate_bm25_scores(train_corpus, class2keywords, id2class)
