@@ -197,24 +197,26 @@ def self_training_loop(model, train_corpus, test_corpus, tokenizer,
         
         # 2. Calculate Target Distribution Q
         print("Updating Target Distribution Q...")
-        targets_q = calculate_target_distribution(probs)
+        # 2. Calculate Class Frequencies (Cached Statistics)
+        # Instead of fixing Q for the whole epoch, we fix the normalization factor f_j = sum_i p_ij
+        # and update Q dynamically for each batch using the current model predictions.
+        print("Calculating Class Frequencies (Cached Statistics)...")
+        # probs shape: (N, C)
+        # f_j shape: (C,)
+        f_j = probs.sum(axis=0)
         
-        # 3. Train on Q
-        # We use Q as soft targets
-        # Note: TaxoClass updates Q every 25 batches. 
-        # Here we simplify by updating Q once per iteration (or epoch).
-        # To strictly follow "every 25 batches", we would need to update Q dynamically inside the loop.
-        # But calculating Q requires global statistics (sum over all docs).
-        # So "every 25 batches" implies we either:
-        # a) Update Q globally every 25 batches (expensive)
-        # b) Or maybe they meant something else?
-        # Re-reading: "In practice, instead of updating the target distribution for every training example, we update it every 25 batches"
-        # This usually means Q is fixed for a few steps.
-        # Given our dataset size (50k docs), updating Q every epoch is a reasonable approximation.
+        # Avoid division by zero
+        f_j = np.maximum(f_j, 1e-8)
         
-        # Create dataset with Soft Targets Q
-        # We don't use masks here, as Q covers all classes
-        st_dataset = TextDataset(all_doc_ids, all_corpus, tokenizer, targets=targets_q, masks=None, max_len=128)
+        # Convert to torch tensor for use in training loop
+        f_j_tensor = torch.tensor(f_j, dtype=torch.float).to(device)
+        
+        # 3. Train with Dynamic Q
+        # We iterate over the dataset, but we don't use the pre-calculated targets_q.
+        # Instead, we calculate Q on the fly.
+        
+        # Create dataset without targets (we compute them on the fly)
+        st_dataset = TextDataset(all_doc_ids, all_corpus, tokenizer, targets=None, masks=None, max_len=128)
         st_dataloader = DataLoader(st_dataset, batch_size=batch_size, shuffle=True)
         
         model.train()
@@ -225,11 +227,33 @@ def self_training_loop(model, train_corpus, test_corpus, tokenizer,
             for batch in tqdm(st_dataloader, desc=f"ST Training Epoch {epoch+1}"):
                 input_ids = batch['input_ids'].to(device)
                 attention_mask = batch['attention_mask'].to(device)
-                batch_targets = batch['targets'].to(device) # Q
                 
                 optimizer.zero_grad()
                 logits = model(input_ids, attention_mask)
                 
+                # --- Dynamic Q Calculation (Binary DEC with Cached Statistics) ---
+                # P: Current predictions
+                current_probs = torch.sigmoid(logits) # (Batch, C)
+                
+                # Q Calculation:
+                # We adapt DEC formula for Multi-label (Binary) classification.
+                # q_ij = (p_ij^2 / f_j) / ( (p_ij^2 / f_j) + ((1-p_ij)^2 / (N - f_j)) )
+                # This balances sharpening based on class frequency f_j.
+                
+                N_docs = len(all_doc_ids)
+                f_j_neg = N_docs - f_j_tensor
+                f_j_neg = torch.maximum(f_j_neg, torch.tensor(1e-8).to(device))
+                
+                # Positive term: p^2 / f
+                q_pos = (current_probs ** 2) / f_j_tensor
+                
+                # Negative term: (1-p)^2 / (N-f)
+                q_neg = ((1 - current_probs) ** 2) / f_j_neg
+                
+                # Normalized Target Q
+                batch_targets = q_pos / (q_pos + q_neg)
+                
+                # Calculate Loss
                 loss = st_criterion(logits, batch_targets)
                 loss.backward()
                 optimizer.step()
