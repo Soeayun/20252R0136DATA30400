@@ -110,55 +110,6 @@ def evaluate(model, dataloader, device, true_labels=None):
     # Placeholder for now
     pass
 
-class SelfTrainingLoss(nn.Module):
-    """
-    KL Divergence Loss for Self-Training.
-    L = KL(Q || P) = sum(q * log(q/p))
-    """
-    def __init__(self):
-        super().__init__()
-        
-    def forward(self, logits, targets):
-        """
-        logits: (batch_size, num_classes) - Model predictions (before sigmoid)
-        targets: (batch_size, num_classes) - Target distribution Q
-        """
-        probs = torch.sigmoid(logits)
-        # Avoid log(0)
-        probs = torch.clamp(probs, min=1e-7, max=1.0 - 1e-7)
-        targets = torch.clamp(targets, min=1e-7, max=1.0 - 1e-7)
-        
-        # KL Divergence: q * (log(q) - log(p))
-        loss = targets * (torch.log(targets) - torch.log(probs))
-        
-        # Sum over classes, mean over batch
-        return loss.sum(dim=1).mean()
-
-def calculate_target_distribution(probs):
-    """
-    Calculates target distribution Q from current predictions P.
-    t_ij = p_ij^2 / sum_i(p_ij) / (p_ij^2 / sum_i(p_ij) + (1-p_ij)^2 / sum_i(1-p_ij))
-    """
-    # probs: (num_docs, num_classes)
-    
-    # Avoid division by zero
-    probs = np.clip(probs, 1e-7, 1.0 - 1e-7)
-    
-    # Calculate normalization terms (sum over documents)
-    sum_p = np.sum(probs, axis=0, keepdims=True) # (1, num_classes)
-    sum_1_p = np.sum(1 - probs, axis=0, keepdims=True)
-    
-    # Numerator: p^2 / sum_p
-    numerator = probs**2 / sum_p
-    
-    # Denominator term 2: (1-p)^2 / sum_(1-p)
-    denom_term2 = (1 - probs)**2 / sum_1_p
-    
-    # Q
-    q = numerator / (numerator + denom_term2)
-    
-    return q
-
 def self_training_loop(model, train_corpus, test_corpus, tokenizer, 
                        initial_targets, initial_masks, 
                        parents_dict, children_dict, num_classes,
@@ -186,7 +137,9 @@ def self_training_loop(model, train_corpus, test_corpus, tokenizer,
     full_dataloader = DataLoader(full_dataset, batch_size=batch_size, shuffle=False)
     
     optimizer = torch.optim.AdamW(model.parameters(), lr=lr)
-    st_criterion = SelfTrainingLoss()
+    # Use BCEWithLogitsLoss for stability and to ensure non-negative loss
+    # This is mathematically equivalent to minimizing KL(Q || P) since Q is constant wrt P
+    st_criterion = nn.BCEWithLogitsLoss()
     
     for iteration in range(num_iterations):
         print(f"\n--- Iteration {iteration + 1}/{num_iterations} ---")
