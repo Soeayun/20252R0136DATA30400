@@ -288,8 +288,25 @@ def generate_core_classes_hybrid_top_down(corpus, id2class, doc_ids, parents_dic
                 
             # Select Top-3 L2 (Just to add to candidates, no further levels)
             l2_scored.sort(key=lambda x: x[1], reverse=True)
-            # selected_l2 = [c for c, s in l2_scored[:3]] 
+            selected_l2 = [c for c, s in l2_scored[:3]] 
         
+        # --- Level 3 (Handle ID 44 and potential others) ---
+        l3_candidates_pool = set()
+        for p in selected_l2:
+            l3_candidates_pool.update(children_dict.get(p, []))
+            
+        l3_candidates_list = list(l3_candidates_pool)
+        if l3_candidates_list:
+            # No BM25 needed for L3 (only 7 classes total)
+            # NLI on ALL Level 3 Candidates
+            l3_premises = [doc_text] * len(l3_candidates_list)
+            l3_hypotheses = [f"This example is {id2class[c]}." for c in l3_candidates_list]
+            
+            l3_scores = run_nli(l3_premises, l3_hypotheses)
+            
+            for c, s in zip(l3_candidates_list, l3_scores):
+                candidates[c] = float(s)
+                
         doc_candidates[doc_id] = candidates
 
     return doc_candidates
