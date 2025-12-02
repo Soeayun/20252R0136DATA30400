@@ -149,6 +149,15 @@ def main():
     # Create Full Model
     model = models.TaxoClassModel(len(id2class), label_emb_init, adj, model_name="microsoft/deberta-v3-base").to(device)
     
+    # --- 6.5 Supervised Warm-up (Step 3) ---
+    # Train on Silver Labels (Core Classes) first to avoid Mode Collapse
+    print("Starting Supervised Warm-up...")
+    model = trainer.supervised_training_loop(
+        model, train_corpus, bert_tokenizer, 
+        targets, masks, device,
+        epochs=3, batch_size=32, lr=5e-5
+    )
+
     # --- 7. Self-Training ---
     # TaxoClass uses Multi-label Self-Training with KL Divergence
     # We use both Train and Test corpus (Transductive) as Unlabeled Data
