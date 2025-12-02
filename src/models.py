@@ -36,7 +36,10 @@ class LabelGCN(nn.Module):
         
         for i, layer in enumerate(self.layers):
             # Message Passing: AX
-            x = torch.sparse.mm(adj, x)
+            if adj.is_sparse:
+                x = torch.mm(adj.to_dense(), x)
+            else:
+                x = torch.mm(adj, x)
             # Linear Transform: XW
             x = layer(x)
             
