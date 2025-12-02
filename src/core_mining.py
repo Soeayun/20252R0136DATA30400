@@ -4,6 +4,7 @@ from tqdm import tqdm
 from rank_bm25 import BM25Okapi
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from torch.nn.functional import softmax
+from collections import defaultdict
 import src.utils as utils
 
 
