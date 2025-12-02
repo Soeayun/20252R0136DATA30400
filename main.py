@@ -160,8 +160,8 @@ def main():
         targets, masks, # Initial targets/masks from Core Classes
         parents_dict, children_dict, len(id2class),
         device,
-        num_iterations=1,
-        epochs_per_iter=3,
+        num_iterations=3,
+        epochs_per_iter=1,
         batch_size=32,
         lr=1e-5 # Lower LR for self-training
     )

@@ -96,7 +96,14 @@ def predict(model, dataloader, device):
             
             logits = model(input_ids, attention_mask)
             all_logits.append(logits.cpu().numpy())
-            all_doc_ids.extend(batch['doc_id'].tolist())
+
+            
+            # Handle doc_id: it might be a list (from default collate) or tensor
+            doc_ids = batch['doc_id']
+            if isinstance(doc_ids, torch.Tensor):
+                all_doc_ids.extend(doc_ids.tolist())
+            else:
+                all_doc_ids.extend(doc_ids)
             
     return np.vstack(all_logits), all_doc_ids
 
