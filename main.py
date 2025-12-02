@@ -2,7 +2,8 @@ import os
 import torch
 import numpy as np
 import pandas as pd
-from transformers import AutoTokenizer
+import json
+from transformers import AutoTokenizer, AutoModel
 from src import utils, core_mining, models, trainer
 
 def main():
@@ -62,15 +63,43 @@ def main():
                 core_classes.append(core_classes_dict.get(doc_id, []))
             
     else:
-        print("Starting Core Class Mining (Hybrid Top-down)...")
+        # print("Starting Core Class Mining (Hybrid Top-down)...") # Original print statement
         
-        # 4.1 Candidate Selection (Hybrid Top-down)
+        # --- 3. Core Class Mining ---
+        print("Starting Core Class Mining...")
+        
+        # Option 1: Hybrid Top-down Search (BM25 + NLI) - Faster
         doc_candidates = core_mining.generate_core_classes_hybrid_top_down(
             train_corpus, id2class, train_doc_ids, parents_dict, children_dict, device, # Use train_corpus and train_doc_ids
             model_name="cross-encoder/nli-deberta-v3-base",
             batch_size=32,
             class2keywords=class2keywords
         )
+        
+        DOC_CANDIDATES_CACHE = os.path.join("checkpoints", "doc_candidates.json")
+        
+        if os.path.exists(DOC_CANDIDATES_CACHE):
+            print(f"Loading Doc Candidates from {DOC_CANDIDATES_CACHE}...")
+            with open(DOC_CANDIDATES_CACHE, 'r') as f:
+                loaded_candidates = json.load(f)
+                # Convert keys back to int (JSON keys are strings)
+                doc_candidates = {}
+                for k, v in loaded_candidates.items():
+                    # v is {class_id: score}
+                    doc_candidates[int(k)] = {int(ck): cv for ck, cv in v.items()}
+        else:
+            # Option 2: Full NLI Top-down Search (No BM25) - Kaggle Submission (More Accurate)
+            # doc_candidates = core_mining.generate_core_classes_full_nli(
+            #     train_corpus, id2class, train_doc_ids, parents_dict, children_dict, device,
+            #     model_name="cross-encoder/nli-deberta-v3-base",
+            #     batch_size=32,
+            #     class2keywords=class2keywords
+            # )
+            
+            # Save Candidates Checkpoint
+            print(f"Saved Doc Candidates to {DOC_CANDIDATES_CACHE}")
+            with open(DOC_CANDIDATES_CACHE, 'w') as f:
+                json.dump(doc_candidates, f)
         
         # 4.2 Confident Core Class Identification
         confident_core_classes = core_mining.identify_confident_core_classes(
@@ -120,6 +149,15 @@ def main():
     # Create Full Model
     model = models.TaxoClassModel(len(id2class), label_emb_init, adj, model_name="microsoft/deberta-v3-base").to(device)
     
+    # --- 6.5 Supervised Warm-up (Step 3) ---
+    # Train on Silver Labels (Core Classes) first to avoid Mode Collapse
+    print("Starting Supervised Warm-up...")
+    model = trainer.supervised_training_loop(
+        model, train_corpus, bert_tokenizer, 
+        targets, masks, device,
+        epochs=3, batch_size=32, lr=5e-5
+    )
+
     # --- 7. Self-Training ---
     # TaxoClass uses Multi-label Self-Training with KL Divergence
     # We use both Train and Test corpus (Transductive) as Unlabeled Data
