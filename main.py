@@ -66,46 +66,33 @@ def main():
         # print("Starting Core Class Mining (Hybrid Top-down)...") # Original print statement
         
         # --- 3. Core Class Mining ---
+        # --- 3. Core Class Mining ---
         print("Starting Core Class Mining...")
         
-        # Option 1: Hybrid Top-down Search (BM25 + NLI) - Faster
-        doc_candidates = core_mining.generate_core_classes_hybrid_top_down(
-            train_corpus, id2class, train_doc_ids, parents_dict, children_dict, device, # Use train_corpus and train_doc_ids
-            model_name="cross-encoder/nli-deberta-v3-base",
-            batch_size=32,
-            class2keywords=class2keywords
-        )
-        
         DOC_CANDIDATES_CACHE = os.path.join("checkpoints", "doc_candidates.json")
-        # Save immediately after generation
-        print(f"Saved Doc Candidates to {DOC_CANDIDATES_CACHE}")
-        with open(DOC_CANDIDATES_CACHE, 'w') as f:
-            json.dump(doc_candidates, f)
         
         if os.path.exists(DOC_CANDIDATES_CACHE):
-            # This block is now redundant for the generation path but useful if we skip generation
-            # However, since we just generated and saved, we can just proceed.
-            # But to keep logic consistent for re-runs where we skip generation:
-            pass 
+            print(f"Loading Doc Candidates from {DOC_CANDIDATES_CACHE}...")
+            with open(DOC_CANDIDATES_CACHE, 'r') as f:
+                loaded_candidates = json.load(f)
+                # Convert keys back to int (JSON keys are strings)
+                doc_candidates = {}
+                for k, v in loaded_candidates.items():
+                    # v is {class_id: score}
+                    doc_candidates[int(k)] = {int(ck): cv for ck, cv in v.items()}
+        else:
+            # Option 1: Hybrid Top-down Search (BM25 + NLI) - Faster
+            doc_candidates = core_mining.generate_core_classes_hybrid_top_down(
+                train_corpus, id2class, train_doc_ids, parents_dict, children_dict, device,
+                model_name="cross-encoder/nli-deberta-v3-base",
+                batch_size=32,
+                class2keywords=class2keywords
+            )
             
-        # Re-structure logic to handle cache loading cleanly
-    else:
-        # If cache exists, load it
-        DOC_CANDIDATES_CACHE = os.path.join("checkpoints", "doc_candidates.json")
-        print(f"Loading Doc Candidates from {DOC_CANDIDATES_CACHE}...")
-        with open(DOC_CANDIDATES_CACHE, 'r') as f:
-            loaded_candidates = json.load(f)
-            doc_candidates = {}
-            for k, v in loaded_candidates.items():
-                doc_candidates[int(k)] = {int(ck): cv for ck, cv in v.items()}
-            # Option 2: Full NLI Top-down Search (No BM25) - Kaggle Submission (More Accurate)
-            # doc_candidates = core_mining.generate_core_classes_full_nli(
-            #     train_corpus, id2class, train_doc_ids, parents_dict, children_dict, device,
-            #     model_name="cross-encoder/nli-deberta-v3-base",
-            #     batch_size=32,
-            #     class2keywords=class2keywords
-            # )
-            pass
+            # Save immediately after generation
+            print(f"Saved Doc Candidates to {DOC_CANDIDATES_CACHE}")
+            with open(DOC_CANDIDATES_CACHE, 'w') as f:
+                json.dump(doc_candidates, f)
         
         # 4.2 Confident Core Class Identification
         confident_core_classes = core_mining.identify_confident_core_classes(
