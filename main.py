@@ -155,7 +155,7 @@ def main():
     model = trainer.supervised_training_loop(
         model, train_corpus, bert_tokenizer, 
         targets, masks, device,
-        epochs=3, batch_size=32, lr=5e-5
+        epochs=9, batch_size=32, lr=5e-5
     )
 
     # --- 7. Self-Training ---
@@ -168,7 +168,7 @@ def main():
         parents_dict, children_dict, len(id2class),
         device,
         num_iterations=3,
-        epochs_per_iter=3,
+        epochs_per_iter=1,
         batch_size=32,
         lr=1e-5 # Lower LR for self-training
     )
