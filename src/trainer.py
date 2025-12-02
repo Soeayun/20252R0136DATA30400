@@ -136,20 +136,32 @@ def self_training_loop(model, train_corpus, test_corpus, tokenizer,
     full_dataset = TextDataset(all_doc_ids, all_corpus, tokenizer, max_len=128)
     full_dataloader = DataLoader(full_dataset, batch_size=batch_size, shuffle=False)
     
+    # Checkpoint Resume Logic
+    start_iteration = 0
+    checkpoint_dir = 'checkpoints'
+    os.makedirs(checkpoint_dir, exist_ok=True)
+    
+    # Check for existing checkpoints
+    for i in range(num_iterations - 1, -1, -1):
+        ckpt_path = os.path.join(checkpoint_dir, f'st_iter_{i+1}.pth')
+        if os.path.exists(ckpt_path):
+            print(f"Found checkpoint: {ckpt_path}. Resuming from Iteration {i+2}...")
+            model.load_state_dict(torch.load(ckpt_path, map_location=device))
+            start_iteration = i + 1
+            break
+            
     optimizer = torch.optim.AdamW(model.parameters(), lr=lr)
     # Use BCEWithLogitsLoss for stability and to ensure non-negative loss
     # This is mathematically equivalent to minimizing KL(Q || P) since Q is constant wrt P
     st_criterion = nn.BCEWithLogitsLoss()
     
-    for iteration in range(num_iterations):
+    for iteration in range(start_iteration, num_iterations):
         print(f"\n--- Iteration {iteration + 1}/{num_iterations} ---")
         
         # 1. Predict P on all data
         logits, _ = predict(model, full_dataloader, device)
         probs = torch.sigmoid(torch.tensor(logits)).numpy()
         
-        # 2. Calculate Target Distribution Q
-        print("Updating Target Distribution Q...")
         # 2. Calculate Class Frequencies (Cached Statistics)
         # Instead of fixing Q for the whole epoch, we fix the normalization factor f_j = sum_i p_ij
         # and update Q dynamically for each batch using the current model predictions.
@@ -215,5 +227,10 @@ def self_training_loop(model, train_corpus, test_corpus, tokenizer,
             
             avg_loss = epoch_loss / len(st_dataloader)
             print(f"Iter {iteration+1}, Epoch {epoch+1} - ST Loss: {avg_loss:.4f}")
+            
+        # Save checkpoint after each iteration
+        ckpt_path = os.path.join(checkpoint_dir, f'st_iter_{iteration+1}.pth')
+        torch.save(model.state_dict(), ckpt_path)
+        print(f"Saved checkpoint to {ckpt_path}")
             
     return model
