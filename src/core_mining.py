@@ -470,6 +470,67 @@ def generate_core_classes_full_nli(corpus, id2class, doc_ids, parents_dict, chil
         
     return core_classes
 
+def identify_confident_core_classes(doc_candidates, parents_dict, children_dict):
+    """
+    Identifies confident core classes using Confidence Score and Median Threshold.
+    
+    conf(D, c) = sim(D,c) - max(sim(D, parents), sim(D, siblings))
+    tau_c = median({conf(D', c) for all D' where c in candidates})
+    Select c if conf(D, c) > tau_c
+    """
+    print("Identifying Confident Core Classes...")
+    
+    # 1. Calculate Raw Confidence Scores
+    # doc_confidences: {doc_id: {class_id: conf_score}}
+    doc_confidences = {}
+    
+    # Also collect scores per class for median calculation
+    # class_conf_distribution: {class_id: [conf_score1, conf_score2, ...]}
+    class_conf_distribution = defaultdict(list)
+    
+    for doc_id, candidates in tqdm(doc_candidates.items(), desc="Calc Confidence"):
+        doc_confidences[doc_id] = {}
+        
+        for c, score in candidates.items():
+            # Get Parent Scores
+            parents = parents_dict.get(c, [])
+            parent_scores = [candidates.get(p, 0.0) for p in parents] # 0.0 if parent not in candidates
+            max_parent = max(parent_scores) if parent_scores else 0.0
+            
+            # Get Sibling Scores
+            siblings = utils.get_siblings(c, parents_dict, children_dict)
+            sibling_scores = [candidates.get(s, 0.0) for s in siblings] # 0.0 if sibling not in candidates (filtered out)
+            max_sibling = max(sibling_scores) if sibling_scores else 0.0
+            
+            # Conf(D, c)
+            conf = score - max(max_parent, max_sibling)
+            
+            doc_confidences[doc_id][c] = conf
+            class_conf_distribution[c].append(conf)
+            
+    # 2. Calculate Median Thresholds
+    class_thresholds = {}
+    for c, scores in class_conf_distribution.items():
+        if scores:
+            class_thresholds[c] = np.median(scores)
+        else:
+            class_thresholds[c] = 0.0 # Should not happen if c is in candidates
+            
+    # 3. Filter
+    final_core_classes = {} # {doc_id: [core_class1, core_class2]}
+    
+    for doc_id, confs in doc_confidences.items():
+        cores = []
+        for c, conf in confs.items():
+            tau = class_thresholds.get(c, 0.0)
+            if conf > tau:
+                cores.append(c)
+        final_core_classes[doc_id] = cores
+        
+    return final_core_classes
+
+
+
 def expand_labels(core_classes, parents_dict, children_dict, num_classes):
     """
     Expands labels based on hierarchy.
