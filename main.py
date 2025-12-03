@@ -155,7 +155,7 @@ def main():
     model = trainer.supervised_training_loop(
         model, train_corpus, bert_tokenizer, 
         targets, masks, device,
-        epochs=12, batch_size=32, lr=5e-5
+        epochs=8, batch_size=32, lr=5e-5
     )
 
     # --- 7. Self-Training ---

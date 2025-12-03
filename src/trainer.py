@@ -146,26 +146,10 @@ def supervised_training_loop(model, train_corpus, tokenizer, targets, masks, dev
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
     
     optimizer = torch.optim.AdamW(model.parameters(), lr=lr)
-    criterion = nn.BCEWithLogitsLoss() # Standard BCE for multi-label
     
     for epoch in range(start_epoch, epochs):
-        model.train()
-        total_loss = 0
-        
-        for batch in tqdm(dataloader, desc=f"Warm-up Epoch {epoch+1}/{epochs}"):
-            input_ids = batch['input_ids'].to(device)
-            attention_mask = batch['attention_mask'].to(device)
-            batch_targets = batch['targets'].to(device)
-            
-            optimizer.zero_grad()
-            logits = model(input_ids, attention_mask)
-            loss = criterion(logits, batch_targets)
-            loss.backward()
-            optimizer.step()
-            
-            total_loss += loss.item()
-            
-        avg_loss = total_loss / len(dataloader)
+        # Use train_epoch which uses HierarchicalBCELoss (handling masks)
+        avg_loss = train_epoch(model, dataloader, optimizer, device)
         print(f"Epoch {epoch+1} Loss: {avg_loss:.4f}")
         
         # Save checkpoint

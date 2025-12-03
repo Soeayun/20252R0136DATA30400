@@ -39,4 +39,5 @@ wandb/
 # Checkpoints
 checkpoints/*
 !checkpoints/.gitkeep
+!checkpoints/*.json
 
