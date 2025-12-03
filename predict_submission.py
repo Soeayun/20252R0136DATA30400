@@ -89,8 +89,8 @@ def main():
     # 4. Load Checkpoint
     # Find the latest checkpoint
     latest_ckpt = None
-    for i in range(10, 0, -1): # Check up to 10 iterations
-        ckpt_path = os.path.join(CHECKPOINT_DIR, f'st_iter_{i}.pth')
+    for i in range(13, 0, -1): # Check up to 10 iterations
+        ckpt_path = os.path.join(CHECKPOINT_DIR, f'warmup_epoch_{i}.pth')
         if os.path.exists(ckpt_path):
             latest_ckpt = ckpt_path
             print(f"Found latest checkpoint: {latest_ckpt}")

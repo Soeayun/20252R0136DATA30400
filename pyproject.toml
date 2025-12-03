@@ -17,6 +17,7 @@ dependencies = [
     "nltk>=3.8.1",
     "tqdm>=4.66.0",
     "sentencepiece>=0.1.99",
+    "protobuf>=6.33.1",
 ]
 
 [tool.uv]

@@ -155,7 +155,7 @@ def main():
     model = trainer.supervised_training_loop(
         model, train_corpus, bert_tokenizer, 
         targets, masks, device,
-        epochs=9, batch_size=32, lr=5e-5
+        epochs=12, batch_size=32, lr=5e-5
     )
 
     # --- 7. Self-Training ---
@@ -167,7 +167,7 @@ def main():
         targets, masks, # Initial targets/masks from Core Classes
         parents_dict, children_dict, len(id2class),
         device,
-        num_iterations=3,
+        num_iterations=1,
         epochs_per_iter=1,
         batch_size=32,
         lr=1e-5 # Lower LR for self-training
@@ -219,7 +219,7 @@ def main():
         
     # Save to CSV
     # Format: pid, labels
-    df = pd.DataFrame({'pid': test_doc_ids, 'labels': predictions})
+    df = pd.DataFrame({'id': test_doc_ids, 'label': predictions})
     df.to_csv('submission.csv', index=False)
     print("Submission saved to submission.csv")
 

@@ -132,14 +132,7 @@ def calculate_entailment_scores(corpus, id2class, doc_ids, device, model_name="c
 def generate_core_classes_hybrid_top_down(corpus, id2class, doc_ids, parents_dict, children_dict, device, model_name="cross-encoder/nli-deberta-v3-base", batch_size=32, class2keywords=None):
     """
     Generates candidate core classes using Hybrid Top-down approach (BM25 filtering + NLI).
-    
-    Strategy:
-    - Level 0 (Roots): NLI on all (6) -> Select Top-2.
-    - Level 1: Get children of selected Roots. BM25 Top-5 -> NLI -> Select Top-2.
-    - Level 2: Get children of selected L1. BM25 Top-4 -> NLI -> Select Top-3.
-    
-    Returns:
-        doc_candidates: dict {doc_id: {class_id: nli_score, ...}}
+    Updated with Path Score (ps) and Strict Candidate Selection.
     """
     print(f"Loading Entailment Model: {model_name}...")
     tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -149,7 +142,6 @@ def generate_core_classes_hybrid_top_down(corpus, id2class, doc_ids, parents_dic
     # Auto-detect entailment index
     entailment_idx = model.config.label2id.get('ENTAILED', model.config.label2id.get('entailment', -1))
     if entailment_idx == -1:
-        # Fallback for DeBERTa-v3-base if not found in config
         if "deberta" in model_name:
             entailment_idx = 1
         else:
@@ -164,11 +156,9 @@ def generate_core_classes_hybrid_top_down(corpus, id2class, doc_ids, parents_dic
     roots = list(all_classes - children_set)
     print(f"Identified {len(roots)} Root classes.")
 
-    doc_candidates = {} # {doc_id: {class_id: score}}
+    doc_candidates = {} 
 
-    # Pre-compute BM25 for filtering (optional optimization: compute on-the-fly or pre-compute all)
-    # Since we need BM25 for specific subsets, we can implement a lightweight BM25 helper here or reuse utils
-    # For efficiency, let's build a global BM25 index first, then query it.
+    # Build BM25 index
     print("Building BM25 index for filtering...")
     tokenized_classes = []
     class_ids_list = sorted(list(id2class.keys()))
@@ -182,132 +172,122 @@ def generate_core_classes_hybrid_top_down(corpus, id2class, doc_ids, parents_dic
     
     bm25 = BM25Okapi(tokenized_classes)
     
-    # Helper for NLI batch inference
     def run_nli(premises, hypotheses):
-        inputs = tokenizer(premises, hypotheses, return_tensors='pt', padding=True, truncation=True, max_length=128).to(device)
-        with torch.no_grad():
-            logits = model(**inputs).logits
-            probs = torch.softmax(logits, dim=1)
-            scores = probs[:, entailment_idx].cpu().numpy()
-        return scores
+        all_scores = []
+        for i in range(0, len(premises), batch_size):
+            batch_p = premises[i:i+batch_size]
+            batch_h = hypotheses[i:i+batch_size]
+            if not batch_p: continue
+            inputs = tokenizer(batch_p, batch_h, return_tensors='pt', padding=True, truncation=True, max_length=128).to(device)
+            with torch.no_grad():
+                logits = model(**inputs).logits
+                probs = torch.softmax(logits, dim=1)
+                scores = probs[:, entailment_idx].cpu().numpy()
+                all_scores.extend(scores)
+        return all_scores
 
     for doc_id in tqdm(doc_ids, desc="Hybrid Top-down Search"):
         doc_text = corpus[doc_id]
-        candidates = {} # {class_id: score}
+        doc_tokens = doc_text.lower().split()
+        
+        # Store ONLY selected candidates (Top-K)
+        candidates_dict = {} 
         
         # --- Level 0 (Roots) ---
-        # NLI on all roots
         root_premises = [doc_text] * len(roots)
         root_hypotheses = [f"This example is {id2class[r]}." for r in roots]
         
-        # Batch inference for roots
-        root_scores = []
-        for i in range(0, len(roots), batch_size):
-            batch_p = root_premises[i:i+batch_size]
-            batch_h = root_hypotheses[i:i+batch_size]
-            if not batch_p: continue
-            scores = run_nli(batch_p, batch_h)
-            root_scores.extend(scores)
-            
-        root_candidates = []
-        for r, s in zip(roots, root_scores):
-            candidates[r] = float(s)
-            root_candidates.append((r, s))
-            
-        # Select Top-2 Roots (Paper: "find its two children classes")
-        # Note: Paper says "start with Root... find its two children". 
-        # Since we have 6 Roots, we select Top-2 to enter the queue.
-        top_k_l0 = 2
-        # The original code had `root_candidates` and `root_scores` as separate lists/tuples.
-        # Let's assume `root_scores` is the list of scores corresponding to `roots`.
-        # And `root_candidates` is a list of (root_id, score) tuples.
-        # The new code snippet seems to assume `l0_candidates` and `l0_scores` are available.
-        # To make it syntactically correct and align with the provided snippet,
-        # I'll use `root_candidates` for the selection, assuming it's sorted by score.
-        # Or, more directly, use `root_scores` for argsort.
+        root_sim_scores = run_nli(root_premises, root_hypotheses)
         
-        # To align with the provided snippet's structure (using argsort on scores directly):
-        # We need a list of candidate IDs and their corresponding scores.
-        # `roots` is the list of IDs, `root_scores` is the list of scores.
+        # Path Score (L0): ps = sim
+        l0_scored = []
+        for r, s in zip(roots, root_sim_scores):
+            l0_scored.append((r, float(s)))
+            
+        # Select Top-2
+        l0_scored.sort(key=lambda x: x[1], reverse=True)
+        selected_l0 = l0_scored[:2]
         
-        if len(roots) > top_k_l0:
-            # Sort by score and get top_k_l0 indices
-            top_indices = np.argsort(root_scores)[-top_k_l0:]
-            selected_l0 = [roots[i] for i in top_indices]
-        else:
-            selected_l0 = roots
+        for c, s in selected_l0:
+            candidates_dict[c] = s
             
         # --- Level 1 ---
-        # Paper: "For each class at level l (here l=0 for Roots? No, l=1 for L1 classes in queue?)"
-        # Actually paper says: "start with Root... find two children... add to queue."
-        # Then "for each class at level l in queue... select l+2 children... aggregate... choose (l+1)^2 classes".
-        # If queue has L1 classes (l=1): Select 1+2=3 children per class. Aggregate. Choose (1+1)^2 = 4 classes at L2.
+        l1_candidates_info = [] # (child_id, parent_ps)
+        for p_id, p_ps in selected_l0:
+            kids = children_dict.get(p_id, [])
+            for k in kids:
+                l1_candidates_info.append((k, p_ps))
         
-        l1_candidates = []
-        for p in selected_l0:
-            l1_candidates.extend(children_dict.get(p, []))
-        l1_candidates = list(set(l1_candidates))
-        
-        if not l1_candidates:
-            # If no L1 candidates, the deepest selected are L0
-            doc_candidates[doc_id] = {c: candidates.get(c, 0.0) for c in selected_l0}
+        if not l1_candidates_info:
+            doc_candidates[doc_id] = candidates_dict
             continue
             
-        # NLI on ALL Level 1 Candidates
-        l1_premises = [doc_text] * len(l1_candidates)
-        l1_hypotheses = [f"This example is {id2class[c]}." for c in l1_candidates]
+        l1_ids = [x[0] for x in l1_candidates_info]
+        l1_premises = [doc_text] * len(l1_ids)
+        l1_hypotheses = [f"This example is {id2class[c]}." for c in l1_ids]
         
-        l1_scores = run_nli(l1_premises, l1_hypotheses)
+        l1_sim_scores = run_nli(l1_premises, l1_hypotheses)
         
-        # Update candidates with L1 scores
-        for c, s in zip(l1_candidates, l1_scores):
-            candidates[c] = float(s)
-
-        # Select Top-4 Level 1 (Paper: (l+1)^2 where l=1? Wait. 
-        # If L1 is in queue, we are selecting L2. So we choose (1+1)^2 = 4 L2 classes?
-        # Let's assume we select Top-4 L1 classes to be safe/generous as per paper's expansion logic.)
-        top_k_l1 = 4
-        if len(l1_candidates) > top_k_l1:
-            top_indices = np.argsort(l1_scores)[-top_k_l1:]
-            selected_l1 = [l1_candidates[i] for i in top_indices]
-        else:
-            selected_l1 = l1_candidates
+        # Path Score (L1): ps = parent_ps * sim
+        l1_scored = []
+        for i, (c_id, p_ps) in enumerate(l1_candidates_info):
+            sim = float(l1_sim_scores[i])
+            ps = p_ps * sim
+            l1_scored.append((c_id, ps))
+            
+        # Select Top-4
+        l1_scored.sort(key=lambda x: x[1], reverse=True)
+        selected_l1 = l1_scored[:4]
+        
+        for c, s in selected_l1:
+            candidates_dict[c] = s
             
         # --- Level 2 ---
-        l2_candidates = []
-        for p in selected_l1:
-            l2_candidates_pool.update(children_dict.get(p, []))
-            
-        l2_candidates_list = list(l2_candidates_pool)
-        if l2_candidates_list:
-            # BM25 Filter: Top-4
-            doc_tokens = doc_text.lower().split()
-            all_bm25_scores = bm25.get_scores(doc_tokens)
-            
-            l2_bm25 = []
-            for cid in l2_candidates_list:
-                idx = cid_to_idx[cid]
-                l2_bm25.append((cid, all_bm25_scores[idx]))
+        l2_candidates_info = [] # (child_id, parent_ps)
+        for p_id, p_ps in selected_l1:
+            kids = children_dict.get(p_id, [])
+            for k in kids:
+                l2_candidates_info.append((k, p_ps))
                 
-            l2_bm25.sort(key=lambda x: x[1], reverse=True)
-            l2_top4 = [cid for cid, s in l2_bm25[:4]]
+        if not l2_candidates_info:
+            doc_candidates[doc_id] = candidates_dict
+            continue
             
-            # NLI on Top-4
-            l2_premises = [doc_text] * len(l2_top4)
-            l2_hypotheses = [f"This example is {id2class[c]}." for c in l2_top4]
-            
-            l2_nli_scores = run_nli(l2_premises, l2_hypotheses)
-            
-            l2_scored = []
-            for c, s in zip(l2_top4, l2_nli_scores):
-                candidates[c] = float(s)
-                l2_scored.append((c, s))
-                
-            # Select Top-3 L2 (Just to add to candidates, no further levels)
-            l2_scored.sort(key=lambda x: x[1], reverse=True)
-            # selected_l2 = [c for c, s in l2_scored[:3]] 
+        # BM25 Filter for L2
+        all_bm25_scores = bm25.get_scores(doc_tokens)
         
-        doc_candidates[doc_id] = candidates
+        l2_bm25_scored = []
+        for c_id, p_ps in l2_candidates_info:
+            idx = cid_to_idx[c_id]
+            bm25_score = all_bm25_scores[idx]
+            l2_bm25_scored.append((c_id, p_ps, bm25_score))
+            
+        # Sort by BM25 and take Top-4
+        l2_bm25_scored.sort(key=lambda x: x[2], reverse=True)
+        l2_top4 = l2_bm25_scored[:4]
+        
+        # NLI on Top-4
+        l2_ids = [x[0] for x in l2_top4]
+        l2_premises = [doc_text] * len(l2_ids)
+        l2_hypotheses = [f"This example is {id2class[c]}." for c in l2_ids]
+        
+        l2_sim_scores = run_nli(l2_premises, l2_hypotheses)
+        
+        # Path Score (L2): ps = parent_ps * sim
+        l2_scored = []
+        for i, (c_id, p_ps, _) in enumerate(l2_top4):
+            sim = float(l2_sim_scores[i])
+            ps = p_ps * sim
+            l2_scored.append((c_id, ps))
+            
+        # Select Top-3 (Final)
+        l2_scored.sort(key=lambda x: x[1], reverse=True)
+        selected_l2 = l2_scored[:3]
+        
+        for c, s in selected_l2:
+            candidates_dict[c] = s
+        
+        doc_candidates[doc_id] = candidates_dict
 
     return doc_candidates
 
