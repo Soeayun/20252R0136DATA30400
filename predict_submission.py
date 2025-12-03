@@ -129,7 +129,7 @@ def main():
     for i in range(len(test_doc_ids)):
         # Adaptive Thresholding Logic
         p = probs[i]
-        selected = np.where(p > 0.5)[0]
+        selected = np.where(p > 0.65)[0]
         
         if len(selected) < 2:
             selected = np.argsort(p)[-2:]

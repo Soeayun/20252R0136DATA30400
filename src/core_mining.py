@@ -352,7 +352,7 @@ def generate_core_classes_full_nli(corpus, id2class, doc_ids, parents_dict, chil
         # --- Level 0 (Roots) ---
         l0_candidates = roots
         l0_premises = [doc_text] * len(l0_candidates)
-        l0_hypotheses = [f"This example is {id2class[c]}." for c in l0_candidates]
+        l0_hypotheses = [f"This product is {id2class[c]}." for c in l0_candidates]
         l0_local_scores = run_nli(l0_premises, l0_hypotheses)
         
         # [수정] Root의 Path Score = Local Score
