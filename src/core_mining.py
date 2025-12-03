@@ -296,46 +296,39 @@ def generate_core_classes_full_nli(corpus, id2class, doc_ids, parents_dict, chil
                                    batch_size=32, 
                                    class2keywords=None):
     """
-    Full NLI Top-down Core Class Mining (TaxoClass Original).
-    No BM25 filtering. Evaluates NLI on ALL children at each step.
-    
-    Strategy:
-    - Level 0: NLI on all Roots -> Top-2
-    - Level 1: NLI on ALL children of selected Roots -> Top-4
-    - Level 2: NLI on ALL children of selected Level 1 -> Top-9
+    FIXED Full NLI Top-down Core Class Mining.
+    1. Calculates Path Score (Parent * Local).
+    2. Stores ONLY selected candidates in the final dictionary.
     """
-    print(f"\n=== Starting Full NLI Top-down Core Class Mining (No BM25) ===")
+    print(f"\n=== Starting Full NLI Top-down Core Class Mining (Fixed) ===")
     
-    # Load NLI Model
+    # ... (모델 로딩 부분은 동일) ...
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForSequenceClassification.from_pretrained(model_name).to(device)
     model.eval()
     
+    # ... (Entailment Index 찾기 동일) ...
     entailment_idx = -1
     for k, v in model.config.label2id.items():
         if k.lower().startswith('entail'):
             entailment_idx = v
             break
     if entailment_idx == -1:
-        # Fallback for DeBERTa-v3-base if not found in config
-        if "deberta" in model_name:
-            entailment_idx = 1
-        else:
-            entailment_idx = 2
-    print(f"Entailment Index: {entailment_idx}")
-
-    # 1. Identify Roots
+        if "deberta" in model_name: entailment_idx = 1
+        else: entailment_idx = 2
+    
+    # ... (Roots 식별 동일) ...
     all_classes = set(id2class.keys())
     all_children = set()
     for children in children_dict.values():
         all_children.update(children)
     roots = list(all_classes - all_children)
-    print(f"Identified {len(roots)} Root classes.")
-    
+
     core_classes = {}
     
-    # Helper for NLI
+    # Helper for NLI (동일)
     def run_nli(premises, hypotheses):
+        if not premises: return np.array([])
         scores = []
         for i in range(0, len(premises), batch_size):
             batch_p = premises[i:i+batch_size]
@@ -351,180 +344,131 @@ def generate_core_classes_full_nli(corpus, id2class, doc_ids, parents_dict, chil
     for doc_id in tqdm(doc_ids, desc="Full NLI Search"):
         doc_text = corpus[doc_id]
         
+        # 결과를 저장할 dict (Local Score 저장용 -> Confidence 계산에 사용)
+        candidates_dict = {} 
+        # 랭킹을 위한 Path Score 추적용
+        path_scores_map = {}
+
         # --- Level 0 (Roots) ---
-        # Candidates: All Roots
         l0_candidates = roots
-        
-        # NLI on All Roots
         l0_premises = [doc_text] * len(l0_candidates)
         l0_hypotheses = [f"This example is {id2class[c]}." for c in l0_candidates]
+        l0_local_scores = run_nli(l0_premises, l0_hypotheses)
         
-        l0_scores = run_nli(l0_premises, l0_hypotheses)
+        # [수정] Root의 Path Score = Local Score
+        for c, s in zip(l0_candidates, l0_local_scores):
+            path_scores_map[c] = float(s)
         
-        # Select Top-2 Roots
+        # [수정] Path Score 기준으로 Top-2 선정
         top_k_l0 = 2
-        if len(l0_candidates) > top_k_l0:
-            top_indices = np.argsort(l0_scores)[-top_k_l0:]
-            selected_l0 = [l0_candidates[i] for i in top_indices]
-        else:
-            selected_l0 = l0_candidates
-            
+        l0_sorted = sorted(l0_candidates, key=lambda c: path_scores_map[c], reverse=True)
+        selected_l0 = l0_sorted[:top_k_l0]
+
+        # [수정] 선택된 Root만 저장
+        l0_local_map = dict(zip(l0_candidates, l0_local_scores))
+        for c in selected_l0:
+            candidates_dict[c] = float(l0_local_map[c])
+
         # --- Level 1 ---
         l1_candidates = []
+        l1_parents_map = {} # 부모 추적용
         for p in selected_l0:
-            l1_candidates.extend(children_dict.get(p, []))
+            for child in children_dict.get(p, []):
+                l1_candidates.append(child)
+                l1_parents_map[child] = p
         l1_candidates = list(set(l1_candidates))
         
         if not l1_candidates:
-            core_classes[doc_id] = selected_l0
+            core_classes[doc_id] = candidates_dict
             continue
             
-        # NLI on ALL Level 1 Candidates (No BM25)
         l1_premises = [doc_text] * len(l1_candidates)
         l1_hypotheses = [f"This example is {id2class[c]}." for c in l1_candidates]
+        l1_local_scores = run_nli(l1_premises, l1_hypotheses)
         
-        l1_scores = run_nli(l1_premises, l1_hypotheses)
-        
-        # Select Top-4 Level 1
-        top_k_l1 = 4
-        if len(l1_candidates) > top_k_l1:
-            top_indices = np.argsort(l1_scores)[-top_k_l1:]
-            selected_l1 = [l1_candidates[i] for i in top_indices]
-        else:
-            selected_l1 = l1_candidates
+        # [수정] Path Score 계산: Parent_PS * Local_Score
+        l1_local_map = dict(zip(l1_candidates, l1_local_scores))
+        for c in l1_candidates:
+            parent = l1_parents_map[c]
+            parent_ps = path_scores_map[parent]
+            local_s = float(l1_local_map[c])
+            path_scores_map[c] = parent_ps * local_s # 누적 곱
             
+        # [수정] Path Score 기준으로 Top-4 선정
+        top_k_l1 = 4
+        l1_sorted = sorted(l1_candidates, key=lambda c: path_scores_map[c], reverse=True)
+        selected_l1 = l1_sorted[:top_k_l1]
+        
+        # [수정] 선택된 L1만 저장
+        for c in selected_l1:
+            candidates_dict[c] = float(l1_local_map[c])
+
         # --- Level 2 ---
         l2_candidates = []
+        l2_parents_map = {}
         for p in selected_l1:
-            l2_candidates.extend(children_dict.get(p, []))
+            for child in children_dict.get(p, []):
+                l2_candidates.append(child)
+                l2_parents_map[child] = p
         l2_candidates = list(set(l2_candidates))
         
         if not l2_candidates:
-            core_classes[doc_id] = selected_l1
+            core_classes[doc_id] = candidates_dict
             continue
             
-        # NLI on ALL Level 2 Candidates (No BM25)
         l2_premises = [doc_text] * len(l2_candidates)
         l2_hypotheses = [f"This example is {id2class[c]}." for c in l2_candidates]
+        l2_local_scores = run_nli(l2_premises, l2_hypotheses)
         
-        l2_scores = run_nli(l2_premises, l2_hypotheses)
-        
-        # Select Top-9 Level 2
-        top_k_l2 = 9
-        if len(l2_candidates) > top_k_l2:
-            top_indices = np.argsort(l2_scores)[-top_k_l2:]
-            selected_l2 = [l2_candidates[i] for i in top_indices]
-        else:
-            selected_l2 = l2_candidates
+        # [수정] Path Score 계산
+        l2_local_map = dict(zip(l2_candidates, l2_local_scores))
+        for c in l2_candidates:
+            parent = l2_parents_map[c]
+            parent_ps = path_scores_map[parent]
+            local_s = float(l2_local_map[c])
+            path_scores_map[c] = parent_ps * local_s
             
-        # --- Level 3 (Handle ID 44 and potential others) ---
+        # [수정] Path Score 기준으로 Top-9 선정
+        top_k_l2 = 9
+        l2_sorted = sorted(l2_candidates, key=lambda c: path_scores_map[c], reverse=True)
+        selected_l2 = l2_sorted[:top_k_l2]
+
+        # [수정] 선택된 L2만 저장
+        for c in selected_l2:
+            candidates_dict[c] = float(l2_local_map[c])
+
+        # --- Level 3 (Optional) ---
         l3_candidates = []
+        l3_parents_map = {}
         for p in selected_l2:
-            l3_candidates.extend(children_dict.get(p, []))
+            for child in children_dict.get(p, []):
+                l3_candidates.append(child)
+                l3_parents_map[child] = p
         l3_candidates = list(set(l3_candidates))
-        
+
         if l3_candidates:
-            # NLI on ALL Level 3 Candidates
             l3_premises = [doc_text] * len(l3_candidates)
             l3_hypotheses = [f"This example is {id2class[c]}." for c in l3_candidates]
+            l3_local_scores = run_nli(l3_premises, l3_hypotheses)
             
-            l3_scores = run_nli(l3_premises, l3_hypotheses)
+            l3_local_map = dict(zip(l3_candidates, l3_local_scores))
+            for c in l3_candidates:
+                parent = l3_parents_map[c]
+                parent_ps = path_scores_map[parent]
+                local_s = float(l3_local_map[c])
+                path_scores_map[c] = parent_ps * local_s
             
-            # Select Top-3 Level 3 (Arbitrary small number, usually 7 total)
-            # Since there are only 7, we can just keep them all or Top-3
+            # Top-3 (임의 설정)
             top_k_l3 = 3
-            if len(l3_candidates) > top_k_l3:
-                top_indices = np.argsort(l3_scores)[-top_k_l3:]
-                selected_l3 = [l3_candidates[i] for i in top_indices]
-            else:
-                selected_l3 = l3_candidates
-        else:
-            selected_l3 = []
-            l3_scores = []
+            l3_sorted = sorted(l3_candidates, key=lambda c: path_scores_map[c], reverse=True)
+            selected_l3 = l3_sorted[:top_k_l3]
             
-        # Final Candidates: Level 2 + Level 3 selections
-        # Note: We need to return a dict of {class_id: score} for identify_confident_core_classes
-        
-        candidates_dict = {}
-        
-        # Add L0 scores
-        for c, s in zip(l0_candidates, l0_scores):
-            candidates_dict[c] = float(s)
-            
-        # Add L1 scores
-        for c, s in zip(l1_candidates, l1_scores):
-            candidates_dict[c] = float(s)
-            
-        # Add L2 scores
-        for c, s in zip(l2_candidates, l2_scores):
-            candidates_dict[c] = float(s)
-            
-        # Add L3 scores
-        for c, s in zip(l3_candidates, l3_scores):
-            candidates_dict[c] = float(s)
-            
+            for c in selected_l3:
+                candidates_dict[c] = float(l3_local_map[c])
+
         core_classes[doc_id] = candidates_dict
         
     return core_classes
-
-def identify_confident_core_classes(doc_candidates, parents_dict, children_dict):
-    """
-    Identifies confident core classes using Confidence Score and Median Threshold.
-    
-    conf(D, c) = sim(D,c) - max(sim(D, parents), sim(D, siblings))
-    tau_c = median({conf(D', c) for all D' where c in candidates})
-    Select c if conf(D, c) > tau_c
-    """
-    print("Identifying Confident Core Classes...")
-    
-    # 1. Calculate Raw Confidence Scores
-    # doc_confidences: {doc_id: {class_id: conf_score}}
-    doc_confidences = {}
-    
-    # Also collect scores per class for median calculation
-    # class_conf_distribution: {class_id: [conf_score1, conf_score2, ...]}
-    class_conf_distribution = defaultdict(list)
-    
-    for doc_id, candidates in tqdm(doc_candidates.items(), desc="Calc Confidence"):
-        doc_confidences[doc_id] = {}
-        
-        for c, score in candidates.items():
-            # Get Parent Scores
-            parents = parents_dict.get(c, [])
-            parent_scores = [candidates.get(p, 0.0) for p in parents] # 0.0 if parent not in candidates
-            max_parent = max(parent_scores) if parent_scores else 0.0
-            
-            # Get Sibling Scores
-            siblings = utils.get_siblings(c, parents_dict, children_dict)
-            sibling_scores = [candidates.get(s, 0.0) for s in siblings] # 0.0 if sibling not in candidates (filtered out)
-            max_sibling = max(sibling_scores) if sibling_scores else 0.0
-            
-            # Conf(D, c)
-            conf = score - max(max_parent, max_sibling)
-            
-            doc_confidences[doc_id][c] = conf
-            class_conf_distribution[c].append(conf)
-            
-    # 2. Calculate Median Thresholds
-    class_thresholds = {}
-    for c, scores in class_conf_distribution.items():
-        if scores:
-            class_thresholds[c] = np.median(scores)
-        else:
-            class_thresholds[c] = 0.0 # Should not happen if c is in candidates
-            
-    # 3. Filter
-    final_core_classes = {} # {doc_id: [core_class1, core_class2]}
-    
-    for doc_id, confs in doc_confidences.items():
-        cores = []
-        for c, conf in confs.items():
-            tau = class_thresholds.get(c, 0.0)
-            if conf > tau:
-                cores.append(c)
-        final_core_classes[doc_id] = cores
-        
-    return final_core_classes
 
 def expand_labels(core_classes, parents_dict, children_dict, num_classes):
     """
