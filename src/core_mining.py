@@ -15,12 +15,12 @@ def generate_core_classes_sbert_reranker(corpus, id2class, doc_ids, parents_dict
     """
     Generates candidate core classes using SBERT Retrieval + Reranker.
     
-    Step 1: Retrieve Top-30 candidates using SBERT (Bi-Encoder).
+    Step 1: Retrieve Top-100 candidates using SBERT (Bi-Encoder).
             Query: Document text
             Corpus: "Parent > Child (keywords)"
             
-    Step 2: Re-rank Top-30 using Reranker (Cross-Encoder).
-            Input: (Document, "Parent > Child")
+    Step 2: Re-rank Top-100 using Reranker (Cross-Encoder).
+            Input: ("Parent > Child", Document)
             
     Returns:
         doc_candidates: {doc_id: {class_id: reranker_score}}
@@ -73,7 +73,7 @@ def generate_core_classes_sbert_reranker(corpus, id2class, doc_ids, parents_dict
     class_embeddings = sbert.encode(class_texts, convert_to_tensor=True, show_progress_bar=True, normalize_embeddings=True)
     
     # 1.2 Encode Documents & Retrieve
-    print("Encoding Documents and Retrieving Top-30...")
+    print("Encoding Documents and Retrieving Top-100...")
     # Process in batches to save memory
     doc_candidates_step1 = {} # {doc_id: [top_30_class_ids]}
     
@@ -93,7 +93,7 @@ def generate_core_classes_sbert_reranker(corpus, id2class, doc_ids, parents_dict
         # util.semantic_search uses cosine similarity by default if unnormalized, or dot if normalized.
         # Let's use pytorch cos_sim manually or sbert util
         from sentence_transformers import util
-        hits = util.semantic_search(doc_embeddings, class_embeddings, top_k=30)
+        hits = util.semantic_search(doc_embeddings, class_embeddings, top_k=100)
         
         for idx, hit_list in enumerate(hits):
             did = batch_dids[idx]
@@ -121,7 +121,7 @@ def generate_core_classes_sbert_reranker(corpus, id2class, doc_ids, parents_dict
         candidates = doc_candidates_step1[did]
         doc_text = corpus[did]
         
-        # Construct Pairs: (Doc, "Parent > Child") - No keywords for Reranker as per strategy
+        # Construct Pairs: ("Parent > Child", Doc) - No keywords for Reranker as per strategy
         pairs = []
         for cid in candidates:
             parents = parents_dict.get(cid, [])
@@ -132,7 +132,7 @@ def generate_core_classes_sbert_reranker(corpus, id2class, doc_ids, parents_dict
             else:
                 class_text = id2class[cid]
             
-            pairs.append([doc_text, class_text])
+            pairs.append([class_text, doc_text])
             
         # Predict
         scores = reranker.predict(pairs, batch_size=batch_size, show_progress_bar=False)
@@ -144,7 +144,17 @@ def generate_core_classes_sbert_reranker(corpus, id2class, doc_ids, parents_dict
         # BGE-Reranker outputs logits.
         # Let's apply Sigmoid to normalize to 0-1 for consistency with NLI probability.
         scores = torch.tensor(scores)
-        probs = torch.sigmoid(scores).numpy()
+        if len(scores) > 1:
+            min_val = scores.min()
+            max_val = scores.max()
+            
+            # 0으로 나누기 방지
+            if max_val - min_val > 1e-9:
+                probs = (scores - min_val) / (max_val - min_val)
+            else:
+                probs = np.zeros_like(scores) # 모든 점수가 같으면 0
+        else:
+            probs = np.ones_like(scores) # 후보가 1개면 1.0
         
         cand_dict = {}
         for cid, score in zip(candidates, probs):
@@ -380,6 +390,25 @@ def identify_confident_core_classes(doc_candidates, parents_dict, children_dict)
     # doc_confidences: {doc_id: {class_id: conf_score}}
     doc_confidences = {}
     
+    # [Added] Apply Min-Max Scaling per Document
+    print("Applying Min-Max Scaling to candidates...")
+    scaled_doc_candidates = {}
+    for doc_id, candidates in doc_candidates.items():
+        scores = np.array(list(candidates.values()))
+        cids = list(candidates.keys())
+        
+        if len(scores) > 0:
+            min_p = np.min(scores)
+            max_p = np.max(scores)
+            if max_p > min_p:
+                scores = (scores - min_p) / (max_p - min_p)
+            else:
+                scores = np.zeros_like(scores)
+        
+        scaled_doc_candidates[doc_id] = {c: float(s) for c, s in zip(cids, scores)}
+    
+    doc_candidates = scaled_doc_candidates
+    
     # Also collect scores per class for median calculation
     # class_conf_distribution: {class_id: [conf_score1, conf_score2, ...]}
     class_conf_distribution = defaultdict(list)
@@ -434,13 +463,16 @@ def identify_confident_core_classes(doc_candidates, parents_dict, children_dict)
         # Even if confidence is high relative to family, absolute score must be reasonable.
         final_candidates = []
         for c, conf in valid_candidates:
-            raw_score = candidates.get(c, 0.0)
-            if raw_score > 0.33:
+            # Filter by Threshold (Min-Max Scaled)
+            # Need to retrieve the raw NLI score for 'c' from 'candidates'
+            raw_score = candidates.get(c, 0.0) 
+            if raw_score > 0.13:
                 final_candidates.append(c)
-            
-            if len(final_candidates) >= 15:
+
+            if len(final_candidates) >= 15: # Top-3 제한 추가
                 break
-        
+
+            
         final_core_classes[doc_id] = final_candidates
         
     return final_core_classes
