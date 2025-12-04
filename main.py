@@ -92,8 +92,7 @@ def main():
             doc_candidates = core_mining.generate_core_classes_full_nli(
                 train_corpus, id2class, train_doc_ids, parents_dict, children_dict, device,
                 model_name="cross-encoder/nli-deberta-v3-base",
-                batch_size=32,
-                class2keywords=class2keywords
+                batch_size=256
             )
             
             # Save Candidates Checkpoint

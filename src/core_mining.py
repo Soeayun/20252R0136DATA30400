@@ -296,18 +296,16 @@ def generate_core_classes_full_nli(corpus, id2class, doc_ids, parents_dict, chil
                                    batch_size=32, 
                                    class2keywords=None):
     """
-    FIXED Full NLI Top-down Core Class Mining.
-    1. Calculates Path Score (Parent * Local).
-    2. Stores ONLY selected candidates in the final dictionary.
+    Optimized Full NLI Top-down Core Class Mining with Document Batching.
+    Processes multiple documents simultaneously to maximize GPU throughput.
     """
-    print(f"\n=== Starting Full NLI Top-down Core Class Mining (Fixed) ===")
+    print(f"\n=== Starting Full NLI Top-down Core Class Mining (Batched) ===")
     
-    # ... (모델 로딩 부분은 동일) ...
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForSequenceClassification.from_pretrained(model_name).to(device)
     model.eval()
     
-    # ... (Entailment Index 찾기 동일) ...
+    # Auto-detect entailment index
     entailment_idx = -1
     for k, v in model.config.label2id.items():
         if k.lower().startswith('entail'):
@@ -317,7 +315,7 @@ def generate_core_classes_full_nli(corpus, id2class, doc_ids, parents_dict, chil
         if "deberta" in model_name: entailment_idx = 1
         else: entailment_idx = 2
     
-    # ... (Roots 식별 동일) ...
+    # Identify Roots
     all_classes = set(id2class.keys())
     all_children = set()
     for children in children_dict.values():
@@ -326,159 +324,183 @@ def generate_core_classes_full_nli(corpus, id2class, doc_ids, parents_dict, chil
 
     core_classes = {}
     
-    # Helper for NLI (동일)
+    # Internal batch size for NLI inference (to avoid OOM)
+    # This is different from the document batch_size passed as argument
+    INFERENCE_BATCH_SIZE = 512
+
     def run_nli(premises, hypotheses):
         if not premises: return np.array([])
         scores = []
-        for i in range(0, len(premises), batch_size):
-            batch_p = premises[i:i+batch_size]
-            batch_h = hypotheses[i:i+batch_size]
+        for i in range(0, len(premises), INFERENCE_BATCH_SIZE):
+            batch_p = premises[i:i+INFERENCE_BATCH_SIZE]
+            batch_h = hypotheses[i:i+INFERENCE_BATCH_SIZE]
             inputs = tokenizer(batch_p, batch_h, return_tensors='pt', padding=True, truncation=True, max_length=192).to(device)
             with torch.no_grad():
-                logits = model(**inputs).logits
-                probs = torch.softmax(logits, dim=1)
-                batch_scores = probs[:, entailment_idx].cpu().numpy()
-                scores.extend(batch_scores)
+                with torch.amp.autocast(device_type='cuda', dtype=torch.float16):
+                    logits = model(**inputs).logits
+                    probs = torch.softmax(logits, dim=1)
+                    batch_scores = probs[:, entailment_idx].float().cpu().numpy()
+                    scores.extend(batch_scores)
         return np.array(scores)
 
-    for doc_id in tqdm(doc_ids, desc="Full NLI Search"):
-        doc_text = corpus[doc_id]
+    def get_hypothesis(cid):
+        cname = id2class[cid]
+        base = f"This product is {cname}."
+        if class2keywords and cname in class2keywords:
+            keywords = class2keywords[cname][:10]
+            if keywords:
+                base += f" Keywords: {', '.join(keywords)}."
+        return base
+
+    # Pre-compute Root Hypotheses
+    root_hypotheses_map = {r: get_hypothesis(r) for r in roots}
+
+    # Process documents in batches
+    # The 'batch_size' argument is used as the number of documents to process at once
+    doc_batch_size = batch_size
+    
+    for i in tqdm(range(0, len(doc_ids), doc_batch_size), desc="Full NLI Search (Batched)"):
+        batch_doc_ids = doc_ids[i : i + doc_batch_size]
+        batch_docs_text = [corpus[did] for did in batch_doc_ids]
         
-        # 결과를 저장할 dict (Local Score 저장용 -> Confidence 계산에 사용)
-        candidates_dict = {} 
-        # 랭킹을 위한 Path Score 추적용
-        path_scores_map = {}
-
-        # Helper to create hypothesis with keywords
-        def get_hypothesis(cid):
-            cname = id2class[cid]
-            base = f"This product is {cname}."
-            if class2keywords and cname in class2keywords:
-                # Use top 10 keywords
-                keywords = class2keywords[cname][:3]
-                if keywords:
-                    base += f" Keywords: {', '.join(keywords)}."
-            return base
-
+        # State tracking per document in batch
+        batch_path_scores = [{} for _ in batch_doc_ids]
+        batch_final_candidates = [{} for _ in batch_doc_ids]
+        
         # --- Level 0 (Roots) ---
-        l0_candidates = roots
-        l0_premises = [doc_text] * len(l0_candidates)
-        l0_hypotheses = [get_hypothesis(c) for c in l0_candidates]
-        l0_local_scores = run_nli(l0_premises, l0_hypotheses)
+        l0_premises = []
+        l0_hypotheses = []
+        l0_map = [] # (doc_idx_in_batch, root_id)
         
-        # [수정] Root의 Path Score = Local Score
-        for c, s in zip(l0_candidates, l0_local_scores):
-            path_scores_map[c] = float(s)
+        for d_idx, doc_text in enumerate(batch_docs_text):
+            for r in roots:
+                l0_premises.append(doc_text)
+                l0_hypotheses.append(root_hypotheses_map[r])
+                l0_map.append((d_idx, r))
+                
+        l0_scores = run_nli(l0_premises, l0_hypotheses)
         
-        # [수정] Path Score 기준으로 Top-2 선정
-        top_k_l0 = 2
-        l0_sorted = sorted(l0_candidates, key=lambda c: path_scores_map[c], reverse=True)
-        selected_l0 = l0_sorted[:top_k_l0]
-
-        # [수정] 선택된 Root만 저장
-        l0_local_map = dict(zip(l0_candidates, l0_local_scores))
-        for c in selected_l0:
-            candidates_dict[c] = float(l0_local_map[c])
-
+        # Organize scores
+        temp_scores = [[] for _ in batch_doc_ids]
+        for idx, score in enumerate(l0_scores):
+            d_idx, r_id = l0_map[idx]
+            temp_scores[d_idx].append((r_id, float(score)))
+            
+        # Select Top-2 Roots
+        batch_selected_l0 = []
+        for d_idx in range(len(batch_doc_ids)):
+            scores = temp_scores[d_idx]
+            scores.sort(key=lambda x: x[1], reverse=True)
+            top2 = scores[:2]
+            
+            selected_ids = []
+            for r_id, s in top2:
+                batch_path_scores[d_idx][r_id] = s
+                batch_final_candidates[d_idx][r_id] = s
+                selected_ids.append(r_id)
+            batch_selected_l0.append(selected_ids)
+            
         # --- Level 1 ---
-        l1_candidates = []
-        l1_parents_map = {} # 부모 추적용
-        for p in selected_l0:
-            for child in children_dict.get(p, []):
-                l1_candidates.append(child)
-                l1_parents_map[child] = p
-        l1_candidates = list(set(l1_candidates))
+        l1_premises = []
+        l1_hypotheses = []
+        l1_map = [] # (doc_idx_in_batch, child_id)
         
-        if not l1_candidates:
-            core_classes[doc_id] = candidates_dict
-            continue
+        for d_idx, selected_roots in enumerate(batch_selected_l0):
+            doc_text = batch_docs_text[d_idx]
+            candidates = set()
+            for r in selected_roots:
+                candidates.update(children_dict.get(r, []))
             
-        l1_premises = [doc_text] * len(l1_candidates)
-        l1_hypotheses = [get_hypothesis(c) for c in l1_candidates]
-        l1_local_scores = run_nli(l1_premises, l1_hypotheses)
+            for c in candidates:
+                l1_premises.append(doc_text)
+                l1_hypotheses.append(get_hypothesis(c))
+                l1_map.append((d_idx, c))
         
-        # [수정] Path Score 계산: Parent_PS * Local_Score
-        l1_local_map = dict(zip(l1_candidates, l1_local_scores))
-        for c in l1_candidates:
-            parent = l1_parents_map[c]
-            parent_ps = path_scores_map[parent]
-            local_s = float(l1_local_map[c])
-            path_scores_map[c] = parent_ps * local_s # 누적 곱
+        if l1_premises:
+            l1_scores = run_nli(l1_premises, l1_hypotheses)
             
-        # [수정] Path Score 기준으로 Top-4 선정
-        top_k_l1 = 4
-        l1_sorted = sorted(l1_candidates, key=lambda c: path_scores_map[c], reverse=True)
-        selected_l1 = l1_sorted[:top_k_l1]
-        
-        # [수정] 선택된 L1만 저장
-        for c in selected_l1:
-            candidates_dict[c] = float(l1_local_map[c])
+            temp_scores = [[] for _ in batch_doc_ids]
+            for idx, score in enumerate(l1_scores):
+                d_idx, c_id = l1_map[idx]
+                
+                # Calculate Path Score = Max(Parent_PS * Local)
+                max_ps = -1.0
+                for p in batch_selected_l0[d_idx]:
+                    if c_id in children_dict.get(p, []):
+                        p_ps = batch_path_scores[d_idx][p]
+                        current_ps = p_ps * float(score)
+                        if current_ps > max_ps:
+                            max_ps = current_ps
+                
+                if max_ps > 0:
+                    temp_scores[d_idx].append((c_id, max_ps, float(score)))
+            
+            batch_selected_l1 = []
+            for d_idx in range(len(batch_doc_ids)):
+                scores = temp_scores[d_idx]
+                scores.sort(key=lambda x: x[1], reverse=True)
+                top4 = scores[:4]
+                
+                selected_ids = []
+                for c_id, ps, local_s in top4:
+                    batch_path_scores[d_idx][c_id] = ps
+                    batch_final_candidates[d_idx][c_id] = local_s
+                    selected_ids.append(c_id)
+                batch_selected_l1.append(selected_ids)
+        else:
+            batch_selected_l1 = [[] for _ in batch_doc_ids]
 
         # --- Level 2 ---
-        l2_candidates = []
-        l2_parents_map = {}
-        for p in selected_l1:
-            for child in children_dict.get(p, []):
-                l2_candidates.append(child)
-                l2_parents_map[child] = p
-        l2_candidates = list(set(l2_candidates))
+        l2_premises = []
+        l2_hypotheses = []
+        l2_map = []
         
-        if not l2_candidates:
-            core_classes[doc_id] = candidates_dict
-            continue
+        for d_idx, selected_l1 in enumerate(batch_selected_l1):
+            doc_text = batch_docs_text[d_idx]
+            candidates = set()
+            for p in selected_l1:
+                candidates.update(children_dict.get(p, []))
+                
+            for c in candidates:
+                l2_premises.append(doc_text)
+                l2_hypotheses.append(get_hypothesis(c))
+                l2_map.append((d_idx, c))
+                
+        if l2_premises:
+            l2_scores = run_nli(l2_premises, l2_hypotheses)
             
-        l2_premises = [doc_text] * len(l2_candidates)
-        l2_hypotheses = [get_hypothesis(c) for c in l2_candidates]
-        l2_local_scores = run_nli(l2_premises, l2_hypotheses)
-        
-        # [수정] Path Score 계산
-        l2_local_map = dict(zip(l2_candidates, l2_local_scores))
-        for c in l2_candidates:
-            parent = l2_parents_map[c]
-            parent_ps = path_scores_map[parent]
-            local_s = float(l2_local_map[c])
-            path_scores_map[c] = parent_ps * local_s
+            temp_scores = [[] for _ in batch_doc_ids]
+            for idx, score in enumerate(l2_scores):
+                d_idx, c_id = l2_map[idx]
+                
+                max_ps = -1.0
+                for p in batch_selected_l1[d_idx]:
+                    if c_id in children_dict.get(p, []):
+                        p_ps = batch_path_scores[d_idx][p]
+                        current_ps = p_ps * float(score)
+                        if current_ps > max_ps:
+                            max_ps = current_ps
+                            
+                if max_ps > 0:
+                    temp_scores[d_idx].append((c_id, max_ps, float(score)))
             
-        # [수정] Path Score 기준으로 Top-9 선정
-        top_k_l2 = 9
-        l2_sorted = sorted(l2_candidates, key=lambda c: path_scores_map[c], reverse=True)
-        selected_l2 = l2_sorted[:top_k_l2]
+            batch_selected_l2 = []
+            for d_idx in range(len(batch_doc_ids)):
+                scores = temp_scores[d_idx]
+                scores.sort(key=lambda x: x[1], reverse=True)
+                top9 = scores[:9]
+                
+                selected_ids = []
+                for c_id, ps, local_s in top9:
+                    batch_path_scores[d_idx][c_id] = ps
+                    batch_final_candidates[d_idx][c_id] = local_s
+                    selected_ids.append(c_id)
+                batch_selected_l2.append(selected_ids)
 
-        # [수정] 선택된 L2만 저장
-        for c in selected_l2:
-            candidates_dict[c] = float(l2_local_map[c])
-
-        # --- Level 3 (Optional) ---
-        l3_candidates = []
-        l3_parents_map = {}
-        for p in selected_l2:
-            for child in children_dict.get(p, []):
-                l3_candidates.append(child)
-                l3_parents_map[child] = p
-        l3_candidates = list(set(l3_candidates))
-
-        if l3_candidates:
-            l3_premises = [doc_text] * len(l3_candidates)
-            l3_hypotheses = [get_hypothesis(c) for c in l3_candidates]
-            l3_local_scores = run_nli(l3_premises, l3_hypotheses)
+        # Store results
+        for d_idx, did in enumerate(batch_doc_ids):
+            core_classes[did] = batch_final_candidates[d_idx]
             
-            l3_local_map = dict(zip(l3_candidates, l3_local_scores))
-            for c in l3_candidates:
-                parent = l3_parents_map[c]
-                parent_ps = path_scores_map[parent]
-                local_s = float(l3_local_map[c])
-                path_scores_map[c] = parent_ps * local_s
-            
-            # Top-3 (임의 설정)
-            top_k_l3 = 3
-            l3_sorted = sorted(l3_candidates, key=lambda c: path_scores_map[c], reverse=True)
-            selected_l3 = l3_sorted[:top_k_l3]
-            
-            for c in selected_l3:
-                candidates_dict[c] = float(l3_local_map[c])
-
-        core_classes[doc_id] = candidates_dict
-        
     return core_classes
 
 def identify_confident_core_classes(doc_candidates, parents_dict, children_dict):
