@@ -74,8 +74,8 @@ def load_keywords(filepath):
     for line in lines:
         parts = line.split(':')
         if len(parts) >= 2:
-            cname = parts[0].strip()
-            keywords = [k.strip() for k in parts[1].split(',')]
+            cname = parts[0].strip().replace('_', ' ') # Remove underscores from key
+            keywords = [k.strip().replace('_', ' ') for k in parts[1].split(',')] # Remove underscores from values
             class2keywords[cname] = keywords
     return class2keywords
 

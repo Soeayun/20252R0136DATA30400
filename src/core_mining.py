@@ -355,7 +355,7 @@ def generate_core_classes_full_nli(corpus, id2class, doc_ids, parents_dict, chil
             base = f"This product is {cname}."
             if class2keywords and cname in class2keywords:
                 # Use top 10 keywords
-                keywords = class2keywords[cname][:10]
+                keywords = class2keywords[cname][:3]
                 if keywords:
                     base += f" Keywords: {', '.join(keywords)}."
             return base
