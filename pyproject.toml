@@ -18,6 +18,8 @@ dependencies = [
     "tqdm>=4.66.0",
     "sentencepiece>=0.1.99",
     "protobuf>=6.33.1",
+    "matplotlib>=3.9.4",
+    "seaborn>=0.13.2",
 ]
 
 [tool.uv]

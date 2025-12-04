@@ -516,16 +516,24 @@ def identify_confident_core_classes(doc_candidates, parents_dict, children_dict)
         else:
             class_thresholds[c] = 0.0 # Should not happen if c is in candidates
             
-    # 3. Filter
+    # 3. Filter and Top-3 Selection
     final_core_classes = {} # {doc_id: [core_class1, core_class2]}
     
     for doc_id, confs in doc_confidences.items():
-        cores = []
+        # Collect candidates that pass the threshold
+        valid_candidates = []
         for c, conf in confs.items():
             tau = class_thresholds.get(c, 0.0)
             if conf > tau:
-                cores.append(c)
-        final_core_classes[doc_id] = cores
+                valid_candidates.append((c, conf))
+        
+        # Sort by Confidence Score (Descending)
+        valid_candidates.sort(key=lambda x: x[1], reverse=True)
+        
+        # Keep Top-3
+        top_k = valid_candidates[:3]
+        
+        final_core_classes[doc_id] = [c for c, score in top_k]
         
     return final_core_classes
 
