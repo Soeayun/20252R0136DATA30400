@@ -333,7 +333,7 @@ def generate_core_classes_full_nli(corpus, id2class, doc_ids, parents_dict, chil
         for i in range(0, len(premises), batch_size):
             batch_p = premises[i:i+batch_size]
             batch_h = hypotheses[i:i+batch_size]
-            inputs = tokenizer(batch_p, batch_h, return_tensors='pt', padding=True, truncation=True, max_length=128).to(device)
+            inputs = tokenizer(batch_p, batch_h, return_tensors='pt', padding=True, truncation=True, max_length=192).to(device)
             with torch.no_grad():
                 logits = model(**inputs).logits
                 probs = torch.softmax(logits, dim=1)
@@ -349,10 +349,21 @@ def generate_core_classes_full_nli(corpus, id2class, doc_ids, parents_dict, chil
         # 랭킹을 위한 Path Score 추적용
         path_scores_map = {}
 
+        # Helper to create hypothesis with keywords
+        def get_hypothesis(cid):
+            cname = id2class[cid]
+            base = f"This product is {cname}."
+            if class2keywords and cname in class2keywords:
+                # Use top 10 keywords
+                keywords = class2keywords[cname][:10]
+                if keywords:
+                    base += f" Keywords: {', '.join(keywords)}."
+            return base
+
         # --- Level 0 (Roots) ---
         l0_candidates = roots
         l0_premises = [doc_text] * len(l0_candidates)
-        l0_hypotheses = [f"This product is {id2class[c]}." for c in l0_candidates]
+        l0_hypotheses = [get_hypothesis(c) for c in l0_candidates]
         l0_local_scores = run_nli(l0_premises, l0_hypotheses)
         
         # [수정] Root의 Path Score = Local Score
@@ -383,7 +394,7 @@ def generate_core_classes_full_nli(corpus, id2class, doc_ids, parents_dict, chil
             continue
             
         l1_premises = [doc_text] * len(l1_candidates)
-        l1_hypotheses = [f"This example is {id2class[c]}." for c in l1_candidates]
+        l1_hypotheses = [get_hypothesis(c) for c in l1_candidates]
         l1_local_scores = run_nli(l1_premises, l1_hypotheses)
         
         # [수정] Path Score 계산: Parent_PS * Local_Score
@@ -417,7 +428,7 @@ def generate_core_classes_full_nli(corpus, id2class, doc_ids, parents_dict, chil
             continue
             
         l2_premises = [doc_text] * len(l2_candidates)
-        l2_hypotheses = [f"This example is {id2class[c]}." for c in l2_candidates]
+        l2_hypotheses = [get_hypothesis(c) for c in l2_candidates]
         l2_local_scores = run_nli(l2_premises, l2_hypotheses)
         
         # [수정] Path Score 계산
@@ -448,7 +459,7 @@ def generate_core_classes_full_nli(corpus, id2class, doc_ids, parents_dict, chil
 
         if l3_candidates:
             l3_premises = [doc_text] * len(l3_candidates)
-            l3_hypotheses = [f"This example is {id2class[c]}." for c in l3_candidates]
+            l3_hypotheses = [get_hypothesis(c) for c in l3_candidates]
             l3_local_scores = run_nli(l3_premises, l3_hypotheses)
             
             l3_local_map = dict(zip(l3_candidates, l3_local_scores))
@@ -531,7 +542,7 @@ def identify_confident_core_classes(doc_candidates, parents_dict, children_dict)
         valid_candidates.sort(key=lambda x: x[1], reverse=True)
         
         # Keep Top-3
-        top_k = valid_candidates[:3]
+        top_k = valid_candidates[:15]
         
         final_core_classes[doc_id] = [c for c, score in top_k]
         
