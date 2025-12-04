@@ -42,9 +42,7 @@ def main():
     # Note: We can also use Test Corpus for Transductive Learning (Self-Training on Test)
     # For now, let's focus on Train Corpus for Silver Label Generation.
     
-    # 4.1 BM25
-    BM25_CACHE = "checkpoints/bm25_scores.npy"
-    # --- 4. Core Class Mining (Hybrid Top-down) ---
+    # --- 4. Core Class Mining ---
     CORE_CLASSES_CACHE = os.path.join("checkpoints", "core_classes.json")
     train_doc_ids = sorted(list(train_corpus.keys())) # Ensure train_doc_ids is defined for the new section
     
@@ -63,18 +61,7 @@ def main():
                 core_classes.append(core_classes_dict.get(doc_id, []))
             
     else:
-        # print("Starting Core Class Mining (Hybrid Top-down)...") # Original print statement
-        
-        # --- 3. Core Class Mining ---
         print("Starting Core Class Mining...")
-        
-        # Option 1: Hybrid Top-down Search (BM25 + NLI) - Faster
-        # doc_candidates = core_mining.generate_core_classes_hybrid_top_down(
-        #     train_corpus, id2class, train_doc_ids, parents_dict, children_dict, device, # Use train_corpus and train_doc_ids
-        #     model_name="cross-encoder/nli-deberta-v3-base",
-        #     batch_size=32,
-        #     class2keywords=class2keywords
-        # )
         
         DOC_CANDIDATES_CACHE = os.path.join("checkpoints", "doc_candidates.json")
         
@@ -88,11 +75,11 @@ def main():
                     # v is {class_id: score}
                     doc_candidates[int(k)] = {int(ck): cv for ck, cv in v.items()}
         else:
-            # Option 2: Full NLI Top-down Search (No BM25) - Kaggle Submission (More Accurate)
+            # Full NLI Top-down Search (No BM25) - Kaggle Submission (More Accurate)
             doc_candidates = core_mining.generate_core_classes_full_nli(
                 train_corpus, id2class, train_doc_ids, parents_dict, children_dict, device,
                 model_name="cross-encoder/nli-deberta-v3-base",
-                batch_size=256
+                batch_size=32
             )
             
             # Save Candidates Checkpoint
