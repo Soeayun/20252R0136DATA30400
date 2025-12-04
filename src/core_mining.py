@@ -2,10 +2,157 @@ import torch
 import numpy as np
 from tqdm import tqdm
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from sentence_transformers import SentenceTransformer, CrossEncoder
 from torch.nn.functional import softmax
 import src.utils as utils
 from collections import defaultdict
 
+def generate_core_classes_sbert_reranker(corpus, id2class, doc_ids, parents_dict, children_dict, device, 
+                                         sbert_model_name="BAAI/bge-m3",
+                                         reranker_model_name="BAAI/bge-reranker-v2-m3",
+                                         batch_size=32, 
+                                         class2keywords=None):
+    """
+    Generates candidate core classes using SBERT Retrieval + Reranker.
+    
+    Step 1: Retrieve Top-30 candidates using SBERT (Bi-Encoder).
+            Query: Document text
+            Corpus: "Parent > Child (keywords)"
+            
+    Step 2: Re-rank Top-30 using Reranker (Cross-Encoder).
+            Input: (Document, "Parent > Child")
+            
+    Returns:
+        doc_candidates: {doc_id: {class_id: reranker_score}}
+    """
+    print(f"\n=== Starting Core Class Mining (SBERT + Reranker) ===")
+    
+    # --- Step 1: SBERT Retrieval ---
+    print(f"Loading SBERT Model: {sbert_model_name}...")
+    sbert = SentenceTransformer(sbert_model_name, device=str(device))
+    
+    # 1.1 Encode Classes
+    print("Encoding Class Hierarchies...")
+    class_ids = sorted(list(id2class.keys()))
+    class_texts = []
+    
+    for cid in tqdm(class_ids, desc="Encoding Classes"):
+        # Construct "Parent > Child" text
+        parents = parents_dict.get(cid, [])
+        if parents:
+            p_name = id2class[parents[0]].replace('_', ' ')
+            c_name = id2class[cid].replace('_', ' ')
+            text = f"{p_name} > {c_name}"
+            query_name = c_name # Use child name for keyword selection
+        else:
+            text = id2class[cid].replace('_', ' ')
+            query_name = text
+            
+        # Add Keywords (Smart Selection using SBERT)
+        if class2keywords and id2class[cid] in class2keywords:
+            raw_keywords = [k.replace('_', ' ') for k in class2keywords[id2class[cid]]]
+            
+            if raw_keywords:
+                # Encode class name and keywords
+                # Small batch, so it's fast
+                name_emb = sbert.encode(query_name, convert_to_tensor=True, show_progress_bar=False)
+                kw_embs = sbert.encode(raw_keywords, convert_to_tensor=True, show_progress_bar=False)
+                
+                # Calculate Cosine Similarity
+                from sentence_transformers import util
+                cos_scores = util.cos_sim(name_emb, kw_embs)[0]
+                
+                # Get Top-5 indices
+                top_k_idx = torch.topk(cos_scores, k=min(5, len(raw_keywords))).indices
+                selected_keywords = [raw_keywords[i] for i in top_k_idx]
+                
+                text += f" ({', '.join(selected_keywords)})"
+        
+        class_texts.append(text)
+        
+    class_embeddings = sbert.encode(class_texts, convert_to_tensor=True, show_progress_bar=True, normalize_embeddings=True)
+    
+    # 1.2 Encode Documents & Retrieve
+    print("Encoding Documents and Retrieving Top-30...")
+    # Process in batches to save memory
+    doc_candidates_step1 = {} # {doc_id: [top_30_class_ids]}
+    
+    # Map list index back to class ID
+    idx2cid = {i: cid for i, cid in enumerate(class_ids)}
+    
+    doc_batch_size = 64
+    for i in tqdm(range(0, len(doc_ids), doc_batch_size), desc="SBERT Retrieval"):
+        batch_dids = doc_ids[i:i+doc_batch_size]
+        batch_texts = [corpus[did] for did in batch_dids]
+        
+        # Encode
+        doc_embeddings = sbert.encode(batch_texts, convert_to_tensor=True, show_progress_bar=False, normalize_embeddings=True)
+        
+        # Similarity (Dot Product for BGE-M3)
+        # BGE-M3 embeddings are normalized? Usually yes, or use cos_sim.
+        # util.semantic_search uses cosine similarity by default if unnormalized, or dot if normalized.
+        # Let's use pytorch cos_sim manually or sbert util
+        from sentence_transformers import util
+        hits = util.semantic_search(doc_embeddings, class_embeddings, top_k=30)
+        
+        for idx, hit_list in enumerate(hits):
+            did = batch_dids[idx]
+            top_cids = [idx2cid[hit['corpus_id']] for hit in hit_list]
+            doc_candidates_step1[did] = top_cids
+            
+    # Free SBERT memory
+    del sbert
+    del class_embeddings
+    del doc_embeddings
+    torch.cuda.empty_cache()
+    
+    # --- Step 2: Reranker ---
+    print(f"Loading Reranker Model: {reranker_model_name}...")
+    reranker = CrossEncoder(reranker_model_name, device=str(device))
+    
+    doc_candidates = {} # Final output
+    
+    print("Reranking Candidates...")
+    # Prepare pairs for Reranker
+    # We process document by document or batch pairs?
+    # CrossEncoder processes list of pairs.
+    
+    for did in tqdm(doc_ids, desc="Reranking"):
+        candidates = doc_candidates_step1[did]
+        doc_text = corpus[did]
+        
+        # Construct Pairs: (Doc, "Parent > Child") - No keywords for Reranker as per strategy
+        pairs = []
+        for cid in candidates:
+            parents = parents_dict.get(cid, [])
+            if parents:
+                p_name = id2class[parents[0]]
+                c_name = id2class[cid]
+                class_text = f"{p_name} > {c_name}"
+            else:
+                class_text = id2class[cid]
+            
+            pairs.append([doc_text, class_text])
+            
+        # Predict
+        scores = reranker.predict(pairs, batch_size=batch_size, show_progress_bar=False)
+        
+        # Store results
+        # Reranker scores are logits (unbounded).
+        # We can use them directly for Confidence Score calculation.
+        # But for 0.33 thresholding later, we might need Sigmoid?
+        # BGE-Reranker outputs logits.
+        # Let's apply Sigmoid to normalize to 0-1 for consistency with NLI probability.
+        scores = torch.tensor(scores)
+        probs = torch.sigmoid(scores).numpy()
+        
+        cand_dict = {}
+        for cid, score in zip(candidates, probs):
+            cand_dict[cid] = float(score)
+            
+        doc_candidates[did] = cand_dict
+        
+    return doc_candidates
 
 def generate_core_classes_full_nli(corpus, id2class, doc_ids, parents_dict, children_dict, device, 
                                    model_name="cross-encoder/nli-deberta-v3-base", 

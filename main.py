@@ -75,11 +75,13 @@ def main():
                     # v is {class_id: score}
                     doc_candidates[int(k)] = {int(ck): cv for ck, cv in v.items()}
         else:
-            # Full NLI Top-down Search (No BM25) - Kaggle Submission (More Accurate)
-            doc_candidates = core_mining.generate_core_classes_full_nli(
+            # Option 3: SBERT Retrieval + Reranker (State-of-the-Art Approach)
+            doc_candidates = core_mining.generate_core_classes_sbert_reranker(
                 train_corpus, id2class, train_doc_ids, parents_dict, children_dict, device,
-                model_name="cross-encoder/nli-deberta-v3-base",
-                batch_size=32
+                sbert_model_name="BAAI/bge-m3",
+                reranker_model_name="BAAI/bge-reranker-v2-m3",
+                batch_size=32,
+                class2keywords=class2keywords
             )
             
             # Save Candidates Checkpoint
