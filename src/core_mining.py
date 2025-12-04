@@ -553,6 +553,9 @@ def identify_confident_core_classes(doc_candidates, parents_dict, children_dict)
     final_core_classes = {} # {doc_id: [core_class1, core_class2]}
     
     for doc_id, confs in doc_confidences.items():
+        # [Fix] Retrieve candidates for the current document
+        candidates = doc_candidates[doc_id]
+        
         # Collect candidates that pass the threshold
         valid_candidates = []
         for c, conf in confs.items():
@@ -563,10 +566,19 @@ def identify_confident_core_classes(doc_candidates, parents_dict, children_dict)
         # Sort by Confidence Score (Descending)
         valid_candidates.sort(key=lambda x: x[1], reverse=True)
         
-        # Keep Top-3
-        top_k = valid_candidates[:15]
+        # Keep Top-K
+        # [Added] Hard Filter: Raw NLI Score > 0.33
+        # Even if confidence is high relative to family, absolute score must be reasonable.
+        final_candidates = []
+        for c, conf in valid_candidates:
+            raw_score = candidates.get(c, 0.0)
+            if raw_score > 0.33:
+                final_candidates.append(c)
+            
+            if len(final_candidates) >= 15:
+                break
         
-        final_core_classes[doc_id] = [c for c, score in top_k]
+        final_core_classes[doc_id] = final_candidates
         
     return final_core_classes
 
