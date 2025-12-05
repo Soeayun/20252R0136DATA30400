@@ -143,23 +143,24 @@ def main():
     model = trainer.supervised_training_loop(
         model, train_corpus, bert_tokenizer, 
         targets, masks, device,
-        epochs=11, batch_size=64, lr=5e-5
+        epochs=14, batch_size=64, lr=5e-5
     )
 
     # --- 7. Self-Training ---
     # TaxoClass uses Multi-label Self-Training with KL Divergence
     # We use both Train and Test corpus (Transductive) as Unlabeled Data
-    print("Starting Self-Training...")
-    model = trainer.self_training_loop(
-        model, train_corpus, test_corpus, bert_tokenizer,
-        targets, masks, # Initial targets/masks from Core Classes
-        parents_dict, children_dict, len(id2class),
-        device,
-        num_iterations=1,
-        epochs_per_iter=1,
-        batch_size=64,
-        lr=1e-5 # Lower LR for self-training
-    )
+    # [DISABLED] Skipping self-training, using supervised warm-up model only
+    # print("Starting Self-Training...")
+    # model = trainer.self_training_loop(
+    #     model, train_corpus, test_corpus, bert_tokenizer,
+    #     targets, masks, # Initial targets/masks from Core Classes
+    #     parents_dict, children_dict, len(id2class),
+    #     device,
+    #     num_iterations=1,
+    #     epochs_per_iter=1,
+    #     batch_size=64,
+    #     lr=1e-5 # Lower LR for self-training
+    # )
     
     # Save Final Model
     MODEL_PATH = "checkpoints/taxoclass_model.pth"

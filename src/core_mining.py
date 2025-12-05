@@ -264,7 +264,7 @@ def identify_confident_core_classes(doc_candidates, parents_dict, children_dict)
             # Filter by Threshold (Min-Max Scaled)
             # Need to retrieve the raw NLI score for 'c' from 'candidates'
             raw_score = candidates.get(c, 0.0) 
-            if raw_score > 0.5006:
+            if raw_score > 0.5005:
                 final_candidates.append(c)
 
             if len(final_candidates) >= 15: # Top-3 제한 추가
@@ -275,7 +275,7 @@ def identify_confident_core_classes(doc_candidates, parents_dict, children_dict)
         
     return final_core_classes
 
-
+# 
 
 def expand_labels(core_classes, parents_dict, children_dict, num_classes):
     """
