@@ -1,0 +1,7886 @@
+{
+  "total_classes": 526,
+  "total_reviews": 14756,
+  "distribution": {
+    "level_1": {
+      "classes": 64,
+      "reviews": 937
+    },
+    "level_2": {
+      "classes": 462,
+      "reviews": 14062
+    }
+  },
+  "classes": [
+    {
+      "category_id": 128,
+      "level": 1,
+      "name": "feeding",
+      "parent_name": "baby products",
+      "keywords": [
+        "bottles",
+        "breast pumps",
+        "formula",
+        "bibs",
+        "high chairs",
+        "baby food"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 1,
+      "level": 1,
+      "name": "meat poultry",
+      "parent_name": "grocery gourmet food",
+      "keywords": [
+        "butcher",
+        "cuts",
+        "marination",
+        "grilling",
+        "roasting",
+        "seasoning"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 131,
+      "level": 1,
+      "name": "diapering",
+      "parent_name": "baby products",
+      "keywords": [
+        "changing pads",
+        "diaper bags",
+        "diaper pails",
+        "cloth diapers",
+        "disposable diapers",
+        "diaper rash cream"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 4,
+      "level": 1,
+      "name": "games",
+      "parent_name": "toys games",
+      "keywords": [
+        "board games",
+        "card games",
+        "tabletop games",
+        "party games",
+        "roleplaying games",
+        "video games"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 5,
+      "level": 1,
+      "name": "puzzles",
+      "parent_name": "toys games",
+      "keywords": [
+        "jigsaw puzzles",
+        "brain teasers",
+        "puzzle accessories",
+        "puzzle storage",
+        "puzzle mats",
+        "puzzle glue"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 135,
+      "level": 1,
+      "name": "safety",
+      "parent_name": "baby products",
+      "keywords": [
+        "childproofing",
+        "safety gates",
+        "outlet covers",
+        "cabinet locks",
+        "corner guards",
+        "window guards"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 8,
+      "level": 1,
+      "name": "beverages",
+      "parent_name": "grocery gourmet food",
+      "keywords": [
+        "coffee",
+        "tea",
+        "energy drinks",
+        "soft drinks",
+        "bottled water",
+        "juices"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 265,
+      "level": 1,
+      "name": "candy chocolate",
+      "parent_name": "grocery gourmet food",
+      "keywords": [
+        "truffles",
+        "chocolate bars",
+        "candy bars",
+        "chocolatecovered nuts",
+        "chocolatecovered fruits",
+        "chocolatecovered pretzels"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 11,
+      "level": 1,
+      "name": "makeup",
+      "parent_name": "beauty",
+      "keywords": [
+        "lipstick",
+        "foundation",
+        "eyeshadow",
+        "mascara",
+        "eyeliner",
+        "blush"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 139,
+      "level": 1,
+      "name": "nursery",
+      "parent_name": "baby products",
+      "keywords": [
+        "cribs",
+        "bedding",
+        "nursery decor",
+        "rocking chairs",
+        "changing tables",
+        "baby monitors"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 13,
+      "level": 1,
+      "name": "arts crafts",
+      "parent_name": "toys games",
+      "keywords": [
+        "painting supplies",
+        "drawing kits",
+        "scrapbooking materials",
+        "yarn crafts",
+        "bead kits",
+        "pottery tools"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 395,
+      "level": 1,
+      "name": "health baby care",
+      "parent_name": "baby products",
+      "keywords": [
+        "teething remedies",
+        "infant supplements",
+        "baby thermometers",
+        "pediatric first aid kits",
+        "nasal aspirators",
+        "baby skincare products"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 271,
+      "level": 1,
+      "name": "snack food",
+      "parent_name": "grocery gourmet food",
+      "keywords": [
+        "chips",
+        "crackers",
+        "popcorn",
+        "pretzels",
+        "nuts",
+        "trail mix"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 15,
+      "level": 1,
+      "name": "action toy figures",
+      "parent_name": "toys games",
+      "keywords": [
+        "poseable figures",
+        "collectible figurines",
+        "actionpacked characters",
+        "superhero toys",
+        "movieinspired figures",
+        "articulated action figures"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 17,
+      "level": 1,
+      "name": "dolls accessories",
+      "parent_name": "toys games",
+      "keywords": [
+        "doll clothes",
+        "doll shoes",
+        "doll furniture",
+        "dollhouse accessories",
+        "doll strollers",
+        "doll carriers"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 145,
+      "level": 1,
+      "name": "bathing skin care",
+      "parent_name": "baby products",
+      "keywords": [
+        "moisturizing lotion",
+        "gentle cleanser",
+        "baby oil",
+        "bath sponge",
+        "bath thermometer",
+        "soothing cream"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 147,
+      "level": 1,
+      "name": "vehicles remote control",
+      "parent_name": "toys games",
+      "keywords": [
+        "rc cars",
+        "remotecontrolled trucks",
+        "miniature drones",
+        "model airplanes",
+        "racing drones",
+        "helicopter models"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 277,
+      "level": 1,
+      "name": "meat seafood",
+      "parent_name": "grocery gourmet food",
+      "keywords": [
+        "seafood",
+        "steaks",
+        "fillets",
+        "shellfish",
+        "smoked meats",
+        "cured meats"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 21,
+      "level": 1,
+      "name": "baby toddler toys",
+      "parent_name": "toys games",
+      "keywords": [
+        "rattles",
+        "teethers",
+        "stacking toys",
+        "sensory development",
+        "crib mobiles",
+        "bath toys"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 151,
+      "level": 1,
+      "name": "car seats accessories",
+      "parent_name": "baby products",
+      "keywords": [
+        "head supports",
+        "seat protectors",
+        "sun shades",
+        "seatbelt covers",
+        "car seat organizers",
+        "travel pillows"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 24,
+      "level": 1,
+      "name": "personal care",
+      "parent_name": "health personal care",
+      "keywords": [
+        "skincare",
+        "hair care",
+        "oral care",
+        "grooming products",
+        "bath and body",
+        "feminine hygiene"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 26,
+      "level": 1,
+      "name": "nutrition wellness",
+      "parent_name": "health personal care",
+      "keywords": [
+        "supplements",
+        "dietary habits",
+        "healthy eating",
+        "vitamins",
+        "minerals",
+        "superfoods"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 28,
+      "level": 1,
+      "name": "learning education",
+      "parent_name": "toys games",
+      "keywords": [
+        "educational books",
+        "stem kits",
+        "science experiments",
+        "language learning tools",
+        "math manipulatives",
+        "educational software"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 30,
+      "level": 1,
+      "name": "electronics for kids",
+      "parent_name": "toys games",
+      "keywords": [
+        "circuit kits",
+        "stem projects",
+        "electronic building blocks",
+        "robotic kits",
+        "coding toys",
+        "science experiments"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 31,
+      "level": 1,
+      "name": "household supplies",
+      "parent_name": "health personal care",
+      "keywords": [
+        "cleaning products",
+        "kitchen utensils",
+        "laundry detergent",
+        "home organization",
+        "paper towels",
+        "garbage bags"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 288,
+      "level": 1,
+      "name": "baby food",
+      "parent_name": "grocery gourmet food",
+      "keywords": [
+        "infant formula",
+        "baby cereal",
+        "organic baby food",
+        "baby snacks",
+        "baby puree",
+        "teething biscuits"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 160,
+      "level": 1,
+      "name": "strollers",
+      "parent_name": "baby products",
+      "keywords": [
+        "lightweight",
+        "jogging",
+        "double",
+        "travel system",
+        "umbrella",
+        "allterrain"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 34,
+      "level": 1,
+      "name": "stuffed animals plush",
+      "parent_name": "toys games",
+      "keywords": [
+        "soft plush toys",
+        "cuddly stuffed animals",
+        "animal plushies",
+        "plush teddy bears",
+        "stuffed fantasy creatures",
+        "cartoon character plushies"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 35,
+      "level": 1,
+      "name": "tricycles",
+      "parent_name": "toys games",
+      "keywords": [
+        "handlebar grips",
+        "adjustable seat",
+        "safety harness",
+        "push handle",
+        "storage basket",
+        "pedalpowered"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 162,
+      "level": 1,
+      "name": "pregnancy maternity",
+      "parent_name": "baby products",
+      "keywords": [
+        "maternity clothing",
+        "prenatal vitamins",
+        "pregnancy pillows",
+        "maternity support belts",
+        "belly bands",
+        "maternity bras"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 38,
+      "level": 1,
+      "name": "health care",
+      "parent_name": "health personal care",
+      "keywords": [
+        "pharmaceuticals",
+        "medical devices",
+        "health insurance",
+        "healthcare services",
+        "telemedicine",
+        "hospital equipment"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 296,
+      "level": 1,
+      "name": "fish aquatic pets",
+      "parent_name": "pet supplies",
+      "keywords": [
+        "aquarium",
+        "tropical fish",
+        "freshwater fish",
+        "saltwater fish",
+        "fish tank",
+        "fish food"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 41,
+      "level": 1,
+      "name": "gear",
+      "parent_name": "baby products",
+      "keywords": [
+        "swings",
+        "carriers",
+        "playards",
+        "bouncers",
+        "walkers",
+        "jumpers"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 170,
+      "level": 1,
+      "name": "cats",
+      "parent_name": "pet supplies",
+      "keywords": [
+        "feline nutrition",
+        "scratching posts",
+        "litter boxes",
+        "cat toys",
+        "grooming supplies",
+        "cat trees"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 426,
+      "level": 1,
+      "name": "bunny rabbit central",
+      "parent_name": "pet supplies",
+      "keywords": [
+        "rabbit hutches",
+        "rabbit food",
+        "rabbit toys",
+        "rabbit grooming supplies",
+        "rabbit litter",
+        "rabbit hay"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 44,
+      "level": 1,
+      "name": "skin care",
+      "parent_name": "beauty",
+      "keywords": [
+        "moisturizer",
+        "sunscreen",
+        "exfoliator",
+        "serum",
+        "acne treatment",
+        "facial mask"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 50,
+      "level": 1,
+      "name": "grown up toys",
+      "parent_name": "toys games",
+      "keywords": [
+        "adult novelty items",
+        "sexual wellness products",
+        "intimate accessories",
+        "bedroom essentials",
+        "sensual gadgets",
+        "pleasure devices"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 51,
+      "level": 1,
+      "name": "dress up pretend play",
+      "parent_name": "toys games",
+      "keywords": [
+        "costumes",
+        "roleplaying",
+        "imagination",
+        "dressup accessories",
+        "fantasy play",
+        "character costumes"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 53,
+      "level": 1,
+      "name": "novelty gag toys",
+      "parent_name": "toys games",
+      "keywords": [
+        "prank items",
+        "joke gadgets",
+        "humorous novelties",
+        "funny gifts",
+        "gag gifts",
+        "novelty props"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 54,
+      "level": 1,
+      "name": "bath body",
+      "parent_name": "beauty",
+      "keywords": [
+        "shower gel",
+        "bath salts",
+        "exfoliating scrubs",
+        "bath bombs",
+        "body lotion",
+        "body wash"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 311,
+      "level": 1,
+      "name": "small animals",
+      "parent_name": "pet supplies",
+      "keywords": [
+        "hamster",
+        "guinea pig",
+        "gerbil",
+        "chinchilla",
+        "hedgehog",
+        "ferret"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 184,
+      "level": 1,
+      "name": "potty training",
+      "parent_name": "baby products",
+      "keywords": [
+        "training pants",
+        "toilet training",
+        "toilet seat",
+        "toilet trainer",
+        "potty chair",
+        "potty seat"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 313,
+      "level": 1,
+      "name": "dairy eggs",
+      "parent_name": "grocery gourmet food",
+      "keywords": [
+        "cheese",
+        "milk",
+        "yogurt",
+        "butter",
+        "cream",
+        "eggs"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 60,
+      "level": 1,
+      "name": "tools accessories",
+      "parent_name": "beauty",
+      "keywords": [
+        "nail tools",
+        "grooming kits",
+        "shaving accessories",
+        "hair styling tools",
+        "manicure sets",
+        "beard grooming tools"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 64,
+      "level": 1,
+      "name": "hair care",
+      "parent_name": "beauty",
+      "keywords": [
+        "shampoo",
+        "conditioner",
+        "hair mask",
+        "hair oil",
+        "hair serum",
+        "hair styling"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 199,
+      "level": 1,
+      "name": "dogs",
+      "parent_name": "pet supplies",
+      "keywords": [
+        "dog food",
+        "dog toys",
+        "dog grooming",
+        "dog training",
+        "dog beds",
+        "dog collars"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 74,
+      "level": 1,
+      "name": "medical supplies equipment",
+      "parent_name": "health personal care",
+      "keywords": [
+        "diagnostic equipment",
+        "surgical instruments",
+        "laboratory supplies",
+        "emergency medical supplies",
+        "medical imaging devices",
+        "mobility aids"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 76,
+      "level": 1,
+      "name": "baby child care",
+      "parent_name": "health personal care",
+      "keywords": [
+        "diaper rash cream",
+        "teething toys",
+        "baby wipes",
+        "nursery decor",
+        "baby monitors",
+        "breastfeeding accessories"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 208,
+      "level": 1,
+      "name": "gourmet gifts",
+      "parent_name": "grocery gourmet food",
+      "keywords": [
+        " specialty cheeses artisanal chocolates gourmet nuts premium olive oils imported wines handcrafted confections luxurious truffles exotic spices decadent desserts elegant gift baskets"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 337,
+      "level": 1,
+      "name": "birds",
+      "parent_name": "pet supplies",
+      "keywords": [
+        "aviaries",
+        "perches",
+        "bird feeders",
+        "bird baths",
+        "bird cages",
+        "bird toys"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 211,
+      "level": 1,
+      "name": "sauces dips",
+      "parent_name": "grocery gourmet food",
+      "keywords": [
+        "condiments",
+        "flavor enhancers",
+        "party snacks",
+        "appetizers",
+        "dipping sauces",
+        "spicy condiments"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 213,
+      "level": 1,
+      "name": "breakfast foods",
+      "parent_name": "grocery gourmet food",
+      "keywords": [
+        "cereal",
+        "oatmeal",
+        "granola",
+        "pancakes",
+        "waffles",
+        "breakfast bars"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 85,
+      "level": 1,
+      "name": "building toys",
+      "parent_name": "toys games",
+      "keywords": [
+        "construction sets",
+        "building blocks",
+        "architectural toys",
+        "magnetic tiles",
+        "wooden blocks",
+        "marble runs"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 216,
+      "level": 1,
+      "name": "pantry staples",
+      "parent_name": "grocery gourmet food",
+      "keywords": [
+        "canned goods",
+        "grains",
+        "pasta",
+        "rice",
+        "beans",
+        "condiments"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 218,
+      "level": 1,
+      "name": "cooking baking supplies",
+      "parent_name": "grocery gourmet food",
+      "keywords": [
+        "baking sheets",
+        "cake decorating tools",
+        "pastry brushes",
+        "rolling pins",
+        "cookie cutters",
+        "silicone baking mats"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 220,
+      "level": 1,
+      "name": "fragrance",
+      "parent_name": "beauty",
+      "keywords": [
+        "perfume",
+        "cologne",
+        "scent",
+        "aroma",
+        "eau de toilette",
+        "fragrance oil"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 100,
+      "level": 1,
+      "name": "gifts",
+      "parent_name": "baby products",
+      "keywords": [
+        "toys",
+        "personalized items",
+        "keepsakes",
+        "gift baskets",
+        "decorative items",
+        "greeting cards"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 229,
+      "level": 1,
+      "name": "fresh flowers live indoor plants",
+      "parent_name": "grocery gourmet food",
+      "keywords": [
+        "potted plants",
+        "floral arrangements",
+        "succulents",
+        "houseplants",
+        "flowering plants",
+        "orchids"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 357,
+      "level": 1,
+      "name": "produce",
+      "parent_name": "grocery gourmet food",
+      "keywords": [
+        "fruits",
+        "vegetables",
+        "organic",
+        "farmfresh",
+        "seasonal",
+        "grocery delivery"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 105,
+      "level": 1,
+      "name": "sexual wellness",
+      "parent_name": "health personal care",
+      "keywords": [
+        "intimacy aids",
+        "arousal enhancers",
+        "pleasure products",
+        "sexual health supplements",
+        "libido boosters",
+        "erotic accessories"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 111,
+      "level": 1,
+      "name": "sports outdoor play",
+      "parent_name": "toys games",
+      "keywords": [
+        "playhouses",
+        "swing sets",
+        "sandboxes",
+        "outdoor sports equipment",
+        "water toys",
+        "inflatable play structures"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 120,
+      "level": 1,
+      "name": "hobbies",
+      "parent_name": "toys games",
+      "keywords": [
+        " model building",
+        " coin collecting",
+        " stamp collecting",
+        " scrapbooking",
+        " calligraphy",
+        " candle making"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 249,
+      "level": 1,
+      "name": "herbs",
+      "parent_name": "grocery gourmet food",
+      "keywords": [
+        "seasonings",
+        "spices",
+        "herbal remedies",
+        "herbal teas",
+        "culinary herbs",
+        "medicinal herbs"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 255,
+      "level": 1,
+      "name": "breads bakery",
+      "parent_name": "grocery gourmet food",
+      "keywords": [
+        "artisanal breads",
+        "pastries",
+        "croissants",
+        "baguettes",
+        "challah",
+        "sourdough"
+      ],
+      "num_reviews": 14
+    },
+    {
+      "category_id": 2,
+      "level": 2,
+      "name": "jerky",
+      "parent_name": "meat poultry",
+      "keywords": [
+        "beef",
+        "turkey",
+        "chicken",
+        "venison",
+        "buffalo",
+        "kangaroo"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 6,
+      "level": 2,
+      "name": "jigsaw puzzles",
+      "parent_name": "puzzles",
+      "keywords": [
+        "interlocking pieces",
+        "puzzle boards",
+        "puzzle glue",
+        "puzzle storage",
+        "puzzle frames",
+        "puzzle rolls"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 7,
+      "level": 2,
+      "name": "board games",
+      "parent_name": "games",
+      "keywords": [
+        "board game accessories",
+        "strategy games",
+        "cooperative games",
+        "family games",
+        "classic board games",
+        "party games"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 9,
+      "level": 2,
+      "name": "juices",
+      "parent_name": "beverages",
+      "keywords": [
+        "fruit juices",
+        "fresh squeezed",
+        "coldpressed",
+        "organic",
+        "juice blends",
+        "juice cleanse"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 12,
+      "level": 2,
+      "name": "nails",
+      "parent_name": "makeup",
+      "keywords": [
+        "nail polish",
+        "nail art",
+        "nail care",
+        "nail tools",
+        "nail decals",
+        "nail stickers"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 14,
+      "level": 2,
+      "name": "drawing painting supplies",
+      "parent_name": "arts crafts",
+      "keywords": [
+        "paintbrushes",
+        "canvases",
+        "acrylic paints",
+        "watercolor pencils",
+        "palette knives",
+        "charcoal pencils"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 16,
+      "level": 2,
+      "name": "figures",
+      "parent_name": "action toy figures",
+      "keywords": [
+        "collectibles",
+        "poseable",
+        "limited edition",
+        "display",
+        "articulation",
+        "character replicas"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 18,
+      "level": 2,
+      "name": "dolls",
+      "parent_name": "dolls accessories",
+      "keywords": [
+        "barbie dolls",
+        "rag dolls",
+        "porcelain dolls",
+        "collectible dolls",
+        "baby dolls",
+        "vintage dolls"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 19,
+      "level": 2,
+      "name": "card games",
+      "parent_name": "games",
+      "keywords": [
+        "deckbuilding games",
+        "solitaire",
+        "bluffing games",
+        "tricktaking games",
+        "shedding games",
+        "party card games"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 20,
+      "level": 2,
+      "name": "drawing sketching tablets",
+      "parent_name": "arts crafts",
+      "keywords": [
+        "pen pressure sensitivity",
+        "digital art",
+        "stylus compatibility",
+        "multitouch support",
+        "screen resolution",
+        "battery life"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 22,
+      "level": 2,
+      "name": "shape sorters",
+      "parent_name": "baby toddler toys",
+      "keywords": [
+        "sorting shapes",
+        "educational toys",
+        "fine motor skills",
+        "cognitive development",
+        "geometric shapes",
+        "sensory exploration"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 25,
+      "level": 2,
+      "name": "deodorants antiperspirants",
+      "parent_name": "personal care",
+      "keywords": [
+        "aluminumfree",
+        "clinical strength",
+        "rollon",
+        "spray",
+        "natural deodorant",
+        "sweat protection"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 27,
+      "level": 2,
+      "name": "nutrition bars drinks",
+      "parent_name": "nutrition wellness",
+      "keywords": [
+        "protein bars",
+        "meal replacement shakes",
+        "energy bars",
+        "protein shakes",
+        "snack bars",
+        "meal replacement bars"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 29,
+      "level": 2,
+      "name": "habitats",
+      "parent_name": "learning education",
+      "keywords": [
+        "wildlife",
+        "environment",
+        "ecosystems",
+        "animals",
+        "conservation",
+        "nature"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 32,
+      "level": 2,
+      "name": "household batteries",
+      "parent_name": "household supplies",
+      "keywords": [
+        "rechargeable batteries",
+        "alkaline batteries",
+        "lithium batteries",
+        "button cell batteries",
+        "battery chargers",
+        "battery organizers"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 33,
+      "level": 2,
+      "name": "push pull toys",
+      "parent_name": "baby toddler toys",
+      "keywords": [
+        "wagons",
+        "walkers",
+        "pull along toys",
+        "push cars",
+        "push carts",
+        "push trains"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 36,
+      "level": 2,
+      "name": "scooters wagons",
+      "parent_name": "tricycles",
+      "keywords": [
+        "handlebar",
+        "collapsible",
+        "foot brake",
+        "adjustable height",
+        "cargo space",
+        "steering mechanism"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 37,
+      "level": 2,
+      "name": "clay dough",
+      "parent_name": "arts crafts",
+      "keywords": [
+        "modeling clay",
+        "playdough",
+        "sculpting tools",
+        "clay cutter",
+        "air dry clay",
+        "polymer clay"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 39,
+      "level": 2,
+      "name": "allergy",
+      "parent_name": "health care",
+      "keywords": [
+        "allergy relief",
+        "allergen",
+        "antihistamine",
+        "nasal congestion",
+        "allergic reaction",
+        "pollen"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 42,
+      "level": 2,
+      "name": "baby gyms playmats",
+      "parent_name": "gear",
+      "keywords": [
+        " sensory toys",
+        " tummy time support",
+        " interactive playmats",
+        " developmental activities",
+        " soft padding",
+        " hanging toys"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 43,
+      "level": 2,
+      "name": "shaving hair removal",
+      "parent_name": "personal care",
+      "keywords": [
+        "electric shavers",
+        "waxing kits",
+        "epilators",
+        "beard trimmers",
+        "hair removal creams",
+        "safety razors"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 44,
+      "level": 2,
+      "name": "skin care",
+      "parent_name": "beauty",
+      "keywords": [
+        "moisturizer",
+        "sunscreen",
+        "exfoliator",
+        "serum",
+        "acne treatment",
+        "facial mask"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 45,
+      "level": 2,
+      "name": "face",
+      "parent_name": "makeup",
+      "keywords": [
+        "moisturizers",
+        "serums",
+        "facial cleansers",
+        "toners",
+        "exfoliators",
+        "face masks"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 46,
+      "level": 2,
+      "name": "animals figures",
+      "parent_name": "stuffed animals plush",
+      "keywords": [
+        "action figures",
+        "animal figurines",
+        "wildlife figurines",
+        "collectible animal figures",
+        "dinosaur figures",
+        "farm animal figures"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 47,
+      "level": 2,
+      "name": "feminine care",
+      "parent_name": "personal care",
+      "keywords": [
+        "menstrual hygiene products",
+        "sanitary pads",
+        "tampons",
+        "menstrual cups",
+        "period panties",
+        "vaginal wipes"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 48,
+      "level": 2,
+      "name": "music sound",
+      "parent_name": "baby toddler toys",
+      "keywords": [
+        "musical instruments",
+        "headphones",
+        "speakers",
+        "mp3 players",
+        "vinyl records",
+        "cds"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 49,
+      "level": 2,
+      "name": "oral hygiene",
+      "parent_name": "personal care",
+      "keywords": [
+        "toothpaste",
+        "mouthwash",
+        "dental floss",
+        "toothbrush",
+        "dental picks",
+        "tongue scraper"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 52,
+      "level": 2,
+      "name": "pretend play",
+      "parent_name": "dress up pretend play",
+      "keywords": [
+        "roleplaying",
+        "imaginary scenarios",
+        "creative storytelling",
+        "toy kitchens",
+        "dollhouses",
+        "action figures"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 55,
+      "level": 2,
+      "name": "cleansers",
+      "parent_name": "bath body",
+      "keywords": [
+        "facial cleansers",
+        "foaming cleansers",
+        "gel cleansers",
+        "oil cleansers",
+        "micellar water",
+        "cleansing balms"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 56,
+      "level": 2,
+      "name": "playsets",
+      "parent_name": "action toy figures",
+      "keywords": [
+        "playhouses",
+        "vehicles",
+        "buildings",
+        "scenery",
+        "landscapes",
+        "environments"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 57,
+      "level": 2,
+      "name": "d puzzles",
+      "parent_name": "puzzles",
+      "keywords": [
+        "3d wooden puzzles",
+        "cubic puzzles",
+        "mechanical puzzles",
+        "crystal puzzles",
+        "puzzle spheres",
+        "interlocking puzzles"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 58,
+      "level": 2,
+      "name": "dollhouses",
+      "parent_name": "dolls accessories",
+      "keywords": [
+        "miniature furniture",
+        "scale models",
+        "architectural design",
+        "interior decoration",
+        "dollhouse kits",
+        "diy crafts"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 59,
+      "level": 2,
+      "name": "lip care products",
+      "parent_name": "personal care",
+      "keywords": [
+        "moisturizing",
+        "lip balm",
+        "spf protection",
+        "chapped lips",
+        "exfoliation",
+        "tinted lip balms"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 61,
+      "level": 2,
+      "name": "nail tools",
+      "parent_name": "tools accessories",
+      "keywords": [
+        "nail clippers",
+        "cuticle pushers",
+        "nail files",
+        "nail polish remover",
+        "nail art brushes",
+        "nail buffer blocks"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 62,
+      "level": 2,
+      "name": "eye care",
+      "parent_name": "personal care",
+      "keywords": [
+        "eye drops",
+        "contact lenses",
+        "eye vitamins",
+        "eyeglasses",
+        "eye masks",
+        "eye cream"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 63,
+      "level": 2,
+      "name": "pill cases splitters",
+      "parent_name": "health care",
+      "keywords": [
+        "medication organizers",
+        "pill splitters",
+        "portable pill cases",
+        "pill storage containers",
+        "weekly pill organizers",
+        "pill divider"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 65,
+      "level": 2,
+      "name": "styling products",
+      "parent_name": "hair care",
+      "keywords": [
+        "hair gel",
+        "hair wax",
+        "hair pomade",
+        "hair mousse",
+        "hair spray",
+        "texture spray"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 66,
+      "level": 2,
+      "name": "electronic toys",
+      "parent_name": "electronics for kids",
+      "keywords": [
+        "remote control cars",
+        "drones",
+        "robotic toys",
+        "educational electronic toys",
+        "interactive toys",
+        "rc helicopters"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 67,
+      "level": 2,
+      "name": "body",
+      "parent_name": "makeup",
+      "keywords": [
+        "body lotion",
+        "body wash",
+        "body scrub",
+        "body butter",
+        "body oil",
+        "body mist"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 68,
+      "level": 2,
+      "name": "toy balls",
+      "parent_name": "novelty gag toys",
+      "keywords": [
+        "bounce balls",
+        "sports balls",
+        "rubber balls",
+        "plush balls",
+        "sensory balls",
+        "juggling balls"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 69,
+      "level": 2,
+      "name": "eyes",
+      "parent_name": "makeup",
+      "keywords": [
+        "eyeshadow",
+        "mascara",
+        "eyeliner",
+        "eye primer",
+        "false lashes",
+        "eyebrow pencil"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 70,
+      "level": 2,
+      "name": "trading card games",
+      "parent_name": "games",
+      "keywords": [
+        "booster packs",
+        "deck building",
+        "competitive play",
+        "trading card singles",
+        "collectible cards",
+        "expansion sets"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 71,
+      "level": 2,
+      "name": "foot care",
+      "parent_name": "personal care",
+      "keywords": [
+        "callus remover",
+        "foot cream",
+        "foot scrub",
+        "foot soak",
+        "blister treatment",
+        "foot file"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 72,
+      "level": 2,
+      "name": "hands nails",
+      "parent_name": "skin care",
+      "keywords": [
+        "cuticle oil",
+        "nail strengthener",
+        "hand cream",
+        "nail file",
+        "nail polish remover",
+        "nail buffer"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 73,
+      "level": 2,
+      "name": "sun",
+      "parent_name": "skin care",
+      "keywords": [
+        "sunscreen",
+        "spf",
+        "uv protection",
+        "sunburn",
+        "tan",
+        "sunblock"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 75,
+      "level": 2,
+      "name": "daily living aids",
+      "parent_name": "medical supplies equipment",
+      "keywords": [
+        "adaptive clothing",
+        "kitchen utensil aids",
+        "gripping aids",
+        "hearing amplifiers",
+        "vision aids",
+        "ergonomic furniture"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 77,
+      "level": 2,
+      "name": "paper plastic",
+      "parent_name": "household supplies",
+      "keywords": [
+        "disposable cups",
+        "food storage bags",
+        "trash bags",
+        "plastic utensils",
+        "paper towels",
+        "plastic wrap"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 78,
+      "level": 2,
+      "name": "incontinence",
+      "parent_name": "health care",
+      "keywords": [
+        "adult diapers",
+        "bladder control pads",
+        "incontinence briefs",
+        "absorbent undergarments",
+        "urinary incontinence products",
+        "incontinence pads for men"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 79,
+      "level": 2,
+      "name": "shampoos",
+      "parent_name": "hair care",
+      "keywords": [
+        "cleansing agents",
+        "hair hygiene",
+        "lathering agents",
+        "scalp care",
+        "dandruff control",
+        "sulfatefree"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 80,
+      "level": 2,
+      "name": "conditioners",
+      "parent_name": "hair care",
+      "keywords": [
+        "moisturizing",
+        "hydrating",
+        "nourishing",
+        "detangling",
+        "smoothing",
+        "frizz control"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 81,
+      "level": 2,
+      "name": "music players karaoke",
+      "parent_name": "electronics for kids",
+      "keywords": [
+        "microphone stand",
+        "vocal effects",
+        "song library",
+        "dual microphone",
+        "pitch correction",
+        "recording function"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 82,
+      "level": 2,
+      "name": "cough cold",
+      "parent_name": "health care",
+      "keywords": [
+        "cough syrup",
+        "cold medicine",
+        "flu remedies",
+        "chest congestion",
+        "throat lozenges",
+        "nasal decongestants"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 83,
+      "level": 2,
+      "name": "bath",
+      "parent_name": "bath body",
+      "keywords": [
+        "bath bombs",
+        "bubble bath",
+        "bath salts",
+        "bath oils",
+        "bath soaps",
+        "bath fizzies"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 84,
+      "level": 2,
+      "name": "tests",
+      "parent_name": "medical supplies equipment",
+      "keywords": [
+        "diagnostic kits",
+        "laboratory testing",
+        "rapid tests",
+        "screening tests",
+        "blood tests",
+        "genetic testing"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 86,
+      "level": 2,
+      "name": "building sets",
+      "parent_name": "building toys",
+      "keywords": [
+        "modular construction",
+        "construction kits",
+        "building bricks",
+        "creative building",
+        "engineering toys",
+        "construction toys"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 87,
+      "level": 2,
+      "name": "stress reduction",
+      "parent_name": "health care",
+      "keywords": [
+        "meditation cushions",
+        "stress balls",
+        "aromatherapy diffusers",
+        "mindfulness journals",
+        "relaxation music",
+        "stress relief supplements"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 88,
+      "level": 2,
+      "name": "family planning contraceptives",
+      "parent_name": "health care",
+      "keywords": [
+        "condoms",
+        "birth control pills",
+        "contraceptive implants",
+        "intrauterine devices iuds",
+        "contraceptive patches",
+        "contraceptive injections"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 89,
+      "level": 2,
+      "name": "vitamins supplements",
+      "parent_name": "nutrition wellness",
+      "keywords": [
+        "multivitamins",
+        "dietary supplements",
+        "vitamin d",
+        "vitamin c",
+        "fish oil",
+        "probiotics"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 90,
+      "level": 2,
+      "name": "hair color",
+      "parent_name": "hair care",
+      "keywords": [
+        "permanent hair dye",
+        "semipermanent hair color",
+        "temporary hair color",
+        "hair color remover",
+        "bleach kits",
+        "root touchup kits"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 91,
+      "level": 2,
+      "name": "pain relievers",
+      "parent_name": "health care",
+      "keywords": [
+        "analgesics",
+        "ibuprofen",
+        "acetaminophen",
+        "nsaids",
+        "muscle pain relief",
+        "back pain relief"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 92,
+      "level": 2,
+      "name": "cotton swabs",
+      "parent_name": "tools accessories",
+      "keywords": [
+        "ear cleaning",
+        "hygiene",
+        "medical supplies",
+        "disposable",
+        "precision tips",
+        "makeup removal"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 93,
+      "level": 2,
+      "name": "styling tools",
+      "parent_name": "hair care",
+      "keywords": [
+        "hair dryers",
+        "flat irons",
+        "curling irons",
+        "hot rollers",
+        "styling wands",
+        "hair straightening brushes"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 94,
+      "level": 2,
+      "name": "first aid",
+      "parent_name": "health care",
+      "keywords": [
+        "bandages",
+        "wound care",
+        "cpr masks",
+        "trauma kits",
+        "tourniquets",
+        "first aid manuals"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 95,
+      "level": 2,
+      "name": "scrubs body treatments",
+      "parent_name": "bath body",
+      "keywords": [
+        "exfoliation",
+        "skincare",
+        "exfoliating gloves",
+        "spa treatments",
+        "rejuvenation",
+        "sugar scrubs"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 96,
+      "level": 2,
+      "name": "cleaning tools",
+      "parent_name": "household supplies",
+      "keywords": [
+        "sponges",
+        "mops",
+        "brooms",
+        "scrub brushes",
+        "dusters",
+        "dustpans"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 97,
+      "level": 2,
+      "name": "pegged puzzles",
+      "parent_name": "puzzles",
+      "keywords": [
+        "wooden peg puzzles",
+        "toddler peg puzzles",
+        "educational peg puzzles",
+        "animal peg puzzles",
+        "shape sorting peg puzzles",
+        "fine motor skills peg puzzles"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 98,
+      "level": 2,
+      "name": "diabetes",
+      "parent_name": "health care",
+      "keywords": [
+        "glucose monitoring",
+        "insulin pumps",
+        "diabetic neuropathy",
+        "blood sugar levels",
+        "diabetic retinopathy",
+        "insulin resistance"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 99,
+      "level": 2,
+      "name": "magic kits accessories",
+      "parent_name": "novelty gag toys",
+      "keywords": [
+        "wand",
+        "magician hat",
+        "card deck",
+        "disappearing cloth",
+        "magic wand holder",
+        "magic book"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 101,
+      "level": 2,
+      "name": "albums",
+      "parent_name": "gifts",
+      "keywords": [
+        "photo albums",
+        "scrapbooks",
+        "memory books",
+        "album covers",
+        "photo sleeves",
+        "album refills"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 102,
+      "level": 2,
+      "name": "crib toys attachments",
+      "parent_name": "baby toddler toys",
+      "keywords": [
+        "mobiles",
+        "hanging toys",
+        "sensory toys",
+        "plush characters",
+        "infant stimulation",
+        "developmental toys"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 103,
+      "level": 2,
+      "name": "digestion nausea",
+      "parent_name": "health care",
+      "keywords": [
+        "stomach ache",
+        "indigestion",
+        "vomiting",
+        "acid reflux",
+        "gastric discomfort",
+        "nausea relief"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 104,
+      "level": 2,
+      "name": "electronic pets",
+      "parent_name": "electronics for kids",
+      "keywords": [
+        "virtual companions",
+        "interactive pets",
+        "digital critters",
+        "robotic pets",
+        "cyber pets",
+        "ai companions"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 106,
+      "level": 2,
+      "name": "safer sex",
+      "parent_name": "sexual wellness",
+      "keywords": [
+        "condoms",
+        "lubricants",
+        "dental dams",
+        "contraceptive pills",
+        "hiv testing kits",
+        "std prevention"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 107,
+      "level": 2,
+      "name": "thermometers",
+      "parent_name": "health care",
+      "keywords": [
+        "oral thermometer",
+        "digital thermometer",
+        "infrared thermometer",
+        "temporal thermometer",
+        "ear thermometer",
+        "rectal thermometer"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 108,
+      "level": 2,
+      "name": "stacking nesting toys",
+      "parent_name": "baby toddler toys",
+      "keywords": [
+        "colorful",
+        "educational",
+        "fine motor skills",
+        "sensory development",
+        "wooden",
+        "stacking rings"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 109,
+      "level": 2,
+      "name": "makeup remover",
+      "parent_name": "makeup",
+      "keywords": [
+        " cleansing oil",
+        "micellar water",
+        "makeup wipes",
+        "cleansing balm",
+        "makeup remover pads",
+        "oilfree makeup remover"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 110,
+      "level": 2,
+      "name": "temporary tattoos",
+      "parent_name": "novelty gag toys",
+      "keywords": [
+        "sticker tattoos",
+        "metallic tattoos",
+        "glitter tattoos",
+        "watercolor tattoos",
+        "henna tattoos",
+        "body art"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 112,
+      "level": 2,
+      "name": "play tents tunnels",
+      "parent_name": "sports outdoor play",
+      "keywords": [
+        "popup tents",
+        "indoor playhouses",
+        "adventure crawl tunnels",
+        "teepee tents",
+        "play tunnels",
+        "play forts"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 113,
+      "level": 2,
+      "name": "science",
+      "parent_name": "learning education",
+      "keywords": [
+        "experiments",
+        "chemistry sets",
+        "physics kits",
+        "biology models",
+        "scientific instruments",
+        "microscopes"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 114,
+      "level": 2,
+      "name": "sports",
+      "parent_name": "sports outdoor play",
+      "keywords": [
+        "athletic apparel",
+        "sports equipment",
+        "team sports",
+        "individual sports",
+        "sporting goods",
+        "outdoor sports"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 115,
+      "level": 2,
+      "name": "bath toys",
+      "parent_name": "baby toddler toys",
+      "keywords": [
+        "water squirters",
+        "floating toys",
+        "bath books",
+        "bath puzzles",
+        "bath crayons",
+        "bath boats"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 116,
+      "level": 2,
+      "name": "puppets",
+      "parent_name": "stuffed animals plush",
+      "keywords": [
+        "hand puppets",
+        "finger puppets",
+        "puppet theaters",
+        "marionettes",
+        "puppet shows",
+        "puppetry"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 117,
+      "level": 2,
+      "name": "systems accessories",
+      "parent_name": "electronics for kids",
+      "keywords": [
+        "controllers",
+        "charging docks",
+        "cables",
+        "headsets",
+        "carrying cases",
+        "screen protectors"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 118,
+      "level": 2,
+      "name": "health monitors",
+      "parent_name": "medical supplies equipment",
+      "keywords": [
+        "blood pressure monitors",
+        "heart rate monitors",
+        "pulse oximeters",
+        "glucose monitors",
+        "sleep trackers",
+        "activity trackers"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 119,
+      "level": 2,
+      "name": "inflatable bouncers",
+      "parent_name": "sports outdoor play",
+      "keywords": [
+        "bounce houses",
+        "inflatable slides",
+        "inflatable obstacle courses",
+        "inflatable water slides",
+        "bounce castle",
+        "inflatable jumpers"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 121,
+      "level": 2,
+      "name": "model building kits tools",
+      "parent_name": "hobbies",
+      "keywords": [
+        "paint brushes",
+        "precision knives",
+        "glue applicators",
+        "sanding blocks",
+        "tweezers",
+        "decal sheets"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 122,
+      "level": 2,
+      "name": "blackboards whiteboards",
+      "parent_name": "arts crafts",
+      "keywords": [
+        "chalk",
+        "markers",
+        "erasers",
+        "magnetic boards",
+        "dry erase boards",
+        "chalkboard paint"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 123,
+      "level": 2,
+      "name": "pools water fun",
+      "parent_name": "sports outdoor play",
+      "keywords": [
+        "pool floats",
+        "water slides",
+        "pool noodles",
+        "pool toys",
+        "swim goggles",
+        "pool maintenance"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 124,
+      "level": 2,
+      "name": "rattles",
+      "parent_name": "baby toddler toys",
+      "keywords": [
+        "colorful",
+        "sensory stimulation",
+        "grasping handles",
+        "soft textures",
+        "developmental aid",
+        "animal designs"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 125,
+      "level": 2,
+      "name": "sandboxes accessories",
+      "parent_name": "sports outdoor play",
+      "keywords": [
+        "sandbox covers",
+        "sandbox toys",
+        "sandbox rake",
+        "sandbox shovel",
+        "sandbox canopy",
+        "sandbox liner"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 126,
+      "level": 2,
+      "name": "activity play centers",
+      "parent_name": "baby toddler toys",
+      "keywords": [
+        "activity gyms",
+        "play mats",
+        "sensory toys",
+        "baby jumpers",
+        "activity cubes",
+        "interactive play centers"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 127,
+      "level": 2,
+      "name": "car seat stroller toys",
+      "parent_name": "baby toddler toys",
+      "keywords": [
+        "soft plush",
+        "sensory development",
+        "hanging toys",
+        "car mirror",
+        "travelfriendly",
+        "interactive"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 129,
+      "level": 2,
+      "name": "bottle feeding",
+      "parent_name": "feeding",
+      "keywords": [
+        "nipples",
+        "sterilizers",
+        "formula",
+        "bottle warmers",
+        "bottle brushes",
+        "anticolic bottles"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 130,
+      "level": 2,
+      "name": "breastfeeding",
+      "parent_name": "feeding",
+      "keywords": [
+        "lactation consultants",
+        "nursing bras",
+        "breast pumps",
+        "breast milk storage",
+        "nipple shields",
+        "breastfeeding covers"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 132,
+      "level": 2,
+      "name": "diaper changing kits",
+      "parent_name": "diapering",
+      "keywords": [
+        "changing pad liners",
+        "diaper cream applicators",
+        "travel diaper changing kits",
+        "diaper disposal bags",
+        "diaper changing station organizers",
+        "diaper clutch bags"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 133,
+      "level": 2,
+      "name": "puzzle accessories",
+      "parent_name": "puzzles",
+      "keywords": [
+        "puzzle glue",
+        "puzzle rollup mats",
+        "puzzle storage bags",
+        "puzzle sorting trays",
+        "puzzle frame",
+        "puzzle saver"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 134,
+      "level": 2,
+      "name": "diaper pails refills",
+      "parent_name": "diapering",
+      "keywords": [
+        "odor control",
+        "refill cartridges",
+        "diaper disposal",
+        "nursery essentials",
+        "diaper genie",
+        "diaper pail liners"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 136,
+      "level": 2,
+      "name": "bathroom safety",
+      "parent_name": "safety",
+      "keywords": [
+        "toilet locks",
+        "nonslip mats",
+        "shower grab bars",
+        "bath mats",
+        "faucet covers",
+        "bathtub thermometers"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 137,
+      "level": 2,
+      "name": "massage relaxation",
+      "parent_name": "health care",
+      "keywords": [
+        "aromatherapy",
+        "essential oils",
+        "muscle tension",
+        "spa treatments",
+        "relaxation techniques",
+        "massage chairs"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 138,
+      "level": 2,
+      "name": "gates doorways",
+      "parent_name": "safety",
+      "keywords": [
+        "expandable gates",
+        "pressuremounted gates",
+        "hardwaremounted gates",
+        "retractable gates",
+        "stair gates",
+        "pet gates"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 140,
+      "level": 2,
+      "name": "furniture",
+      "parent_name": "nursery",
+      "keywords": [
+        "living room sets",
+        "dining tables",
+        "sofas",
+        "bookshelves",
+        "coffee tables",
+        "tv stands"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 141,
+      "level": 2,
+      "name": "monitors",
+      "parent_name": "safety",
+      "keywords": [
+        "led",
+        "ips",
+        "refresh rate",
+        "resolution",
+        "hdmi",
+        "display size"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 142,
+      "level": 2,
+      "name": "cloth diapers",
+      "parent_name": "diapering",
+      "keywords": [
+        "organic cotton",
+        "bamboo inserts",
+        "diaper covers",
+        "prefold diapers",
+        "reusable diapers",
+        "diaper liners"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 143,
+      "level": 2,
+      "name": "plush backpacks purses",
+      "parent_name": "stuffed animals plush",
+      "keywords": [
+        "cute designs",
+        "functional storage",
+        "trendy styles",
+        "fashionable accessories",
+        "soft fabric",
+        "adjustable straps"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 144,
+      "level": 2,
+      "name": "statues",
+      "parent_name": "action toy figures",
+      "keywords": [
+        "sculptures",
+        "home decor",
+        "collectibles",
+        "art pieces",
+        "monuments",
+        "religious icons"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 146,
+      "level": 2,
+      "name": "bathing tubs seats",
+      "parent_name": "bathing skin care",
+      "keywords": [
+        "infant bath seats",
+        "toddler bath chairs",
+        "bathing tub rings",
+        "bathtub support seats",
+        "baby bath cradles",
+        "adjustable bath seats"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 148,
+      "level": 2,
+      "name": "play vehicles",
+      "parent_name": "vehicles remote control",
+      "keywords": [
+        "toy cars",
+        "toy trucks",
+        "toy airplanes",
+        "toy helicopters",
+        "toy boats",
+        "toy motorcycles"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 149,
+      "level": 2,
+      "name": "backpacks carriers",
+      "parent_name": "gear",
+      "keywords": [
+        "hiking backpack carriers",
+        "outdoor baby carriers",
+        "infant backpack carriers",
+        "toddler backpack carriers",
+        "ergonomic baby carriers",
+        "lightweight baby carriers"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 150,
+      "level": 2,
+      "name": "craft kits",
+      "parent_name": "arts crafts",
+      "keywords": [
+        "origami kits",
+        "sewing kits",
+        "candle making kits",
+        "jewelry making kits",
+        "embroidery kits",
+        "knitting kits"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 152,
+      "level": 2,
+      "name": "car seats",
+      "parent_name": "car seats accessories",
+      "keywords": [
+        "safety features",
+        "installation",
+        "weight limits",
+        "crash test ratings",
+        "adjustable harness",
+        "side impact protection"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 153,
+      "level": 2,
+      "name": "nursery d cor",
+      "parent_name": "nursery",
+      "keywords": [
+        "wall decals",
+        "wall art",
+        "mobiles",
+        "wall shelves",
+        "rugs",
+        "curtains"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 154,
+      "level": 2,
+      "name": "hammering pounding toys",
+      "parent_name": "baby toddler toys",
+      "keywords": [
+        "wooden hammering toys",
+        "pounding bench",
+        "hammer and peg set",
+        "hammering bench",
+        "pounding toy",
+        "hammering toy set"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 155,
+      "level": 2,
+      "name": "bedding",
+      "parent_name": "nursery",
+      "keywords": [
+        "comforters",
+        "duvet covers",
+        "mattress pads",
+        "pillow shams",
+        "bed skirts",
+        "quilts"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 156,
+      "level": 2,
+      "name": "play trains railway sets",
+      "parent_name": "vehicles remote control",
+      "keywords": [
+        "train tracks",
+        "locomotives",
+        "train stations",
+        "railroad crossings",
+        "miniature landscapes",
+        "signal towers"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 157,
+      "level": 2,
+      "name": "rockets",
+      "parent_name": "hobbies",
+      "keywords": [
+        "propulsion systems",
+        "aerospace engineering",
+        "space exploration",
+        "rocket engines",
+        "launch vehicles",
+        "rocketry enthusiasts"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 158,
+      "level": 2,
+      "name": "stacking blocks",
+      "parent_name": "building toys",
+      "keywords": [
+        "wooden blocks",
+        "magnetic blocks",
+        "colorful stacking blocks",
+        "alphabet blocks",
+        "shape sorting blocks",
+        "nesting blocks"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 159,
+      "level": 2,
+      "name": "diaper bags",
+      "parent_name": "diapering",
+      "keywords": [
+        "backpack diaper bags",
+        "messenger diaper bags",
+        "tote diaper bags",
+        "stylish diaper bags",
+        "diaper bag organizers",
+        "insulated bottle pockets"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 161,
+      "level": 2,
+      "name": "gym sets swings",
+      "parent_name": "sports outdoor play",
+      "keywords": [
+        "monkey bars",
+        "trapeze rings",
+        "climbing ropes",
+        "swing seats",
+        "jungle gym",
+        "backyard playsets"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 163,
+      "level": 2,
+      "name": "maternity pillows",
+      "parent_name": "pregnancy maternity",
+      "keywords": [
+        "pregnancy support pillows",
+        "ushaped maternity pillows",
+        "fullbody maternity pillows",
+        "memory foam maternity pillows",
+        "wedge maternity pillows",
+        "nursing pillows"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 164,
+      "level": 2,
+      "name": "rocking spring ride ons",
+      "parent_name": "baby toddler toys",
+      "keywords": [
+        "plush seat",
+        "animal design",
+        "spring mechanism",
+        "outdoor play",
+        "wooden base",
+        "safety harness"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 165,
+      "level": 2,
+      "name": "braces",
+      "parent_name": "medical supplies equipment",
+      "keywords": [
+        "orthodontic braces",
+        "knee braces",
+        "back braces",
+        "ankle braces",
+        "wrist braces",
+        "posture braces"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 166,
+      "level": 2,
+      "name": "accessories",
+      "parent_name": "action toy figures",
+      "keywords": [
+        "diaper bags",
+        "bottle holders",
+        "stroller organizers",
+        "car seat covers",
+        "pacifier clips",
+        "nursing covers"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 167,
+      "level": 2,
+      "name": "vehicle playsets",
+      "parent_name": "vehicles remote control",
+      "keywords": [
+        "roadway adventure sets",
+        "construction site playsets",
+        "airport terminal playsets",
+        "racing track sets",
+        "offroad exploration playsets",
+        "urban cityscape playsets"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 168,
+      "level": 2,
+      "name": "doll accessories",
+      "parent_name": "dolls accessories",
+      "keywords": [
+        "hairbrushes",
+        "clothing",
+        "shoes",
+        "jewelry",
+        "handbags",
+        "hats"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 171,
+      "level": 2,
+      "name": "litter housebreaking",
+      "parent_name": "cats",
+      "keywords": [
+        "clumping litter",
+        "nonclumping litter",
+        "litter box",
+        "litter scoop",
+        "litter mat",
+        "litter liners"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 172,
+      "level": 2,
+      "name": "spinning tops",
+      "parent_name": "baby toddler toys",
+      "keywords": [
+        "rotation",
+        "gyroscopic motion",
+        "spinning velocity",
+        "balance",
+        "metal spinning tops",
+        "wooden spinning tops"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 173,
+      "level": 2,
+      "name": "sets",
+      "parent_name": "skin care",
+      "keywords": [
+        "fragrance sets",
+        "gift sets",
+        "travel sets",
+        "hair care sets",
+        "grooming sets",
+        "wellness sets"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 174,
+      "level": 2,
+      "name": "travel games",
+      "parent_name": "games",
+      "keywords": [
+        "portable games",
+        "compact games",
+        "onthego games",
+        "pocketsized games",
+        "travelsized games",
+        "mini games"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 175,
+      "level": 2,
+      "name": "pillows stools",
+      "parent_name": "feeding",
+      "keywords": [
+        "supportive cushions",
+        "seating aids",
+        "lumbar pillows",
+        "ergonomic stools",
+        "back support cushions",
+        "posture correctors"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 176,
+      "level": 2,
+      "name": "battling tops",
+      "parent_name": "games",
+      "keywords": [
+        "spinning tops",
+        "battling arenas",
+        "launchers",
+        "battle strategies",
+        "customizable tops",
+        "rip cords"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 177,
+      "level": 2,
+      "name": "cameras camcorders",
+      "parent_name": "electronics for kids",
+      "keywords": [
+        " digital cameras dslr cameras mirrorless cameras action cameras camcorders camera lenses camera tripods camera bags camera accessories photography equipment"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 178,
+      "level": 2,
+      "name": "dance mats",
+      "parent_name": "electronics for kids",
+      "keywords": [
+        "interactive floor pads",
+        "rhythm games",
+        "dance competitions",
+        "sensory integration",
+        "physical activity",
+        "wireless connectivity"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 179,
+      "level": 2,
+      "name": "food",
+      "parent_name": "feeding",
+      "keywords": [
+        "nutritional supplements",
+        "snacks",
+        "canned food",
+        "dry food",
+        "fresh produce",
+        "specialty diets"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 180,
+      "level": 2,
+      "name": "radio control",
+      "parent_name": "hobbies",
+      "keywords": [
+        "remotecontrolled cars",
+        "rc helicopters",
+        "drone racing",
+        "fpv goggles",
+        "transmitter receivers",
+        "brushless motors"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 181,
+      "level": 2,
+      "name": "grooming healthcare kits",
+      "parent_name": "bathing skin care",
+      "keywords": [
+        "nail clippers",
+        "electric toothbrush",
+        "beard grooming set",
+        "hair trimmer",
+        "travelsized grooming kit",
+        "dental floss"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 182,
+      "level": 2,
+      "name": "balls",
+      "parent_name": "baby toddler toys",
+      "keywords": [
+        "bounce",
+        "sports",
+        "inflatable",
+        "sensory",
+        "foam",
+        "rubber"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 183,
+      "level": 2,
+      "name": "tile games",
+      "parent_name": "games",
+      "keywords": [
+        "word games",
+        "tile matching",
+        "tilebased puzzles",
+        "mahjong sets",
+        "domino games",
+        "tangram puzzles"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 185,
+      "level": 2,
+      "name": "potties seats",
+      "parent_name": "potty training",
+      "keywords": [
+        "toddler toilet seats",
+        "portable potty seats",
+        "travel potty chairs",
+        "potty training seats with handles",
+        "adjustable toilet training seats",
+        "nonslip potty seats"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 186,
+      "level": 2,
+      "name": "highchairs booster seats",
+      "parent_name": "feeding",
+      "keywords": [
+        "adjustable height",
+        "safety harness",
+        "removable tray",
+        "portable design",
+        "convertible chair",
+        "easy clean"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 187,
+      "level": 2,
+      "name": "stuffed animals toys",
+      "parent_name": "baby toddler toys",
+      "keywords": [
+        "plush",
+        "cuddly",
+        "soft",
+        "huggable",
+        "adorable",
+        "collectible"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 188,
+      "level": 2,
+      "name": "dvd games",
+      "parent_name": "games",
+      "keywords": [
+        "interactive dvd games",
+        "trivia dvd games",
+        "puzzle dvd games",
+        "educational dvd games",
+        "dvd game shows",
+        "dvd party games"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 189,
+      "level": 2,
+      "name": "edge corner guards",
+      "parent_name": "safety",
+      "keywords": [
+        "furniture protection",
+        "childproofing",
+        "table corners",
+        "furniture edges",
+        "foam guards",
+        "sharp corners"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 190,
+      "level": 2,
+      "name": "basic life skills toys",
+      "parent_name": "learning education",
+      "keywords": [
+        "cooking utensils",
+        "sewing kit",
+        "gardening tools",
+        "household chores set",
+        "first aid kit",
+        "tool set"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 191,
+      "level": 2,
+      "name": "activity centers entertainers",
+      "parent_name": "gear",
+      "keywords": [
+        " interactive toys",
+        " musical activity centers",
+        " activity tables",
+        " multifunctional play centers",
+        " rotating play stations",
+        " sensory exploration centers"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 192,
+      "level": 2,
+      "name": "thermometer accessories",
+      "parent_name": "health care",
+      "keywords": [
+        "probe covers",
+        "thermometer storage case",
+        "thermometer stand",
+        "thermometer calibration kit",
+        "thermometer cleaning wipes",
+        "thermometer battery"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 193,
+      "level": 2,
+      "name": "wipes holders",
+      "parent_name": "diapering",
+      "keywords": [
+        "wipes dispenser",
+        "wipes case",
+        "wipes container",
+        "wipes organizer",
+        "wipes pouch",
+        "wipes clutch"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 194,
+      "level": 2,
+      "name": "gift sets",
+      "parent_name": "feeding",
+      "keywords": [
+        "toys",
+        "clothing",
+        "blankets",
+        "rattles",
+        "books",
+        "picture frames"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 195,
+      "level": 2,
+      "name": "solid feeding",
+      "parent_name": "feeding",
+      "keywords": [
+        "silicone bibs",
+        "baby utensils",
+        "suction plates",
+        "spillproof bowls",
+        "snack containers",
+        "selffeeding spoons"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 196,
+      "level": 2,
+      "name": "joggers",
+      "parent_name": "strollers",
+      "keywords": [
+        "running",
+        "fitness",
+        "outdoors",
+        "exercise",
+        "jogging stroller",
+        "allterrain"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 197,
+      "level": 2,
+      "name": "facial steamers",
+      "parent_name": "tools accessories",
+      "keywords": [
+        "steam settings",
+        "facial hydration",
+        "sinus relief",
+        "aromatherapy attachments",
+        "deep pore cleansing",
+        "nanoionic technology"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 198,
+      "level": 2,
+      "name": "kites wind spinners",
+      "parent_name": "sports outdoor play",
+      "keywords": [
+        "kite string",
+        "windsock",
+        "kite tail",
+        "kite line reel",
+        "wind spinner stake",
+        "dualline kite"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 200,
+      "level": 2,
+      "name": "toys",
+      "parent_name": "cats",
+      "keywords": [
+        "plush toys",
+        "action figures",
+        "board games",
+        "dolls",
+        "building blocks",
+        "puzzles"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 201,
+      "level": 2,
+      "name": "walkers",
+      "parent_name": "gear",
+      "keywords": [
+        "toddler walkers",
+        "mobility aids",
+        "rollators",
+        "elderly walkers",
+        "adjustable walkers",
+        "folding walkers"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 202,
+      "level": 2,
+      "name": "slumber bags",
+      "parent_name": "sports outdoor play",
+      "keywords": [
+        "sleeping bags",
+        "camping gear",
+        "outdoor sleeping",
+        "slumber parties",
+        "camping equipment",
+        "camping accessories"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 203,
+      "level": 2,
+      "name": "die cast vehicles",
+      "parent_name": "vehicles remote control",
+      "keywords": [
+        "collectible models",
+        "scale replicas",
+        "metal cars",
+        "miniature vehicles",
+        "detailed automobiles",
+        "hobbyist cars"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 204,
+      "level": 2,
+      "name": "easels",
+      "parent_name": "arts crafts",
+      "keywords": [
+        "canvas",
+        "adjustable",
+        "studio",
+        "display",
+        "wooden",
+        "tabletop"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 205,
+      "level": 2,
+      "name": "lips",
+      "parent_name": "makeup",
+      "keywords": [
+        "lipstick",
+        "lip gloss",
+        "lip liner",
+        "lip balm",
+        "lip stain",
+        "lip plumper"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 206,
+      "level": 2,
+      "name": "tea",
+      "parent_name": "beverages",
+      "keywords": [
+        "loose leaf",
+        "black tea",
+        "green tea",
+        "herbal tea",
+        "chai tea",
+        "tea bags"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 207,
+      "level": 2,
+      "name": "reading writing",
+      "parent_name": "learning education",
+      "keywords": [
+        "literacy",
+        "language arts",
+        "phonics",
+        "handwriting",
+        "composition",
+        "storytelling"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 209,
+      "level": 2,
+      "name": "snack gifts",
+      "parent_name": "gourmet gifts",
+      "keywords": [
+        "variety packs",
+        "popcorn tins",
+        "nuts assortments",
+        "trail mix bundles",
+        "jerky samplers",
+        "pretzel gift sets"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 210,
+      "level": 2,
+      "name": "stacking games",
+      "parent_name": "games",
+      "keywords": [
+        "building blocks",
+        "tower building",
+        "balancing games",
+        "stacking challenges",
+        "block stacking",
+        "wooden block towers"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 212,
+      "level": 2,
+      "name": "sauces",
+      "parent_name": "sauces dips",
+      "keywords": [
+        "barbecue",
+        "marinades",
+        "hot sauce",
+        "salsa",
+        "teriyaki",
+        "pesto"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 214,
+      "level": 2,
+      "name": "cereals",
+      "parent_name": "breakfast foods",
+      "keywords": [
+        "whole grain",
+        "flakes",
+        "oats",
+        "bran",
+        "wheat",
+        "corn"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 215,
+      "level": 2,
+      "name": "shopping cart covers",
+      "parent_name": "gear",
+      "keywords": [
+        "portable",
+        "cushioned",
+        "adjustable",
+        "germ protection",
+        "washable",
+        "grocery shopping"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 217,
+      "level": 2,
+      "name": "scaled model vehicles",
+      "parent_name": "hobbies",
+      "keywords": [
+        "diecast models",
+        "collectors items",
+        "automotive replicas",
+        "miniature cars",
+        "scale replicas",
+        "display models"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 219,
+      "level": 2,
+      "name": "personal video players accessories",
+      "parent_name": "electronics for kids",
+      "keywords": [
+        "screen protectors",
+        "carrying cases",
+        "headphones",
+        "charging cables",
+        "portable stands",
+        "remote controls"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 221,
+      "level": 2,
+      "name": "women s",
+      "parent_name": "fragrance",
+      "keywords": [
+        "makeup",
+        "skincare",
+        "perfume",
+        "cosmetics",
+        "haircare",
+        "nail polish"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 222,
+      "level": 2,
+      "name": "keepsakes",
+      "parent_name": "gifts",
+      "keywords": [
+        "memory boxes",
+        "personalized ornaments",
+        "handprint kits",
+        "footprint frames",
+        "milestone markers",
+        "baby handprint and footprint keepsakes"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 223,
+      "level": 2,
+      "name": "treats",
+      "parent_name": "cats",
+      "keywords": [
+        "crunchy treats",
+        "soft treats",
+        "dental treats",
+        "natural treats",
+        "freezedried treats",
+        "training treats"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 224,
+      "level": 2,
+      "name": "swings",
+      "parent_name": "gear",
+      "keywords": [
+        " rockers",
+        "bouncers",
+        "infant swing",
+        "outdoor swing",
+        "hammock swing",
+        "porch swing"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 225,
+      "level": 2,
+      "name": "trains accessories",
+      "parent_name": "hobbies",
+      "keywords": [
+        "train tracks",
+        "locomotive engines",
+        "train signals",
+        "train station accessories",
+        "train scenery",
+        "train bridges"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 226,
+      "level": 2,
+      "name": "disposable diapers",
+      "parent_name": "diapering",
+      "keywords": [
+        "absorbency",
+        "leak protection",
+        "diaper rash prevention",
+        "elastic waistband",
+        "wetness indicator",
+        "hypoallergenic materials"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 227,
+      "level": 2,
+      "name": "plug play video games",
+      "parent_name": "electronics for kids",
+      "keywords": [
+        "retro gaming",
+        "arcade classics",
+        "joystick controllers",
+        "hdmi output",
+        "builtin games",
+        "tv gaming"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 228,
+      "level": 2,
+      "name": "floor puzzles",
+      "parent_name": "puzzles",
+      "keywords": [
+        "large pieces",
+        "interlocking pieces",
+        "educational themes",
+        "animal themes",
+        "alphabet puzzles",
+        "number puzzles"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 230,
+      "level": 2,
+      "name": "live indoor plants",
+      "parent_name": "fresh flowers live indoor plants",
+      "keywords": [
+        "succulents",
+        "air plants",
+        "foliage plants",
+        "spider plants",
+        "ferns",
+        "orchids"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 231,
+      "level": 2,
+      "name": "weight loss products",
+      "parent_name": "nutrition wellness",
+      "keywords": [
+        "fat burners",
+        "appetite suppressants",
+        "diet pills",
+        "waist trainers",
+        "meal replacement shakes",
+        "metabolism boosters"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 232,
+      "level": 2,
+      "name": "smoking cessation",
+      "parent_name": "health care",
+      "keywords": [
+        "nicotine replacement therapy",
+        "quit smoking aids",
+        "smoking cessation counseling",
+        "tobacco cessation programs",
+        "nicotine gum",
+        "smoking cessation patches"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 233,
+      "level": 2,
+      "name": "beauty fashion",
+      "parent_name": "dress up pretend play",
+      "keywords": [
+        "makeup brushes",
+        "cosmetic organizers",
+        "skincare sets",
+        "nail polish",
+        "beauty mirrors",
+        "makeup palettes"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 234,
+      "level": 2,
+      "name": "mirrors",
+      "parent_name": "baby toddler toys",
+      "keywords": [
+        "reflective surface",
+        "vanity mirrors",
+        "wall mirrors",
+        "floor mirrors",
+        "decorative mirrors",
+        "handheld mirrors"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 235,
+      "level": 2,
+      "name": "coffee",
+      "parent_name": "beverages",
+      "keywords": [
+        "coffee beans",
+        "espresso",
+        "brewing methods",
+        "coffee roasting",
+        "coffee grinder",
+        "coffee culture"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 236,
+      "level": 2,
+      "name": "cabinet locks straps",
+      "parent_name": "safety",
+      "keywords": [
+        "childproofing",
+        "cabinet safety",
+        "furniture straps",
+        "adhesive locks",
+        "drawer locks",
+        "adjustable straps"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 237,
+      "level": 2,
+      "name": "plush pillows",
+      "parent_name": "stuffed animals plush",
+      "keywords": [
+        "decorative cushions",
+        "soft throw pillows",
+        "novelty pillows",
+        "character pillows",
+        "fluffy cushions",
+        "embroidered pillows"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 238,
+      "level": 2,
+      "name": "floor games",
+      "parent_name": "games",
+      "keywords": [
+        "rug games",
+        "outdoor games",
+        "giant games",
+        "interactive floor games",
+        "party games",
+        "team building games"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 239,
+      "level": 2,
+      "name": "makeup brushes tools",
+      "parent_name": "tools accessories",
+      "keywords": [
+        "blending brushes",
+        "foundation brushes",
+        "contour brushes",
+        "kabuki brushes",
+        "angled brushes",
+        "stippling brushes"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 240,
+      "level": 2,
+      "name": "alternative medicine",
+      "parent_name": "health care",
+      "keywords": [
+        "acupuncture",
+        "herbal remedies",
+        "naturopathy",
+        "chiropractic care",
+        "homeopathy",
+        "aromatherapy"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 241,
+      "level": 2,
+      "name": "changing table pads covers",
+      "parent_name": "diapering",
+      "keywords": [
+        "waterproof",
+        "plush",
+        "soft",
+        "machine washable",
+        "nontoxic",
+        "hypoallergenic"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 242,
+      "level": 2,
+      "name": "men s",
+      "parent_name": "fragrance",
+      "keywords": [
+        "grooming products",
+        "mens skincare",
+        "beard care",
+        "shaving supplies",
+        "cologne",
+        "aftershave"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 243,
+      "level": 2,
+      "name": "step stools",
+      "parent_name": "potty training",
+      "keywords": [
+        "nonslip surface",
+        "adjustable height",
+        "foldable design",
+        "weight capacity",
+        "rubberized feet",
+        "dualstep"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 244,
+      "level": 2,
+      "name": "rails rail guards",
+      "parent_name": "safety",
+      "keywords": [
+        " crib rail protectors",
+        "crib rail covers",
+        "crib teething guards",
+        "crib rail padding",
+        "crib rail shields",
+        "crib rail bumpers"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 245,
+      "level": 2,
+      "name": "laundry",
+      "parent_name": "household supplies",
+      "keywords": [
+        "laundry detergent",
+        "fabric softener",
+        "stain remover",
+        "laundry pods",
+        "bleach",
+        "laundry baskets"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 246,
+      "level": 2,
+      "name": "women s health",
+      "parent_name": "health care",
+      "keywords": [
+        "menstrual health",
+        "reproductive health",
+        "prenatal care",
+        "menopause support",
+        "pelvic floor exercises",
+        "breast health"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 247,
+      "level": 2,
+      "name": "standard",
+      "parent_name": "strollers",
+      "keywords": [
+        " folding mechanism adjustable handlebars reclining seat fivepoint harness removable canopy suspension system onehand fold swivel wheels cup holder allterrain tires"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 248,
+      "level": 2,
+      "name": "beds furniture",
+      "parent_name": "cats",
+      "keywords": [
+        "mattresses",
+        "bed frames",
+        "headboards",
+        "nightstands",
+        "bedding sets",
+        "pillows"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 250,
+      "level": 2,
+      "name": "sleep positioners",
+      "parent_name": "safety",
+      "keywords": [
+        "infant sleep aid",
+        "wedge pillow",
+        "baby sleep positioner",
+        "newborn sleep positioner",
+        "antiroll pillow",
+        "sleep positioner wedge"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 251,
+      "level": 2,
+      "name": "health supplies",
+      "parent_name": "cats",
+      "keywords": [
+        "medications",
+        "supplements",
+        "vitamins",
+        "first aid",
+        "grooming tools",
+        "dental care"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 252,
+      "level": 2,
+      "name": "breakfast cereal bars",
+      "parent_name": "breakfast foods",
+      "keywords": [
+        "oats",
+        "granola",
+        "nutritional bars",
+        "energy bars",
+        "fruitfilled bars",
+        "protein bars"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 253,
+      "level": 2,
+      "name": "body art",
+      "parent_name": "personal care",
+      "keywords": [
+        "tattoo ink",
+        "temporary tattoos",
+        "body piercings",
+        "henna tattoos",
+        "tattoo aftercare",
+        "tattoo removal"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 254,
+      "level": 2,
+      "name": "condiments",
+      "parent_name": "pantry staples",
+      "keywords": [
+        "mustard",
+        "ketchup",
+        "relish",
+        "hot sauce",
+        "pickles",
+        "mayonnaise"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 256,
+      "level": 2,
+      "name": "cakes",
+      "parent_name": "breads bakery",
+      "keywords": [
+        "frosting",
+        "layer cakes",
+        "cupcakes",
+        "bundt cakes",
+        "cheesecakes",
+        "wedding cakes"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 257,
+      "level": 2,
+      "name": "dried beans",
+      "parent_name": "pantry staples",
+      "keywords": [
+        "legumes",
+        "pulses",
+        "lentils",
+        "chickpeas",
+        "kidney beans",
+        "black beans"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 258,
+      "level": 2,
+      "name": "household cleaning",
+      "parent_name": "household supplies",
+      "keywords": [
+        "surface cleaners",
+        "allpurpose cleaners",
+        "disinfectants",
+        "glass cleaners",
+        "bathroom cleaners",
+        "kitchen cleaners"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 259,
+      "level": 2,
+      "name": "collars",
+      "parent_name": "cats",
+      "keywords": [
+        "buckle collars",
+        "flea collars",
+        "reflective collars",
+        "gps collars",
+        "personalized collars",
+        "designer collars"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 260,
+      "level": 2,
+      "name": "educational repellents",
+      "parent_name": "cats",
+      "keywords": [
+        "training aids",
+        "behavior modification",
+        "deterrent sprays",
+        "training mats",
+        "electronic deterrents",
+        "ultrasonic devices"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 261,
+      "level": 2,
+      "name": "dessert gifts",
+      "parent_name": "gourmet gifts",
+      "keywords": [
+        "baked goods",
+        "pastry assortments",
+        "confectionery gifts",
+        "dessert sampler",
+        "gourmet desserts",
+        "sweet treats"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 262,
+      "level": 2,
+      "name": "adult toys games",
+      "parent_name": "sexual wellness",
+      "keywords": [
+        "roleplaying games",
+        "erotic dice",
+        "sexy card games",
+        "intimate board games",
+        "couples intimacy kits",
+        "adultthemed puzzles"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 263,
+      "level": 2,
+      "name": "teddy bears",
+      "parent_name": "stuffed animals plush",
+      "keywords": [
+        "cuddly",
+        "collectible",
+        "huggable",
+        "personalized",
+        "limited edition",
+        "vintageinspired"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 264,
+      "level": 2,
+      "name": "therapeutic skin care",
+      "parent_name": "health care",
+      "keywords": [
+        "eczema relief",
+        "psoriasis treatment",
+        "acne management",
+        "dermatitis care",
+        "wound healing",
+        "scar reduction"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 266,
+      "level": 2,
+      "name": "chocolate assortments",
+      "parent_name": "candy chocolate",
+      "keywords": [
+        "gift box",
+        "luxury chocolates",
+        "artisanal chocolates",
+        "gourmet treats",
+        "chocolate sampler",
+        "confectionery assortment"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 267,
+      "level": 2,
+      "name": "sand water tables",
+      "parent_name": "sports outdoor play",
+      "keywords": [
+        "sandbox",
+        "water play",
+        "sensory play",
+        "outdoor activities",
+        "imaginative play",
+        "beach toys"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 268,
+      "level": 2,
+      "name": "slot cars",
+      "parent_name": "hobbies",
+      "keywords": [
+        "racing tracks",
+        "digital slot cars",
+        "analog slot cars",
+        "slot car controllers",
+        "slot car accessories",
+        "slot car sets"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 269,
+      "level": 2,
+      "name": "chocolate",
+      "parent_name": "cooking baking supplies",
+      "keywords": [
+        "cocoa beans",
+        "cocoa butter",
+        "chocolate bars",
+        "truffles",
+        "cocoa powder",
+        "chocolate chips"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 270,
+      "level": 2,
+      "name": "soft drinks",
+      "parent_name": "beverages",
+      "keywords": [
+        "carbonated beverages",
+        "sodas",
+        "cola",
+        "fizzy drinks",
+        "soda pop",
+        "pop"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 272,
+      "level": 2,
+      "name": "chips crisps",
+      "parent_name": "snack food",
+      "keywords": [
+        "potato chips",
+        "tortilla chips",
+        "kettle chips",
+        "veggie chips",
+        "plantain chips",
+        "multigrain chips"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 273,
+      "level": 2,
+      "name": "licorice",
+      "parent_name": "candy chocolate",
+      "keywords": [
+        "black licorice",
+        "red licorice",
+        "twists",
+        "rope",
+        "salty licorice",
+        "soft licorice"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 274,
+      "level": 2,
+      "name": "feeding watering supplies",
+      "parent_name": "cats",
+      "keywords": [
+        "automatic feeders",
+        "water dispensers",
+        "feeding mats",
+        "water fountains",
+        "feeding bowls",
+        "watering cans"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 275,
+      "level": 2,
+      "name": "blasters foam play",
+      "parent_name": "sports outdoor play",
+      "keywords": [
+        "foam blasters",
+        "dart guns",
+        "foam bullets",
+        "nerf guns",
+        "blaster battles",
+        "foam weapon play"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 276,
+      "level": 2,
+      "name": "chocolate bars",
+      "parent_name": "candy chocolate",
+      "keywords": [
+        "dark chocolate",
+        "milk chocolate",
+        "white chocolate",
+        "organic chocolate",
+        "fair trade chocolate",
+        "artisan chocolate"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 278,
+      "level": 2,
+      "name": "wild game fowl",
+      "parent_name": "meat seafood",
+      "keywords": [
+        "pheasant",
+        "quail",
+        "partridge",
+        "grouse",
+        "wild turkey",
+        "duck"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 279,
+      "level": 2,
+      "name": "spices seasonings",
+      "parent_name": "herbs",
+      "keywords": [
+        "cumin powder",
+        "paprika flakes",
+        "garlic salt",
+        "chili seasoning",
+        "curry paste",
+        "turmeric powder"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 280,
+      "level": 2,
+      "name": "cookies",
+      "parent_name": "breads bakery",
+      "keywords": [
+        "chocolate chip",
+        "oatmeal",
+        "sugar",
+        "peanut butter",
+        "macadamia nut",
+        "shortbread"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 281,
+      "level": 2,
+      "name": "training behavior aids",
+      "parent_name": "dogs",
+      "keywords": [
+        "clickers",
+        "leashes",
+        "training pads",
+        "whistles",
+        "training vests",
+        "agility equipment"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 282,
+      "level": 2,
+      "name": "gardening tools",
+      "parent_name": "sports outdoor play",
+      "keywords": [
+        "shovels",
+        "rakes",
+        "pruning shears",
+        "watering cans",
+        "gardening gloves",
+        "trowels"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 283,
+      "level": 2,
+      "name": "bathroom aids safety",
+      "parent_name": "medical supplies equipment",
+      "keywords": [
+        "shower chairs",
+        "grab bars",
+        "toilet safety frames",
+        "nonslip bath mats",
+        "transfer benches",
+        "raised toilet seats"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 284,
+      "level": 2,
+      "name": "pogo sticks hoppers",
+      "parent_name": "sports outdoor play",
+      "keywords": [
+        "bounce height adjustment",
+        "rubber tip grips",
+        "nonslip foot pads",
+        "foldable design",
+        "spring mechanism",
+        "foamcovered handles"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 285,
+      "level": 2,
+      "name": "powdered drink mixes",
+      "parent_name": "beverages",
+      "keywords": [
+        "lemonade mixes",
+        "fruit punch powder",
+        "iced tea mixes",
+        "drink mix packets",
+        "drink powder blends",
+        "instant drink mixes"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 286,
+      "level": 2,
+      "name": "playards",
+      "parent_name": "gear",
+      "keywords": [
+        "portable cribs",
+        "travel playpens",
+        "pack n plays",
+        "toddler play yards",
+        "foldable playpens",
+        "indooroutdoor play yards"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 287,
+      "level": 2,
+      "name": "gag toys practical jokes",
+      "parent_name": "novelty gag toys",
+      "keywords": [
+        "fake vomit",
+        "whoopee cushion",
+        "fart spray",
+        "shocking pen",
+        "fake lottery tickets",
+        "fake cockroach"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 289,
+      "level": 2,
+      "name": "baby formula",
+      "parent_name": "baby food",
+      "keywords": [
+        "infant formula",
+        "powdered formula",
+        "readytofeed formula",
+        "organic formula",
+        "lactosefree formula",
+        "hypoallergenic formula"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 290,
+      "level": 2,
+      "name": "lighters",
+      "parent_name": "household supplies",
+      "keywords": [
+        "flame",
+        "ignition",
+        "butane",
+        "refillable",
+        "windproof",
+        "pocketsized"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 291,
+      "level": 2,
+      "name": "dried fruit raisins",
+      "parent_name": "snack food",
+      "keywords": [
+        "organic",
+        "sundried",
+        "thompson",
+        "seedless",
+        "california",
+        "natural sweetener"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 292,
+      "level": 2,
+      "name": "money banks",
+      "parent_name": "novelty gag toys",
+      "keywords": [
+        "coin banks",
+        "piggy banks",
+        "savings banks",
+        "coin collectors",
+        "money jars",
+        "cash boxes"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 293,
+      "level": 2,
+      "name": "marble runs",
+      "parent_name": "building toys",
+      "keywords": [
+        "marble track",
+        "gravity maze",
+        "marble race",
+        "ball run",
+        "marble coaster",
+        "marble labyrinth"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 294,
+      "level": 2,
+      "name": "game collections",
+      "parent_name": "games",
+      "keywords": [
+        "puzzle collections",
+        "miniature game collections",
+        "strategy game collections",
+        "roleplaying game collections",
+        "electronic game collections",
+        "retro game collections"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 295,
+      "level": 2,
+      "name": "kitchen safety",
+      "parent_name": "safety",
+      "keywords": [
+        "kitchen appliances safety",
+        "stove knob covers",
+        "oven locks",
+        "refrigerator locks",
+        "sink safety guards",
+        "hot surface protectors"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 297,
+      "level": 2,
+      "name": "gum",
+      "parent_name": "candy chocolate",
+      "keywords": [
+        "bubble gum",
+        "sugarfree gum",
+        "mint gum",
+        "cinnamon gum",
+        "novelty gum",
+        "gum balls"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 298,
+      "level": 2,
+      "name": "outdoor safety",
+      "parent_name": "safety",
+      "keywords": [
+        " sun protection gear",
+        "insect repellent",
+        "outdoor first aid kits",
+        "camping safety equipment",
+        "outdoor childproofing supplies",
+        "outdoor safety gates"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 299,
+      "level": 2,
+      "name": "hair nails",
+      "parent_name": "dress up pretend play",
+      "keywords": [
+        "hair accessories",
+        "manicure set",
+        "nail polish",
+        "hair clips",
+        "nail art kit",
+        "hair styling tools"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 300,
+      "level": 2,
+      "name": "aquarium lights",
+      "parent_name": "fish aquatic pets",
+      "keywords": [
+        "led",
+        "lighting spectrum",
+        "timer function",
+        "adjustable brightness",
+        "energyefficient",
+        "waterproof"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 301,
+      "level": 2,
+      "name": "blocks",
+      "parent_name": "baby toddler toys",
+      "keywords": [
+        "building",
+        "construction",
+        "educational",
+        "creativity",
+        "wooden",
+        "magnetic"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 302,
+      "level": 2,
+      "name": "tandem",
+      "parent_name": "strollers",
+      "keywords": [
+        "double stroller",
+        "sidebyside",
+        "inline stroller",
+        "seating configuration",
+        "convertible",
+        "reclining seats"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 303,
+      "level": 2,
+      "name": "occupational physical therapy aids",
+      "parent_name": "medical supplies equipment",
+      "keywords": [
+        "hand therapy balls",
+        "finger splints",
+        "grip strengtheners",
+        "adaptive utensils",
+        "therapy putty",
+        "range of motion tools"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 304,
+      "level": 2,
+      "name": "packaged meals side dishes",
+      "parent_name": "pantry staples",
+      "keywords": [
+        "instant rice",
+        "microwaveable mashed potatoes",
+        "frozen vegetables",
+        "couscous mixes",
+        "quinoa blends",
+        "instant soup mixes"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 305,
+      "level": 2,
+      "name": "indoor climbers play structures",
+      "parent_name": "baby toddler toys",
+      "keywords": [
+        "climbing walls",
+        "indoor playground equipment",
+        "jungle gym",
+        "climbing ropes",
+        "rock climbing holds",
+        "play tunnels"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 306,
+      "level": 2,
+      "name": "pumps filters",
+      "parent_name": "fish aquatic pets",
+      "keywords": [
+        "water pumps",
+        "air pumps",
+        "filter media",
+        "filter cartridges",
+        "filter pads",
+        "filter socks"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 307,
+      "level": 2,
+      "name": "beds accessories",
+      "parent_name": "medical supplies equipment",
+      "keywords": [
+        "mattress toppers",
+        "bedding sets",
+        "bedside tables",
+        "bed rails",
+        "bed skirts",
+        "bed canopies"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 308,
+      "level": 2,
+      "name": "energy drinks",
+      "parent_name": "beverages",
+      "keywords": [
+        "caffeine content",
+        "taurine",
+        "bvitamins",
+        "guarana extract",
+        "ginseng extract",
+        "electrolytes"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 309,
+      "level": 2,
+      "name": "sleep snoring",
+      "parent_name": "health care",
+      "keywords": [
+        "snoring chin strap",
+        "antisnoring mouthpiece",
+        "sleep apnea",
+        "cpap machine",
+        "snoring pillow",
+        "nasal dilators"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 310,
+      "level": 2,
+      "name": "geography",
+      "parent_name": "learning education",
+      "keywords": [
+        "maps",
+        "continents",
+        "countries",
+        "capitals",
+        "landforms",
+        "oceans"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 312,
+      "level": 2,
+      "name": "houses habitats",
+      "parent_name": "small animals",
+      "keywords": [
+        "bedding",
+        "nesting material",
+        "hideouts",
+        "litter boxes",
+        "cage liners",
+        "enclosures"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 314,
+      "level": 2,
+      "name": "cheese",
+      "parent_name": "dairy eggs",
+      "keywords": [
+        "cheddar",
+        "parmesan",
+        "brie",
+        "camembert",
+        "gouda",
+        "feta"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 315,
+      "level": 2,
+      "name": "travel systems",
+      "parent_name": "strollers",
+      "keywords": [
+        "convertible",
+        "car seat",
+        "infant",
+        "detachable",
+        "adjustable",
+        "allinone"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 316,
+      "level": 2,
+      "name": "walkie talkies",
+      "parent_name": "electronics for kids",
+      "keywords": [
+        "twoway radios",
+        "communication devices",
+        "handheld transceivers",
+        "radio communication gadgets",
+        "portable radios",
+        "wireless walkie talkies"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 317,
+      "level": 2,
+      "name": "mobility aids equipment",
+      "parent_name": "medical supplies equipment",
+      "keywords": [
+        "wheelchairs",
+        "walkers",
+        "canes",
+        "crutches",
+        "mobility scooters",
+        "lift chairs"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 318,
+      "level": 2,
+      "name": "sexual enhancers",
+      "parent_name": "sexual wellness",
+      "keywords": [
+        " libido boosters",
+        " performance enhancers",
+        " aphrodisiacs",
+        " erectile dysfunction remedies",
+        " stamina supplements",
+        " arousal gels"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 319,
+      "level": 2,
+      "name": "dips",
+      "parent_name": "sauces dips",
+      "keywords": [
+        "chipotle",
+        "spinach artichoke",
+        "queso",
+        "hummus",
+        "guacamole",
+        "baba ganoush"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 320,
+      "level": 2,
+      "name": "dollhouse accessories",
+      "parent_name": "dolls accessories",
+      "keywords": [
+        "miniature furniture",
+        "tiny decorations",
+        "dollhouse rugs",
+        "scale model appliances",
+        "dollhouse lighting",
+        "small kitchenware"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 321,
+      "level": 2,
+      "name": "party mix",
+      "parent_name": "snack food",
+      "keywords": [
+        "pretzel sticks",
+        "cheese puffs",
+        "party nuts",
+        "snack mix",
+        "chex mix",
+        "cheese balls"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 322,
+      "level": 2,
+      "name": "bathing accessories",
+      "parent_name": "bath body",
+      "keywords": [
+        "towels",
+        "shower caps",
+        "loofahs",
+        "bath brushes",
+        "bath pillows",
+        "bath caddies"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 323,
+      "level": 2,
+      "name": "grooming",
+      "parent_name": "cats",
+      "keywords": [
+        "shampoo",
+        "conditioner",
+        "brushes",
+        "combs",
+        "grooming tools",
+        "clippers"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 324,
+      "level": 2,
+      "name": "baby seats",
+      "parent_name": "gear",
+      "keywords": [
+        "infant car seats",
+        "booster seats",
+        "convertible car seats",
+        "high chairs",
+        "bouncers",
+        "rocking chairs"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 325,
+      "level": 2,
+      "name": "wind up toys",
+      "parent_name": "novelty gag toys",
+      "keywords": [
+        "mechanical movement",
+        "vintage designs",
+        "collectible figurines",
+        "clockwork mechanisms",
+        "animalshaped",
+        "retro nostalgia"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 326,
+      "level": 2,
+      "name": "sensual delights",
+      "parent_name": "sexual wellness",
+      "keywords": [
+        "aromatherapy candles",
+        "massage oils",
+        "luxury bath salts",
+        "silk robes",
+        "satin sheets",
+        "romantic lingerie"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 327,
+      "level": 2,
+      "name": "hot cocoa",
+      "parent_name": "beverages",
+      "keywords": [
+        "chocolatey goodness",
+        "marshmallowtopped indulgence",
+        "winter warmer",
+        "creamy delight",
+        "decadent treat",
+        "cocoa powder blend"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 328,
+      "level": 2,
+      "name": "dishwashing",
+      "parent_name": "household supplies",
+      "keywords": [
+        "detergent",
+        "dishwasher",
+        "sponges",
+        "dish rack",
+        "dish soap",
+        "dishwasher pods"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 329,
+      "level": 2,
+      "name": "carriers strollers",
+      "parent_name": "cats",
+      "keywords": [
+        " pet transporters",
+        "pet carriers",
+        "pet strollers",
+        "portable pet carriers",
+        "dog strollers",
+        "cat carriers"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 330,
+      "level": 2,
+      "name": "flash cards",
+      "parent_name": "learning education",
+      "keywords": [
+        "memory",
+        "language learning",
+        "vocabulary building",
+        "educational tools",
+        "visual aids",
+        "study aids"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 331,
+      "level": 2,
+      "name": "brain teasers",
+      "parent_name": "puzzles",
+      "keywords": [
+        "logic puzzles",
+        "wooden puzzles",
+        "metal puzzles",
+        "iq puzzles",
+        "rubiks cubes",
+        "sudoku puzzles"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 332,
+      "level": 2,
+      "name": "nesting dolls",
+      "parent_name": "novelty gag toys",
+      "keywords": [
+        "matryoshka dolls",
+        "russian nesting dolls",
+        "handpainted nesting dolls",
+        "wooden nesting dolls",
+        "traditional nesting dolls",
+        "collectible nesting dolls"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 333,
+      "level": 2,
+      "name": "test kits",
+      "parent_name": "fish aquatic pets",
+      "keywords": [
+        "testing solutions",
+        "water quality monitoring",
+        "ph testers",
+        "ammonia levels",
+        "nitrate tests",
+        "nitrite levels"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 334,
+      "level": 2,
+      "name": "lightweight",
+      "parent_name": "strollers",
+      "keywords": [
+        "compact",
+        "foldable",
+        "maneuverable",
+        "umbrella",
+        "portable",
+        "reclining"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 335,
+      "level": 2,
+      "name": "hair loss products",
+      "parent_name": "hair care",
+      "keywords": [
+        "hair growth supplements",
+        "scalp massagers",
+        "laser hair growth devices",
+        "hair regrowth treatments",
+        "dht blockers",
+        "hair loss shampoos for menwomen"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 336,
+      "level": 2,
+      "name": "water treatments",
+      "parent_name": "fish aquatic pets",
+      "keywords": [
+        "water conditioners",
+        "water clarifiers",
+        "algae control",
+        "ph stabilizers",
+        "ammonia neutralizers",
+        "chlorine removers"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 338,
+      "level": 2,
+      "name": "hair scalp treatments",
+      "parent_name": "hair care",
+      "keywords": [
+        "scalp exfoliators",
+        "hair masks",
+        "scalp serums",
+        "scalp oils",
+        "scalp brushes",
+        "scalp massagers"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 339,
+      "level": 2,
+      "name": "cages accessories",
+      "parent_name": "birds",
+      "keywords": [
+        "perches",
+        "swings",
+        "cage liners",
+        "cage covers",
+        "nesting materials",
+        "cleaning tools"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 340,
+      "level": 2,
+      "name": "gummy candies",
+      "parent_name": "candy chocolate",
+      "keywords": [
+        "sour",
+        "fruity",
+        "chewy",
+        "bears",
+        "worms",
+        "shapes"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 341,
+      "level": 2,
+      "name": "gummy candy",
+      "parent_name": "candy chocolate",
+      "keywords": [
+        "sour gummy candy",
+        "fruitflavored gummy candy",
+        "novelty gummy candy",
+        "gummy worms",
+        "gummy bears",
+        "vegan gummy candy"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 342,
+      "level": 2,
+      "name": "jerky dried meats",
+      "parent_name": "snack food",
+      "keywords": [
+        "beef jerky",
+        "turkey jerky",
+        "venison jerky",
+        "salmon jerky",
+        "biltong",
+        "kangaroo jerky"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 343,
+      "level": 2,
+      "name": "houses",
+      "parent_name": "dogs",
+      "keywords": [
+        "kennels",
+        "crates",
+        "pens",
+        "shelters",
+        "enclosures",
+        "habitats"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 344,
+      "level": 2,
+      "name": "chocolate truffles",
+      "parent_name": "candy chocolate",
+      "keywords": [
+        "ganache",
+        "cocoa powder dusted",
+        "artisanal",
+        "handcrafted",
+        "cocoa butter",
+        "cocoa solids"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 345,
+      "level": 2,
+      "name": "ear care",
+      "parent_name": "personal care",
+      "keywords": [
+        "earwax removal",
+        "ear drops",
+        "ear cleaning tools",
+        "earplugs",
+        "ear infection treatment",
+        "ear candles"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 346,
+      "level": 2,
+      "name": "milk",
+      "parent_name": "dairy eggs",
+      "keywords": [
+        "pasteurized",
+        "lactosefree",
+        "organic",
+        "nongmo",
+        "skimmed",
+        "condensed"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 347,
+      "level": 2,
+      "name": "pizza crusts",
+      "parent_name": "breads bakery",
+      "keywords": [
+        "dough balls",
+        "thin crust",
+        "glutenfree options",
+        "premade crusts",
+        "woodfired",
+        "cauliflower crust"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 348,
+      "level": 2,
+      "name": "fresh baked cookies",
+      "parent_name": "breads bakery",
+      "keywords": [
+        "chocolate chip",
+        "oatmeal raisin",
+        "sugar cookies",
+        "peanut butter",
+        "snickerdoodle",
+        "macadamia nut"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 349,
+      "level": 2,
+      "name": "hard candies",
+      "parent_name": "candy chocolate",
+      "keywords": [
+        "fruitflavored",
+        "sugarfree",
+        "assorted flavors",
+        "nostalgic",
+        "jawbreakers",
+        "oldfashioned"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 350,
+      "level": 2,
+      "name": "sports supplements",
+      "parent_name": "nutrition wellness",
+      "keywords": [
+        "protein powders",
+        "preworkout supplements",
+        "creatine monohydrate",
+        "branchedchain amino acids bcaas",
+        "glutamine",
+        "testosterone boosters"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 351,
+      "level": 2,
+      "name": "baking mixes",
+      "parent_name": "cooking baking supplies",
+      "keywords": [
+        "cake mixes",
+        "muffin mixes",
+        "bread mixes",
+        "pancake mixes",
+        "cookie mixes",
+        "brownie mixes"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 352,
+      "level": 2,
+      "name": "crackers",
+      "parent_name": "snack food",
+      "keywords": [
+        "cracker snacks",
+        "savory biscuits",
+        "cheese crackers",
+        "wheat crackers",
+        "glutenfree crackers",
+        "whole grain crackers"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 353,
+      "level": 2,
+      "name": "pork rinds",
+      "parent_name": "snack food",
+      "keywords": [
+        "fatback",
+        "cracklins",
+        "chicharrones",
+        "pork skins",
+        "fried pork rinds",
+        "barbecue flavor"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 354,
+      "level": 2,
+      "name": "pasta noodles",
+      "parent_name": "pantry staples",
+      "keywords": [
+        "spaghetti",
+        "linguine",
+        "fettuccine",
+        "penne",
+        "rigatoni",
+        "macaroni"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 355,
+      "level": 2,
+      "name": "trail mix",
+      "parent_name": "snack food",
+      "keywords": [
+        "nuts",
+        "seeds",
+        "almonds",
+        "cashews",
+        "walnuts",
+        "pecans"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 356,
+      "level": 2,
+      "name": "carriers travel products",
+      "parent_name": "dogs",
+      "keywords": [
+        "portable crates",
+        "airlineapproved carriers",
+        "pet travel bags",
+        "car seat carriers",
+        "backpack pet carriers",
+        "pet travel accessories"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 358,
+      "level": 2,
+      "name": "fresh fruits",
+      "parent_name": "produce",
+      "keywords": [
+        "seasonal fruits",
+        "orchard fruits",
+        "citrus fruits",
+        "exotic fruits",
+        "tree fruits",
+        "berries assortment"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 359,
+      "level": 2,
+      "name": "toaster pastries",
+      "parent_name": "breakfast foods",
+      "keywords": [
+        "flavors",
+        "frosting",
+        "filling",
+        "pastry dough",
+        "packaging design",
+        "fruitfilled"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 360,
+      "level": 2,
+      "name": "rice cakes",
+      "parent_name": "snack food",
+      "keywords": [
+        "whole grain",
+        "glutenfree",
+        "low calorie",
+        "flavored",
+        "organic",
+        "multigrain"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 361,
+      "level": 2,
+      "name": "chips",
+      "parent_name": "snack food",
+      "keywords": [
+        "potato chips",
+        "tortilla chips",
+        "corn chips",
+        "vegetable chips",
+        "cheese puffs",
+        "multigrain chips"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 362,
+      "level": 2,
+      "name": "puffed snacks",
+      "parent_name": "snack food",
+      "keywords": [
+        "corn puffs",
+        "cheese puffs",
+        "puff pastry snacks",
+        "puff snack mix",
+        "puffed corn snacks",
+        "rice puffs"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 363,
+      "level": 2,
+      "name": "pretzels",
+      "parent_name": "snack food",
+      "keywords": [
+        "soft pretzels",
+        "pretzel twists",
+        "pretzel rods",
+        "pretzel bites",
+        "pretzel sticks",
+        "pretzel nuggets"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 364,
+      "level": 2,
+      "name": "mathematics counting",
+      "parent_name": "learning education",
+      "keywords": [
+        "numbers",
+        "arithmetic",
+        "addition",
+        "subtraction",
+        "multiplication",
+        "division"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 365,
+      "level": 2,
+      "name": "suckers lollipops",
+      "parent_name": "candy chocolate",
+      "keywords": [
+        "lollipop sticks",
+        "swirl lollipops",
+        "novelty lollipops",
+        "candy canes",
+        "rock candy",
+        "gourmet lollipops"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 366,
+      "level": 2,
+      "name": "popcorn",
+      "parent_name": "snack food",
+      "keywords": [
+        "butter",
+        "microwave",
+        "cinema",
+        "kernels",
+        "movie night",
+        "seasoning"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 367,
+      "level": 2,
+      "name": "toy banks",
+      "parent_name": "gifts",
+      "keywords": [
+        "piggy banks",
+        "coin banks",
+        "savings banks",
+        "money boxes",
+        "novelty banks",
+        "animalshaped banks"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 368,
+      "level": 2,
+      "name": "training pants",
+      "parent_name": "potty training",
+      "keywords": [
+        "diapers",
+        "pullups",
+        "absorbent underwear",
+        "toddler underwear",
+        "potty training pants",
+        "reusable training pants"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 369,
+      "level": 2,
+      "name": "tea gifts",
+      "parent_name": "gourmet gifts",
+      "keywords": [
+        "loose leaf tea",
+        "tea accessories",
+        "tea sampler",
+        "tea set",
+        "tea infuser",
+        "tea gift basket"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 370,
+      "level": 2,
+      "name": "oils",
+      "parent_name": "pantry staples",
+      "keywords": [
+        "extra virgin olive oil",
+        "cooking oil",
+        "essential oils",
+        "coconut oil",
+        "avocado oil",
+        "grapeseed oil"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 371,
+      "level": 2,
+      "name": "aquarium hoods",
+      "parent_name": "fish aquatic pets",
+      "keywords": [
+        "led lighting",
+        "ventilation",
+        "acrylic material",
+        "glass hoods",
+        "custom sizes",
+        "hinge design"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 372,
+      "level": 2,
+      "name": "tortillas",
+      "parent_name": "breads bakery",
+      "keywords": [
+        "corn",
+        "flour",
+        "masa",
+        "tacos",
+        "burritos",
+        "enchiladas"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 373,
+      "level": 2,
+      "name": "cheese gifts",
+      "parent_name": "gourmet gifts",
+      "keywords": [
+        "cheese assortments",
+        "cheese boards",
+        "cheese baskets",
+        "cheese samplers",
+        "artisan cheese gifts",
+        "gourmet cheese gifts"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 374,
+      "level": 2,
+      "name": "doors",
+      "parent_name": "dogs",
+      "keywords": [
+        "locks",
+        "hinges",
+        "thresholds",
+        "weatherstripping",
+        "handles",
+        "security"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 375,
+      "level": 2,
+      "name": "standard playing card decks",
+      "parent_name": "games",
+      "keywords": [
+        "poker cards",
+        "bridge decks",
+        "solitaire decks",
+        "magic tricks",
+        "cardistry",
+        "collectible cards"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 376,
+      "level": 2,
+      "name": "fudge",
+      "parent_name": "candy chocolate",
+      "keywords": [
+        "creamy",
+        "indulgent",
+        "confection",
+        "rich",
+        "decadent",
+        "homemade"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 377,
+      "level": 2,
+      "name": "syrups",
+      "parent_name": "cooking baking supplies",
+      "keywords": [
+        "maple syrup",
+        "pancake syrup",
+        "fruit syrups",
+        "honey syrup",
+        "agave syrup",
+        "corn syrup"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 378,
+      "level": 2,
+      "name": "printing stamping",
+      "parent_name": "arts crafts",
+      "keywords": [
+        "rubber stamps",
+        "ink pads",
+        "stamping blocks",
+        "embossing powder",
+        "stamping ink",
+        "stamping tools"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 379,
+      "level": 2,
+      "name": "toy gift sets",
+      "parent_name": "baby toddler toys",
+      "keywords": [
+        "plush toy sets",
+        "pretend play sets",
+        "building block sets",
+        "vehicle toy sets",
+        "animal figure sets",
+        "doll accessory sets"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 380,
+      "level": 2,
+      "name": "canned jarred food",
+      "parent_name": "pantry staples",
+      "keywords": [
+        "pickles",
+        "canned fruits",
+        "canned vegetables",
+        "soups",
+        "broths",
+        "canned meats"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 381,
+      "level": 2,
+      "name": "fresh vegetables",
+      "parent_name": "produce",
+      "keywords": [
+        "leafy greens",
+        "root vegetables",
+        "cruciferous vegetables",
+        "salad greens",
+        "nightshade vegetables",
+        "starchy vegetables"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 382,
+      "level": 2,
+      "name": "apparel accessories",
+      "parent_name": "dogs",
+      "keywords": [
+        "scarves",
+        "hats",
+        "gloves",
+        "socks",
+        "belts",
+        "sunglasses"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 383,
+      "level": 2,
+      "name": "candy gifts",
+      "parent_name": "gourmet gifts",
+      "keywords": [
+        "candy assortments",
+        "novelty candy",
+        "retro candy",
+        "candy bouquets",
+        "candy subscription boxes",
+        "personalized candy gifts"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 384,
+      "level": 2,
+      "name": "chewing gum",
+      "parent_name": "candy chocolate",
+      "keywords": [
+        "flavor variety",
+        "sugarfree options",
+        "breath freshening",
+        "bubble gum",
+        "oral health",
+        "chewing gum brands"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 385,
+      "level": 2,
+      "name": "puzzle play mats",
+      "parent_name": "puzzles",
+      "keywords": [
+        "foam mats",
+        "interlocking tiles",
+        "childrens playroom",
+        "educational flooring",
+        "soft surface",
+        "colorful designs"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 386,
+      "level": 2,
+      "name": "electrical safety",
+      "parent_name": "safety",
+      "keywords": [
+        "surge protectors",
+        "outlet covers",
+        "electrical cord organizers",
+        "ground fault circuit interrupters gfcis",
+        "electrical outlet testers",
+        "power strip covers"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 387,
+      "level": 2,
+      "name": "sugars sweeteners",
+      "parent_name": "cooking baking supplies",
+      "keywords": [
+        "organic cane sugar",
+        "honey",
+        "agave nectar",
+        "coconut sugar",
+        "stevia drops",
+        "maple sugar"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 388,
+      "level": 2,
+      "name": "marble games",
+      "parent_name": "sports outdoor play",
+      "keywords": [
+        "marbles",
+        "marble runs",
+        "marble mazes",
+        "marble tracks",
+        "marble race games",
+        "marble solitaire"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 389,
+      "level": 2,
+      "name": "miniatures",
+      "parent_name": "novelty gag toys",
+      "keywords": [
+        "scale models",
+        "dioramas",
+        "terrain pieces",
+        "tabletop gaming accessories",
+        "model trains",
+        "dollhouse furniture"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 390,
+      "level": 2,
+      "name": "finger boards finger bikes",
+      "parent_name": "novelty gag toys",
+      "keywords": [
+        "mini skateboards",
+        "miniature bmx bikes",
+        "finger scooter",
+        "finger skateboard ramps",
+        "tech deck accessories",
+        "finger bike parks"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 391,
+      "level": 2,
+      "name": "coconut water",
+      "parent_name": "beverages",
+      "keywords": [
+        "hydration",
+        "electrolytes",
+        "natural hydration",
+        "coconut flavor",
+        "tropical refreshment",
+        "replenishment"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 392,
+      "level": 2,
+      "name": "handheld games",
+      "parent_name": "games",
+      "keywords": [
+        "portable consoles",
+        "electronic entertainment devices",
+        "pocketsized games",
+        "handheld gaming devices",
+        "mobile gaming devices",
+        "onthego gaming"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 393,
+      "level": 2,
+      "name": "slime putty toys",
+      "parent_name": "novelty gag toys",
+      "keywords": [
+        "gooey",
+        "stretchy",
+        "squishy",
+        "sensory play",
+        "slime making kits",
+        "glittery"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 394,
+      "level": 2,
+      "name": "pastries",
+      "parent_name": "breads bakery",
+      "keywords": [
+        "croissants",
+        "danishes",
+        "turnovers",
+        "\u00e9clairs",
+        "puff pastry",
+        "strudel"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 396,
+      "level": 2,
+      "name": "teethers",
+      "parent_name": "health baby care",
+      "keywords": [
+        " teething relief silicone teethers natural wood teethers bpafree teethers baby teething toys chew toys for babies freezer teethers soft teethers teething rings teething mittens"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 397,
+      "level": 2,
+      "name": "butter",
+      "parent_name": "dairy eggs",
+      "keywords": [
+        "spreadable",
+        "margarine",
+        "baking",
+        "cooking",
+        "toast",
+        "churned"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 398,
+      "level": 2,
+      "name": "fruits",
+      "parent_name": "candy chocolate",
+      "keywords": [
+        "fresh produce",
+        "tropical fruits",
+        "citrus fruits",
+        "stone fruits",
+        "exotic fruits",
+        "dried fruits"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 399,
+      "level": 2,
+      "name": "chocolate pretzels",
+      "parent_name": "candy chocolate",
+      "keywords": [
+        "salty snacks",
+        "sweet and salty",
+        "crunchy",
+        "snack mix",
+        "chocolatecovered snacks",
+        "crunchy munchies"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 400,
+      "level": 2,
+      "name": "breakfast bakery",
+      "parent_name": "breads bakery",
+      "keywords": [
+        "croissants",
+        "muffins",
+        "bagels",
+        "breakfast bars",
+        "scones",
+        "cinnamon rolls"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 401,
+      "level": 2,
+      "name": "stickers",
+      "parent_name": "arts crafts",
+      "keywords": [
+        "decorative",
+        "adhesive",
+        "scrapbooking",
+        "vinyl",
+        "waterproof",
+        "laptop stickers"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 402,
+      "level": 2,
+      "name": "soaps cleansers",
+      "parent_name": "bathing skin care",
+      "keywords": [
+        "lathering",
+        "exfoliating",
+        "moisturizing",
+        "antibacterial",
+        "fragrancefree",
+        "hypoallergenic"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 403,
+      "level": 2,
+      "name": "sauces gifts",
+      "parent_name": "gourmet gifts",
+      "keywords": [
+        "hot sauce gift sets",
+        "bbq sauce gift packs",
+        "gourmet sauce collections",
+        "salsa gift baskets",
+        "artisan sauce assortments",
+        "specialty sauce samplers"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 404,
+      "level": 2,
+      "name": "fitness equipment",
+      "parent_name": "sports outdoor play",
+      "keywords": [
+        "exercise bikes",
+        "treadmills",
+        "dumbbells",
+        "resistance bands",
+        "yoga mats",
+        "jump ropes"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 405,
+      "level": 2,
+      "name": "water",
+      "parent_name": "beverages",
+      "keywords": [
+        "bottled water",
+        "mineral water",
+        "purified water",
+        "sparkling water",
+        "flavored water",
+        "alkaline water"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 406,
+      "level": 2,
+      "name": "portable changing pads",
+      "parent_name": "diapering",
+      "keywords": [
+        "waterproof",
+        "travelfriendly",
+        "compact",
+        "foldable",
+        "wipeclean surface",
+        "diaper clutch"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 407,
+      "level": 2,
+      "name": "dice gaming dice",
+      "parent_name": "games",
+      "keywords": [
+        "polyhedral dice",
+        "roleplaying dice",
+        "d20 dice",
+        "d10 dice",
+        "d6 dice",
+        "dice bags"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 408,
+      "level": 2,
+      "name": "pacifiers accessories",
+      "parent_name": "feeding",
+      "keywords": [
+        "pacifier clips",
+        "teething toys",
+        "pacifier cases",
+        "pacifier holders",
+        "pacifier wipes",
+        "pacifier sterilizers"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 409,
+      "level": 2,
+      "name": "bars",
+      "parent_name": "candy chocolate",
+      "keywords": [
+        "protein bars",
+        "energy bars",
+        "granola bars",
+        "snack bars",
+        "cereal bars",
+        "nutrition bars"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 410,
+      "level": 2,
+      "name": "cocktail mixers",
+      "parent_name": "beverages",
+      "keywords": [
+        "tonic water",
+        "bitters",
+        "grenadine syrup",
+        "vermouth",
+        "simple syrup",
+        "soda water"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 411,
+      "level": 2,
+      "name": "aquariums",
+      "parent_name": "fish aquatic pets",
+      "keywords": [
+        "glass tanks",
+        "acrylic tanks",
+        "planted aquariums",
+        "saltwater tanks",
+        "freshwater tanks",
+        "nano aquariums"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 412,
+      "level": 2,
+      "name": "ball pits accessories",
+      "parent_name": "sports outdoor play",
+      "keywords": [
+        "ball pit balls",
+        "ball pit liners",
+        "ball pit nets",
+        "ball pit covers",
+        "ball pit scoops",
+        "ball pit bags"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 413,
+      "level": 2,
+      "name": "seafood",
+      "parent_name": "meat poultry",
+      "keywords": [
+        "shellfish",
+        "crustaceans",
+        "mollusks",
+        "sushi",
+        "shrimp",
+        "crab"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 414,
+      "level": 2,
+      "name": "bags cases",
+      "parent_name": "tools accessories",
+      "keywords": [
+        "backpacks",
+        "luggage",
+        "duffel bags",
+        "cosmetic bags",
+        "travel cases",
+        "toiletry bags"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 415,
+      "level": 2,
+      "name": "jelly beans",
+      "parent_name": "candy chocolate",
+      "keywords": [
+        "jelly bean flavors",
+        "beanshaped candies",
+        "sugary treats",
+        "colorful confections",
+        "easter candy",
+        "candy jars"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 416,
+      "level": 2,
+      "name": "novelty spinning tops",
+      "parent_name": "novelty gag toys",
+      "keywords": [
+        "metal spinning tops",
+        "led lightup spinning tops",
+        "wooden spinning tops",
+        "handcrafted spinning tops",
+        "spinning tops with intricate designs",
+        "fidget spinning tops"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 417,
+      "level": 2,
+      "name": "automatic feeders",
+      "parent_name": "fish aquatic pets",
+      "keywords": [
+        "scheduling",
+        "dispensing",
+        "programmable",
+        "portion control",
+        "timerbased",
+        "wifienabled"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 418,
+      "level": 2,
+      "name": "mints",
+      "parent_name": "candy chocolate",
+      "keywords": [
+        "peppermint",
+        "breath freshener",
+        "minty flavor",
+        "pocketsized",
+        "tin",
+        "sugarfree"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 419,
+      "level": 2,
+      "name": "makeup sets",
+      "parent_name": "makeup",
+      "keywords": [
+        "brushes",
+        "applicators",
+        "palettes",
+        "sponges",
+        "organizers",
+        "travelsized"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 420,
+      "level": 2,
+      "name": "cleaners",
+      "parent_name": "fish aquatic pets",
+      "keywords": [
+        "glass cleaners",
+        "algae scrubbers",
+        "magnetic cleaners",
+        "gravel vacuums",
+        "algae eaters",
+        "snails"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 421,
+      "level": 2,
+      "name": "fresh cut flowers",
+      "parent_name": "fresh flowers live indoor plants",
+      "keywords": [
+        "bouquets",
+        "floral arrangements",
+        "flower delivery",
+        "florist",
+        "vase arrangements",
+        "wedding flowers"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 422,
+      "level": 2,
+      "name": "jams",
+      "parent_name": "pantry staples",
+      "keywords": [
+        "fruit preserves",
+        "jelly",
+        "marmalade",
+        "fruit spread",
+        "artisanal jams",
+        "homemade jams"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 423,
+      "level": 2,
+      "name": "prams",
+      "parent_name": "strollers",
+      "keywords": [
+        "bassinetstyle",
+        "reversible seat",
+        "convertible carriage",
+        "allterrain capability",
+        "fullsize canopy",
+        "adjustable handlebar"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 424,
+      "level": 2,
+      "name": "nuts seeds",
+      "parent_name": "cooking baking supplies",
+      "keywords": [
+        "almonds",
+        "walnuts",
+        "cashews",
+        "pistachios",
+        "sunflower seeds",
+        "pumpkin seeds"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 425,
+      "level": 2,
+      "name": "taffy",
+      "parent_name": "candy chocolate",
+      "keywords": [
+        "stretchy",
+        "sweet",
+        "chewy",
+        "confectionery",
+        "flavorsome",
+        "pulled sugar"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 427,
+      "level": 2,
+      "name": "rabbit hutches",
+      "parent_name": "bunny rabbit central",
+      "keywords": [
+        "outdoor enclosures",
+        "hutch covers",
+        "multilevel habitats",
+        "wire cages",
+        "hutch accessories",
+        "portable shelters"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 428,
+      "level": 2,
+      "name": "aquarium d cor",
+      "parent_name": "fish aquatic pets",
+      "keywords": [
+        "decorative rocks",
+        "artificial plants",
+        "aquarium backgrounds",
+        "driftwood",
+        "ornaments",
+        "gravel vacuum"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 429,
+      "level": 2,
+      "name": "granola bars",
+      "parent_name": "snack food",
+      "keywords": [
+        "protein bars",
+        "energy bars",
+        "breakfast bars",
+        "oat bars",
+        "fiber bars",
+        "chocolate bars"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 430,
+      "level": 2,
+      "name": "viewfinders",
+      "parent_name": "novelty gag toys",
+      "keywords": [
+        "optical illusion",
+        "retro",
+        "3d images",
+        "vintage",
+        "photography",
+        "travel"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 431,
+      "level": 2,
+      "name": "harnesses leashes",
+      "parent_name": "safety",
+      "keywords": [
+        "pet harnesses",
+        "dog leashes",
+        "retractable leashes",
+        "handsfree leashes",
+        "hiking harnesses",
+        "car safety harnesses"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 432,
+      "level": 2,
+      "name": "foie gras p t s",
+      "parent_name": "meat seafood",
+      "keywords": [
+        "luxury appetizer",
+        "french delicacy",
+        "gourmet spread",
+        "duck liver mousse",
+        "gastronomic indulgence",
+        "indulgent treat"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 433,
+      "level": 2,
+      "name": "game accessories",
+      "parent_name": "games",
+      "keywords": [
+        "controllers",
+        "gaming chairs",
+        "headset stands",
+        "gaming mouse pads",
+        "keyboard wrist rests",
+        "gaming desks"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 434,
+      "level": 2,
+      "name": "p t s",
+      "parent_name": "meat poultry",
+      "keywords": [
+        "snack sticks",
+        "meat snacks",
+        "beef sticks",
+        "turkey sticks",
+        "protein snacks",
+        "meat bars"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 435,
+      "level": 2,
+      "name": "game room games",
+      "parent_name": "games",
+      "keywords": [
+        "billiards",
+        "air hockey",
+        "foosball",
+        "ping pong",
+        "shuffleboard",
+        "arcade games"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 436,
+      "level": 2,
+      "name": "cages",
+      "parent_name": "cats",
+      "keywords": [
+        "enclosures",
+        "kennels",
+        "crates",
+        "habitat",
+        "aviaries",
+        "habitats"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 437,
+      "level": 2,
+      "name": "non slip bath mats",
+      "parent_name": "bathing skin care",
+      "keywords": [
+        "rubberized grip",
+        "antislip surface",
+        "suction cup design",
+        "quickdrying material",
+        "mildewresistant",
+        "textured bottom"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 438,
+      "level": 2,
+      "name": "halva",
+      "parent_name": "candy chocolate",
+      "keywords": [
+        "sesame",
+        "tahini",
+        "middle eastern",
+        "dessert",
+        "confection",
+        "sesame seeds"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 439,
+      "level": 2,
+      "name": "seafood gifts",
+      "parent_name": "gourmet gifts",
+      "keywords": [
+        " lobster gifts",
+        "crab gifts",
+        "shrimp gifts",
+        "smoked salmon gifts",
+        "caviar gifts",
+        "oyster gifts"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 440,
+      "level": 2,
+      "name": "stimulants",
+      "parent_name": "health care",
+      "keywords": [
+        "energy drinks",
+        "caffeine supplements",
+        "preworkout supplements",
+        "focus enhancers",
+        "alertness aids",
+        "mental performance boosters"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 441,
+      "level": 2,
+      "name": "beanbags foot bags",
+      "parent_name": "sports outdoor play",
+      "keywords": [
+        "beanbag toss",
+        "hacky sack",
+        "juggling beanbags",
+        "footbag freestyle",
+        "cornhole bags",
+        "beanbag juggling"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 442,
+      "level": 2,
+      "name": "shampoo conditioner sets",
+      "parent_name": "hair care",
+      "keywords": [
+        "hair care sets",
+        "hair cleansing duos",
+        "shower essentials",
+        "hydration bundles",
+        "scalp nourishing combos",
+        "bath companions"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 443,
+      "level": 2,
+      "name": "nut clusters",
+      "parent_name": "candy chocolate",
+      "keywords": [
+        "nut clusters",
+        "mixed nuts",
+        "crunchy clusters",
+        "nutty delights",
+        "almond clusters",
+        "cashew clusters"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 444,
+      "level": 2,
+      "name": "raisins",
+      "parent_name": "snack food",
+      "keywords": [
+        "organic",
+        "sundried",
+        "california",
+        "thompson seedless",
+        "golden",
+        "mediterranean"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 445,
+      "level": 2,
+      "name": "breadcrumbs",
+      "parent_name": "breads bakery",
+      "keywords": [
+        "panko",
+        "seasoned breadcrumbs",
+        "glutenfree breadcrumbs",
+        "italian breadcrumbs",
+        "japanese breadcrumbs",
+        "breadcrumb coating"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 446,
+      "level": 2,
+      "name": "extracts flavoring",
+      "parent_name": "cooking baking supplies",
+      "keywords": [
+        "vanilla extract",
+        "almond extract",
+        "lemon extract",
+        "peppermint extract",
+        "coconut extract",
+        "rum extract"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 447,
+      "level": 2,
+      "name": "plush puppets",
+      "parent_name": "stuffed animals plush",
+      "keywords": [
+        "hand puppets",
+        "puppet theater",
+        "storytelling",
+        "roleplay",
+        "childrens entertainment",
+        "puppet shows"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 448,
+      "level": 2,
+      "name": "shampoo plus conditioner",
+      "parent_name": "hair care",
+      "keywords": [
+        "2in1",
+        "cleansing",
+        "hydrating",
+        "moisturizing",
+        "detangling",
+        "allinone"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 449,
+      "level": 2,
+      "name": "salsas",
+      "parent_name": "snack food",
+      "keywords": [
+        "spicy",
+        "salsa verde",
+        "salsa roja",
+        "homemade",
+        "gourmet",
+        "spicy mango"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 450,
+      "level": 2,
+      "name": "memorials",
+      "parent_name": "cats",
+      "keywords": [
+        "grave markers",
+        "urns",
+        "memorial jewelry",
+        "sympathy gifts",
+        "pet memorial plaques",
+        "memorial garden stones"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 451,
+      "level": 2,
+      "name": "die cast toy vehicles",
+      "parent_name": "grown up toys",
+      "keywords": [
+        "scale models",
+        "collectors items",
+        "metal construction",
+        "detailed replicas",
+        "vintage vehicles",
+        "racing cars"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 452,
+      "level": 2,
+      "name": "aquarium starter kits",
+      "parent_name": "fish aquatic pets",
+      "keywords": [
+        "starter fish",
+        "gravel",
+        "ornaments",
+        "substrate",
+        "plants",
+        "water conditioner"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 453,
+      "level": 2,
+      "name": "coffee gifts",
+      "parent_name": "gourmet gifts",
+      "keywords": [
+        "coffee beans",
+        "coffee mugs",
+        "coffee accessories",
+        "coffee subscription",
+        "coffee sampler",
+        "coffee gift baskets"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 454,
+      "level": 2,
+      "name": "air fresheners",
+      "parent_name": "household supplies",
+      "keywords": [
+        "fragrance",
+        "aerosol",
+        "plugin",
+        "odor eliminator",
+        "car freshener",
+        "essential oils"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 455,
+      "level": 2,
+      "name": "fruit leather",
+      "parent_name": "snack food",
+      "keywords": [
+        "natural",
+        "organic",
+        "vegan",
+        "glutenfree",
+        "healthy",
+        "alternative"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 456,
+      "level": 2,
+      "name": "granola trail mix bars",
+      "parent_name": "snack food",
+      "keywords": [
+        "oats",
+        "almonds",
+        "honey",
+        "chocolate chips",
+        "cranberries",
+        "protein"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 457,
+      "level": 2,
+      "name": "sugar substitutes",
+      "parent_name": "cooking baking supplies",
+      "keywords": [
+        "stevia",
+        "monk fruit",
+        "erythritol",
+        "xylitol",
+        "aspartame",
+        "saccharin"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 458,
+      "level": 2,
+      "name": "bacon",
+      "parent_name": "meat seafood",
+      "keywords": [
+        "smoked",
+        "pork belly",
+        "crispy",
+        "maple",
+        "hickory",
+        "breakfast"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 459,
+      "level": 2,
+      "name": "cat flaps",
+      "parent_name": "cats",
+      "keywords": [
+        "electronic",
+        "magnetic",
+        "microchip",
+        "locking mechanism",
+        "installation",
+        "weatherproof"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 460,
+      "level": 2,
+      "name": "aquarium heaters",
+      "parent_name": "fish aquatic pets",
+      "keywords": [
+        "temperature control",
+        "submersible heater",
+        "heater thermostat",
+        "adjustable heater",
+        "digital heater",
+        "titanium heater"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 461,
+      "level": 2,
+      "name": "hair relaxers",
+      "parent_name": "hair care",
+      "keywords": [
+        "chemical straightening",
+        "relaxer kit",
+        "sodium hydroxide relaxer",
+        "nolye relaxer",
+        "hair smoothing",
+        "relaxer cream"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 462,
+      "level": 2,
+      "name": "breads",
+      "parent_name": "breads bakery",
+      "keywords": [
+        "artisanal loaves",
+        "sandwich bread",
+        "sourdough",
+        "baguettes",
+        "whole wheat bread",
+        "rye bread"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 463,
+      "level": 2,
+      "name": "packaged breads",
+      "parent_name": "breads bakery",
+      "keywords": [
+        "sliced bread",
+        "sandwich bread",
+        "whole wheat bread",
+        "glutenfree bread",
+        "bagged bread",
+        "artisan bread"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 464,
+      "level": 2,
+      "name": "sausages",
+      "parent_name": "meat poultry",
+      "keywords": [
+        "flavorful",
+        "bratwurst",
+        "chorizo",
+        "kielbasa",
+        "italian sausage",
+        "breakfast sausage"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 465,
+      "level": 2,
+      "name": "dessert toppings",
+      "parent_name": "cooking baking supplies",
+      "keywords": [
+        "whipped cream",
+        "fruit preserves",
+        "marshmallows",
+        "caramel sauce",
+        "fruit syrups",
+        "honey"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 466,
+      "level": 2,
+      "name": "diaper stackers caddies",
+      "parent_name": "diapering",
+      "keywords": [
+        "nursery organization",
+        "baby room storage",
+        "diaper organizer",
+        "crib organization",
+        "nursery decor",
+        "baby essentials storage"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 467,
+      "level": 2,
+      "name": "prisms kaleidoscopes",
+      "parent_name": "novelty gag toys",
+      "keywords": [
+        "colorful patterns",
+        "light refraction",
+        "optical illusions",
+        "glass prisms",
+        "intricate designs",
+        "visual stimulation"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 468,
+      "level": 2,
+      "name": "maternity",
+      "parent_name": "skin care",
+      "keywords": [
+        "pregnancy",
+        "stretch marks",
+        "breastfeeding",
+        "prenatal care",
+        "maternity clothing",
+        "postpartum recovery"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 469,
+      "level": 2,
+      "name": "crackers biscuits",
+      "parent_name": "baby food",
+      "keywords": [
+        "saltines",
+        "wheat thins",
+        "ritz crackers",
+        "cheese crackers",
+        "graham crackers",
+        "oatcakes"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 470,
+      "level": 2,
+      "name": "coin collecting",
+      "parent_name": "hobbies",
+      "keywords": [
+        "numismatics",
+        "rare coins",
+        "coin albums",
+        "coin holders",
+        "coin display cases",
+        "coin grading"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 471,
+      "level": 2,
+      "name": "chocolate gifts",
+      "parent_name": "gourmet gifts",
+      "keywords": [
+        "truffle assortment",
+        "chocolatecovered nuts",
+        "luxury chocolate",
+        "chocolate gift baskets",
+        "artisan chocolate",
+        "chocolate bars"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 472,
+      "level": 2,
+      "name": "kickball playground balls",
+      "parent_name": "sports outdoor play",
+      "keywords": [
+        "rubber material",
+        "playground game",
+        "recess activity",
+        "red kickball",
+        "playground equipment",
+        "outdoor recreation"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 473,
+      "level": 2,
+      "name": "hair perms texturizers",
+      "parent_name": "hair care",
+      "keywords": [
+        "chemical treatments",
+        "curl definition",
+        "wave patterns",
+        "hair texture alteration",
+        "curl enhancing",
+        "hair styling solutions"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 474,
+      "level": 2,
+      "name": "yo yos",
+      "parent_name": "sports outdoor play",
+      "keywords": [
+        "string tricks",
+        "competitiongrade",
+        "bearing system",
+        "looping style",
+        "responsive design",
+        "collectible editions"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 475,
+      "level": 2,
+      "name": "flours meals",
+      "parent_name": "cooking baking supplies",
+      "keywords": [
+        "wheat flour",
+        "rice flour",
+        "almond flour",
+        "coconut flour",
+        "glutenfree flour",
+        "oat flour"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 476,
+      "level": 2,
+      "name": "beef",
+      "parent_name": "meat seafood",
+      "keywords": [
+        "ground beef",
+        "steak",
+        "roast beef",
+        "brisket",
+        "beef jerky",
+        "beef ribs"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 477,
+      "level": 2,
+      "name": "molding sculpting sticks",
+      "parent_name": "arts crafts",
+      "keywords": [
+        "modeling clay",
+        "sculpting tools",
+        "clay modeling",
+        "clay sculpting",
+        "sculpting accessories",
+        "clay crafts"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 478,
+      "level": 2,
+      "name": "washcloths towels",
+      "parent_name": "bathing skin care",
+      "keywords": [
+        "cotton towels",
+        "microfiber cloths",
+        "terry washcloths",
+        "bamboo towels",
+        "hand towels",
+        "face towels"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 479,
+      "level": 2,
+      "name": "fruit gifts",
+      "parent_name": "gourmet gifts",
+      "keywords": [
+        "edible arrangements",
+        "fruit baskets",
+        "fruit bouquet",
+        "dried fruit gifts",
+        "fresh fruit delivery",
+        "tropical fruit gifts"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 480,
+      "level": 2,
+      "name": "stuffing",
+      "parent_name": "breads bakery",
+      "keywords": [
+        "savory",
+        "thanksgiving",
+        "turkey",
+        "holiday",
+        "stuffing mix",
+        "recipe"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 481,
+      "level": 2,
+      "name": "baking powder",
+      "parent_name": "cooking baking supplies",
+      "keywords": [
+        "leavening agent",
+        "rising agent",
+        "sodium bicarbonate",
+        "cream of tartar",
+        "doubleacting",
+        "aluminumfree"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 482,
+      "level": 2,
+      "name": "cereal",
+      "parent_name": "baby food",
+      "keywords": [
+        "granola",
+        "oats",
+        "bran flakes",
+        "cornflakes",
+        "wheat",
+        "rice puffs"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 483,
+      "level": 2,
+      "name": "exotic meats",
+      "parent_name": "meat poultry",
+      "keywords": [
+        "venison",
+        "kangaroo",
+        "alligator",
+        "bison",
+        "ostrich",
+        "elk"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 484,
+      "level": 2,
+      "name": "breadsticks",
+      "parent_name": "breads bakery",
+      "keywords": [
+        "dipping sauces",
+        "garlic",
+        "parmesan",
+        "appetizers",
+        "crunchy",
+        "snacks"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 485,
+      "level": 2,
+      "name": "eggs",
+      "parent_name": "dairy eggs",
+      "keywords": [
+        "organic",
+        "cagefree",
+        "omega3 enriched",
+        "pastured",
+        "freerange",
+        "brown eggs"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 486,
+      "level": 2,
+      "name": "cloth diaper accessories",
+      "parent_name": "diapering",
+      "keywords": [
+        "diaper liners",
+        "wet bags",
+        "diaper sprayers",
+        "cloth diaper inserts",
+        "diaper fasteners",
+        "cloth diaper covers"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 487,
+      "level": 2,
+      "name": "carriers",
+      "parent_name": "bunny rabbit central",
+      "keywords": [
+        "travel carriers",
+        "airlineapproved carriers",
+        "softsided carriers",
+        "hardsided carriers",
+        "backpack carriers",
+        "sling carriers"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 488,
+      "level": 2,
+      "name": "toffee",
+      "parent_name": "candy chocolate",
+      "keywords": [
+        "brittle",
+        "caramel",
+        "butterscotch",
+        "confectionery",
+        "sweets",
+        "caramelized sugar"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 489,
+      "level": 2,
+      "name": "hair coloring tools",
+      "parent_name": "tools accessories",
+      "keywords": [
+        "hair dye brushes",
+        "mixing bowls",
+        "tint brushes",
+        "hair coloring cap",
+        "foiling tools",
+        "hair dye applicator"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 490,
+      "level": 2,
+      "name": "chocolate covered fruit",
+      "parent_name": "candy chocolate",
+      "keywords": [
+        "dried strawberries",
+        "chocolate covered bananas",
+        "chocolate covered cherries",
+        "chocolate covered blueberries",
+        "chocolate dipped pineapple",
+        "chocolate coated mango"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 491,
+      "level": 2,
+      "name": "caramels",
+      "parent_name": "candy chocolate",
+      "keywords": [
+        "caramel popcorn",
+        "caramel sauce",
+        "caramel apples",
+        "caramel candies",
+        "caramel syrup",
+        "caramelflavored coffee"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 492,
+      "level": 2,
+      "name": "assortments",
+      "parent_name": "candy chocolate",
+      "keywords": [
+        "gift baskets",
+        "snack assortments",
+        "cookie assortments",
+        "cracker assortments",
+        "cheese assortments",
+        "dried fruit assortments"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 493,
+      "level": 2,
+      "name": "aromatherapy",
+      "parent_name": "bathing skin care",
+      "keywords": [
+        "essential oils",
+        "diffusers",
+        "relaxation",
+        "stress relief",
+        "aromatherapist",
+        "candles"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 494,
+      "level": 2,
+      "name": "seat covers",
+      "parent_name": "potty training",
+      "keywords": [
+        "waterproof",
+        "car seats",
+        "dining chairs",
+        "sofa protectors",
+        "pet seat covers",
+        "universal fit"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 495,
+      "level": 2,
+      "name": "bondage gear accessories",
+      "parent_name": "sexual wellness",
+      "keywords": [
+        "leather cuffs",
+        "latex hoods",
+        "metal restraints",
+        "rope bondage",
+        "bondage tape",
+        "nipple clamps"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 496,
+      "level": 2,
+      "name": "sun protection",
+      "parent_name": "health baby care",
+      "keywords": [
+        "sunscreen lotion",
+        "uv protection clothing",
+        "sun hats",
+        "sunglasses for babies",
+        "sunshade tents",
+        "spf lip balm"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 497,
+      "level": 2,
+      "name": "dinners",
+      "parent_name": "baby food",
+      "keywords": [
+        "pasta",
+        "sauce",
+        "meatballs",
+        "vegetables",
+        "rice dishes",
+        "stirfry"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 498,
+      "level": 2,
+      "name": "fruit",
+      "parent_name": "baby food",
+      "keywords": [
+        "fresh",
+        "organic",
+        "ripe",
+        "juicy",
+        "tropical",
+        "citrus"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 499,
+      "level": 2,
+      "name": "aquarium stands",
+      "parent_name": "fish aquatic pets",
+      "keywords": [
+        "tank stands",
+        "fish tank furniture",
+        "display racks",
+        "metal aquarium stands",
+        "wooden aquarium stands",
+        "glass aquarium stands"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 500,
+      "level": 2,
+      "name": "teaching clocks",
+      "parent_name": "baby toddler toys",
+      "keywords": [
+        "learning time",
+        "educational clocks",
+        "timetelling aids",
+        "clock manipulatives",
+        "analog clock teaching tools",
+        "time management toys"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 501,
+      "level": 2,
+      "name": "milk substitutes",
+      "parent_name": "dairy eggs",
+      "keywords": [
+        "almond milk",
+        "soy milk",
+        "oat milk",
+        "coconut milk",
+        "rice milk",
+        "cashew milk"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 502,
+      "level": 2,
+      "name": "bubble bath",
+      "parent_name": "bathing skin care",
+      "keywords": [
+        "relaxation",
+        "foaming agent",
+        "aromatic bubbles",
+        "bath time fun",
+        "scented indulgence",
+        "bubble bath bombs"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 503,
+      "level": 2,
+      "name": "novelties",
+      "parent_name": "sexual wellness",
+      "keywords": [
+        "gifts",
+        "gag gifts",
+        "novelty items",
+        "funny accessories",
+        "quirky gadgets",
+        "prank toys"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 504,
+      "level": 2,
+      "name": "jams preserves gifts",
+      "parent_name": "gourmet gifts",
+      "keywords": [
+        "fruit preserves",
+        "artisanal jams",
+        "homemade preserves",
+        "gourmet spreads",
+        "berry jams",
+        "citrus preserves"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 505,
+      "level": 2,
+      "name": "meat gifts",
+      "parent_name": "gourmet gifts",
+      "keywords": [
+        "smoked meats",
+        "charcuterie",
+        "jerky assortments",
+        "sausage samplers",
+        "bacon gift sets",
+        "meat lovers baskets"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 506,
+      "level": 2,
+      "name": "beads",
+      "parent_name": "arts crafts",
+      "keywords": [
+        "jewelry making",
+        "bracelet beads",
+        "necklace beads",
+        "beading wire",
+        "seed beads",
+        "glass beads"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 507,
+      "level": 2,
+      "name": "fish bowls",
+      "parent_name": "fish aquatic pets",
+      "keywords": [
+        "glass bowls",
+        "decorative bowls",
+        "small fish tanks",
+        "tabletop aquariums",
+        "round fish tanks",
+        "betta fish bowls"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 508,
+      "level": 2,
+      "name": "odor stain removers",
+      "parent_name": "bunny rabbit central",
+      "keywords": [
+        "enzymatic formulas",
+        "carpet cleaner",
+        "urine remover",
+        "pet odor eliminator",
+        "stain remover spray",
+        "fabric freshener"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 509,
+      "level": 2,
+      "name": "food coloring",
+      "parent_name": "cooking baking supplies",
+      "keywords": [
+        "gel food coloring",
+        "liquid food coloring",
+        "natural food coloring",
+        "powdered food coloring",
+        "icing colors",
+        "food dye"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 510,
+      "level": 2,
+      "name": "children s",
+      "parent_name": "fragrance",
+      "keywords": [
+        "baby lotion",
+        "kids shampoo",
+        "childrens sunscreen",
+        "toddler bath products",
+        "boys cologne",
+        "girls hair accessories"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 511,
+      "level": 2,
+      "name": "ice cream frozen desserts",
+      "parent_name": "dairy eggs",
+      "keywords": [
+        "gelato",
+        "sorbet",
+        "frozen yogurt",
+        "popsicles",
+        "sherbet",
+        "ice cream sandwiches"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 512,
+      "level": 2,
+      "name": "pastry decorations",
+      "parent_name": "cooking baking supplies",
+      "keywords": [
+        "fondant",
+        "edible glitter",
+        "icing pens",
+        "edible pearls",
+        "pastry stencils",
+        "cake toppers"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 513,
+      "level": 2,
+      "name": "chicken",
+      "parent_name": "meat seafood",
+      "keywords": [
+        "grilled",
+        "fried",
+        "rotisserie",
+        "nuggets",
+        "tenders",
+        "drumsticks"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 514,
+      "level": 2,
+      "name": "sports drinks",
+      "parent_name": "beverages",
+      "keywords": [
+        "electrolytes",
+        "hydration",
+        "endurance",
+        "isotonic",
+        "recovery",
+        "fitness"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 515,
+      "level": 2,
+      "name": "marshmallows",
+      "parent_name": "candy chocolate",
+      "keywords": [
+        "fluffy",
+        "smores",
+        "campfire",
+        "confectionery",
+        "pillowy",
+        "toasted"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 516,
+      "level": 2,
+      "name": "pudding",
+      "parent_name": "snack food",
+      "keywords": [
+        "tapioca",
+        "custard",
+        "mousse",
+        "flan",
+        "rice pudding",
+        "chocolate pudding"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 517,
+      "level": 2,
+      "name": "aprons smocks",
+      "parent_name": "arts crafts",
+      "keywords": [
+        "kitchen aprons",
+        "chef aprons",
+        "gardening smocks",
+        "waterproof aprons",
+        "childrens aprons",
+        "bbq aprons"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 518,
+      "level": 2,
+      "name": "electronics",
+      "parent_name": "learning education",
+      "keywords": [
+        "circuits",
+        "soldering",
+        "microcontrollers",
+        "capacitors",
+        "resistors",
+        "transistors"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 519,
+      "level": 2,
+      "name": "sex furniture",
+      "parent_name": "sexual wellness",
+      "keywords": [
+        "kinkfriendly furniture",
+        "erotic seating",
+        "intimate cushions",
+        "sensory stimulation chairs",
+        "bdsm benches",
+        "pleasure swings"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 520,
+      "level": 2,
+      "name": "pork",
+      "parent_name": "meat poultry",
+      "keywords": [
+        "bacon",
+        "ribs",
+        "pork chops",
+        "pulled pork",
+        "ham",
+        "pork belly"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 521,
+      "level": 2,
+      "name": "spices gifts",
+      "parent_name": "gourmet gifts",
+      "keywords": [
+        "seasoning sets",
+        "spice blends",
+        "herb collections",
+        "gourmet salt assortments",
+        "pepper grinders",
+        "infused oils and vinegars"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 522,
+      "level": 2,
+      "name": "dried fruit",
+      "parent_name": "snack food",
+      "keywords": [
+        "apricots",
+        "mango slices",
+        "dried pineapple",
+        "dried cranberries",
+        "figs",
+        "prunes"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 523,
+      "level": 2,
+      "name": "flying toys",
+      "parent_name": "novelty gag toys",
+      "keywords": [
+        "drones",
+        "remote control helicopters",
+        "kites",
+        "paper airplanes",
+        "model airplanes",
+        "flying discs"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 524,
+      "level": 2,
+      "name": "shampoo",
+      "parent_name": "bathing skin care",
+      "keywords": [
+        "hair care",
+        "conditioner",
+        "scalp treatment",
+        "dandruff control",
+        "sulfatefree",
+        "volumizing"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 525,
+      "level": 2,
+      "name": "coatings batters",
+      "parent_name": "cooking baking supplies",
+      "keywords": [
+        "crumb coatings",
+        "tempura batter mix",
+        "bread crumbs",
+        "panko flakes",
+        "crispy coating",
+        "seasoned flour"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 526,
+      "level": 2,
+      "name": "hydrometers",
+      "parent_name": "fish aquatic pets",
+      "keywords": [
+        "salinity measurement",
+        "water density gauge",
+        "specific gravity meter",
+        "marine aquarium tool",
+        "reef tank accessory",
+        "saltwater testing equipment"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 527,
+      "level": 2,
+      "name": "lamb",
+      "parent_name": "meat poultry",
+      "keywords": [
+        "grilling",
+        "roasting",
+        "stewing",
+        "chops",
+        "shanks",
+        "rack of lamb"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 528,
+      "level": 2,
+      "name": "exercise wheels",
+      "parent_name": "small animals",
+      "keywords": [
+        "running tracks",
+        "silent operation",
+        "wire mesh design",
+        "adjustable stand",
+        "nonslip surface",
+        "wheel diameter"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 529,
+      "level": 2,
+      "name": "chocolate covered nuts",
+      "parent_name": "candy chocolate",
+      "keywords": [
+        "roasted almonds",
+        "cashew clusters",
+        "hazelnut pralines",
+        "peanut clusters",
+        "almond bark",
+        "pecan turtles"
+      ],
+      "num_reviews": 30
+    },
+    {
+      "category_id": 530,
+      "level": 2,
+      "name": "breeding tanks",
+      "parent_name": "fish aquatic pets",
+      "keywords": [
+        "breeding tanks",
+        "fish breeding",
+        "spawning tanks",
+        "fry rearing",
+        "breeding habitats",
+        "breeding equipment"
+      ],
+      "num_reviews": 30
+    }
+  ]
+}

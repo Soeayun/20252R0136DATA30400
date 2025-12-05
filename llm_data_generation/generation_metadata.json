@@ -1,0 +1,11 @@
+{
+  "total_reviews": 12883,
+  "total_calls": 526,
+  "failed_calls": 0,
+  "total_tokens": 1051239,
+  "reviews_per_call": 15,
+  "temperature": 0.9,
+  "max_calls_limit": 1000,
+  "used_real_examples": true,
+  "parallel_workers": 10
+}

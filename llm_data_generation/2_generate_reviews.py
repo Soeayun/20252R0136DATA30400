@@ -33,7 +33,7 @@ client = OpenAI(api_key=API_KEY)
 REVIEWS_PER_CALL = 15
 REVIEW_LENGTH = "70-100 words"
 TEMPERATURE = 0.9
-MAX_TOKENS = 2500
+MAX_TOKENS = 4000  # Increased for 30 reviews (Level 2 classes)
 MAX_API_CALLS = 1000  # Hard limit
 
 SYSTEM_PROMPT = """You are an Amazon customer writing authentic product reviews.
