@@ -20,6 +20,8 @@ dependencies = [
     "protobuf>=6.33.1",
     "matplotlib>=3.9.4",
     "seaborn>=0.13.2",
+    "openai>=2.9.0",
+    "dotenv>=0.9.9",
 ]
 
 [tool.uv]
