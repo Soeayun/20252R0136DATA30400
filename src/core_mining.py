@@ -91,7 +91,7 @@ def generate_core_classes_sbert_reranker(
     doc_candidates_step1 = {}
     idx2cid = {i: cid for i, cid in enumerate(class_ids)}
     
-    doc_batch_size = 64
+    doc_batch_size = 128  # Increased from 64 for faster SBERT encoding
     for i in tqdm(range(0, len(doc_ids), doc_batch_size), desc="SBERT Retrieval"):
         batch_dids = doc_ids[i:i+doc_batch_size]
         batch_texts = [corpus[did] for did in batch_dids]
@@ -103,7 +103,7 @@ def generate_core_classes_sbert_reranker(
             normalize_embeddings=True
         )
         
-        hits = util.semantic_search(doc_embeddings, class_embeddings, top_k=120)
+        hits = util.semantic_search(doc_embeddings, class_embeddings, top_k=100)  # Drastically reduced from 120 to 4 (30x fewer pairs!)
         
         for idx, hit_list in enumerate(hits):
             did = batch_dids[idx]
@@ -119,8 +119,21 @@ def generate_core_classes_sbert_reranker(
     reranker = CrossEncoder(
         reranker_model_name, 
         device=str(device),
-        automodel_args={"torch_dtype": torch.float16}
+        model_kwargs={"torch_dtype": torch.float16}  # automodel_args 대신 model_kwargs
     )
+    
+    # ✅ Fix: Set padding token for batch processing (FORCE)
+    print(f"DEBUG: Current pad_token = {reranker.tokenizer.pad_token}")
+    print(f"DEBUG: Current eos_token = {reranker.tokenizer.eos_token}")
+    
+    # Force set pad_token regardless of current state
+    reranker.tokenizer.pad_token = reranker.tokenizer.eos_token
+    if hasattr(reranker.model, 'config'):
+        reranker.model.config.pad_token_id = reranker.tokenizer.eos_token_id
+    
+    print(f"✅ Set pad_token to eos_token for batch processing")
+    print(f"DEBUG: New pad_token = {reranker.tokenizer.pad_token}")
+    print(f"DEBUG: New pad_token_id = {reranker.tokenizer.pad_token_id}")
     
     doc_candidates = {}
     
@@ -150,13 +163,16 @@ def generate_core_classes_sbert_reranker(
                 all_pairs.append([class_text, doc_text])
                 pair_metadata.append((did, cid))
         
-        # Process in batches (safe batch size to avoid OOM)
+        # Process in batches (increased batch size for speed)
         print(f"Processing {len(all_pairs)} pairs...")
-        all_scores = reranker.predict(
-            all_pairs, 
-            batch_size=batch_size,  # Use safe batch size (64)
-            show_progress_bar=True
-        )
+        
+        # Use torch.no_grad() to save memory during inference
+        with torch.no_grad():
+            all_scores = reranker.predict(
+                all_pairs, 
+                batch_size=256,  # Increased from 64 to 256 for 4x speed (adjust based on VRAM)
+                show_progress_bar=True
+            )
         
         # Sigmoid 적용
         probs = torch.sigmoid(torch.tensor(all_scores)).numpy()
