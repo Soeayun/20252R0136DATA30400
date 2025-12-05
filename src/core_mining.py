@@ -274,8 +274,18 @@ def identify_confident_core_classes(doc_candidates, parents_dict, children_dict)
         else:
             class_thresholds[c] = 0.0 # Should not happen if c is in candidates
             
-    # 3. Filter and Top-3 Selection
+    # 3. Filter and Level 0 Weighted Voting Selection
     final_core_classes = {} # {doc_id: [core_class1, core_class2]}
+    
+    # Helper function to find Level 0 ancestor
+    def get_level0_ancestor(class_id, parents_dict):
+        """Traverse up the hierarchy to find the root (Level 0) node"""
+        current = class_id
+        while True:
+            parents = parents_dict.get(current, [])
+            if not parents:  # Reached root
+                return current
+            current = parents[0]  # Follow first parent
     
     for doc_id, confs in doc_confidences.items():
         # [Fix] Retrieve candidates for the current document
@@ -291,20 +301,53 @@ def identify_confident_core_classes(doc_candidates, parents_dict, children_dict)
         # Sort by Confidence Score (Descending)
         valid_candidates.sort(key=lambda x: x[1], reverse=True)
         
-        # Keep Top-K
-        # [Added] Hard Filter: Raw NLI Score > 0.33
-        # Even if confidence is high relative to family, absolute score must be reasonable.
-        final_candidates = []
+        # Step 1: Select initial candidates with absolute threshold
+        initial_candidates = []
         for c, conf in valid_candidates:
-            # Filter by Threshold (Min-Max Scaled)
-            # Need to retrieve the raw NLI score for 'c' from 'candidates'
+            # Filter by absolute threshold (lowered to be more inclusive)
             raw_score = candidates.get(c, 0.0) 
-            if raw_score > 0.5005:
-                final_candidates.append(c)
+            if raw_score > 0.62:  # Lowered from 0.6546
+                initial_candidates.append(c)
 
-            if len(final_candidates) >= 15: # Top-3 제한 추가
+            if len(initial_candidates) >= 9:  # Adaptive top-k (reduced from 12)
                 break
-
+        
+        # Step 2: Level 0 Weighted Voting
+        if not initial_candidates:
+            final_core_classes[doc_id] = []
+            continue
+        
+        # Get Level 0 of the highest-scoring class (must be included)
+        top_class_level0 = get_level0_ancestor(initial_candidates[0], parents_dict)
+        
+        # Weighted voting: 1st = N points, 2nd = N-1 points, ..., Nth = 1 point
+        level0_scores = defaultdict(float)
+        n = len(initial_candidates)
+        
+        for rank, class_id in enumerate(initial_candidates):
+            points = n - rank  # 1st gets n, 2nd gets n-1, etc.
+            level0_id = get_level0_ancestor(class_id, parents_dict)
+            level0_scores[level0_id] += points
+        
+        # Step 3: Select top 3 Level 0 categories (including top_class_level0)
+        sorted_level0 = sorted(level0_scores.items(), key=lambda x: x[1], reverse=True)
+        
+        # Ensure top_class_level0 is included
+        selected_level0s = {top_class_level0}
+        
+        # Add up to 2 more Level 0s
+        for level0_id, score in sorted_level0:
+            if level0_id not in selected_level0s:
+                selected_level0s.add(level0_id)
+            if len(selected_level0s) >= 2:
+                break
+        
+        # Step 4: Keep only classes from selected Level 0s
+        final_candidates = []
+        for class_id in initial_candidates:
+            level0_id = get_level0_ancestor(class_id, parents_dict)
+            if level0_id in selected_level0s:
+                final_candidates.append(class_id)
             
         final_core_classes[doc_id] = final_candidates
         
