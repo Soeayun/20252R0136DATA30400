@@ -3,6 +3,7 @@ import torch
 import numpy as np
 import pandas as pd
 import json
+import sys
 from transformers import AutoTokenizer, AutoModel
 from src import utils, core_mining, models, trainer
 
@@ -105,7 +106,10 @@ def main():
             core_classes.append(confident_core_classes.get(doc_id, []))
 
     # --- 5. Label Expansion --- # Renumbered from 4.4 to 5
-    targets, masks = core_mining.expand_labels(core_classes, parents_dict, children_dict, num_classes) # Corrected num_classes
+    # Use custom mining for limited expansion (Core + Immediate Parent)
+    sys.path.append('llm_data_generation')
+    import custom_mining
+    targets, masks = custom_mining.expand_labels_limited(core_classes, parents_dict, children_dict, num_classes)
     
     # --- 6. Initialize Model ---
     print("Initializing Model...")

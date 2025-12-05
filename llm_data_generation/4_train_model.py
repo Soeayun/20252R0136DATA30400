@@ -140,8 +140,9 @@ def main():
     print(f"Labeled documents: {labeled_docs}/{len(doc_ids)}")
     
     # Label Expansion (include all ancestors)
-    print("\nExpanding labels hierarchically...")
-    targets, masks = core_mining.expand_labels(
+    print("\nExpanding labels hierarchically (Limited)...")
+    import custom_mining
+    targets, masks = custom_mining.expand_labels_limited(
         core_classes, parents_dict, children_dict, num_classes
     )
     

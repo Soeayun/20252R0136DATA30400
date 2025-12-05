@@ -227,24 +227,22 @@ def generate_core_classes_sbert_reranker(
 
 def identify_confident_core_classes(doc_candidates, parents_dict, children_dict):
     """
-    Identifies confident core classes using Confidence Score and Median Threshold.
+    Identifies confident core classes using Relative Drop and Dynamic Level 0 Selection.
     
-    conf(D, c) = sim(D,c) - max(sim(D, parents), sim(D, siblings))
-    tau_c = median({conf(D', c) for all D' where c in candidates})
-    Select c if conf(D, c) > tau_c
+    1. Candidate Selection:
+       - Sort by Confidence Score.
+       - Select until Relative Drop > 0.1 or Count >= 10.
+       - Ensure at least 1 candidate.
+       
+    2. Level 0 Filtering:
+       - Calculate Level 0 Score = Sum of Confidence Scores of descendants.
+       - Threshold = Max(Level 0 Scores) * 0.6.
+       - Keep Level 0s >= Threshold.
     """
-    print("Identifying Confident Core Classes...")
+    print("Identifying Confident Core Classes (Refined)...")
     
     # 1. Calculate Raw Confidence Scores
-    # doc_confidences: {doc_id: {class_id: conf_score}}
     doc_confidences = {}
-    
-    # [Modified] Removed Min-Max Scaling to preserve absolute probability values
-    # doc_candidates = scaled_doc_candidates
-    
-    # Also collect scores per class for median calculation
-    # class_conf_distribution: {class_id: [conf_score1, conf_score2, ...]}
-    class_conf_distribution = defaultdict(list)
     
     for doc_id, candidates in tqdm(doc_candidates.items(), desc="Calc Confidence"):
         doc_confidences[doc_id] = {}
@@ -252,104 +250,76 @@ def identify_confident_core_classes(doc_candidates, parents_dict, children_dict)
         for c, score in candidates.items():
             # Get Parent Scores
             parents = parents_dict.get(c, [])
-            parent_scores = [candidates.get(p, 0.0) for p in parents] # 0.0 if parent not in candidates
+            parent_scores = [candidates.get(p, 0.0) for p in parents]
             max_parent = max(parent_scores) if parent_scores else 0.0
             
             # Get Sibling Scores
             siblings = utils.get_siblings(c, parents_dict, children_dict)
-            sibling_scores = [candidates.get(s, 0.0) for s in siblings] # 0.0 if sibling not in candidates (filtered out)
+            sibling_scores = [candidates.get(s, 0.0) for s in siblings]
             max_sibling = max(sibling_scores) if sibling_scores else 0.0
             
             # Conf(D, c)
             conf = score - max(max_parent, max_sibling)
-            
             doc_confidences[doc_id][c] = conf
-            class_conf_distribution[c].append(conf)
             
-    # 2. Calculate Median Thresholds
-    class_thresholds = {}
-    for c, scores in class_conf_distribution.items():
-        if scores:
-            class_thresholds[c] = np.median(scores)
-        else:
-            class_thresholds[c] = 0.0 # Should not happen if c is in candidates
-            
-    # 3. Filter and Level 0 Weighted Voting Selection
-    final_core_classes = {} # {doc_id: [core_class1, core_class2]}
+    # 2. Selection Logic
+    final_core_classes = {}
     
     # Helper function to find Level 0 ancestor
     def get_level0_ancestor(class_id, parents_dict):
-        """Traverse up the hierarchy to find the root (Level 0) node"""
         current = class_id
         while True:
             parents = parents_dict.get(current, [])
-            if not parents:  # Reached root
+            if not parents:
                 return current
-            current = parents[0]  # Follow first parent
+            current = parents[0]
     
     for doc_id, confs in doc_confidences.items():
-        # [Fix] Retrieve candidates for the current document
-        candidates = doc_candidates[doc_id]
-        
-        # Collect candidates that pass the threshold
-        valid_candidates = []
-        for c, conf in confs.items():
-            tau = class_thresholds.get(c, 0.0)
-            if conf > tau:
-                valid_candidates.append((c, conf))
-        
         # Sort by Confidence Score (Descending)
-        valid_candidates.sort(key=lambda x: x[1], reverse=True)
+        sorted_candidates = sorted(confs.items(), key=lambda x: x[1], reverse=True)
         
-        # Step 1: Select initial candidates with absolute threshold
-        initial_candidates = []
-        for c, conf in valid_candidates:
-            # Filter by absolute threshold (lowered to be more inclusive)
-            raw_score = candidates.get(c, 0.0) 
-            if raw_score > 0.62:  # Lowered from 0.6546
-                initial_candidates.append(c)
-
-            if len(initial_candidates) >= 9:  # Adaptive top-k (reduced from 12)
-                break
+        # Step 1: Relative Drop + Max K
+        selected_candidates = []
+        if sorted_candidates:
+            selected_candidates.append(sorted_candidates[0]) # Always take top 1
+            
+            for i in range(1, len(sorted_candidates)):
+                # Max K = 10
+                if len(selected_candidates) >= 10:
+                    break
+                
+                # Relative Drop > 0.1
+                curr_conf = sorted_candidates[i][1]
+                prev_conf = sorted_candidates[i-1][1]
+                
+                if prev_conf - curr_conf > 0.1:
+                    break
+                    
+                selected_candidates.append(sorted_candidates[i])
         
-        # Step 2: Level 0 Weighted Voting
-        if not initial_candidates:
+        if not selected_candidates:
             final_core_classes[doc_id] = []
             continue
-        
-        # Get Level 0 of the highest-scoring class (must be included)
-        top_class_level0 = get_level0_ancestor(initial_candidates[0], parents_dict)
-        
-        # Weighted voting: 1st = N points, 2nd = N-1 points, ..., Nth = 1 point
-        level0_scores = defaultdict(float)
-        n = len(initial_candidates)
-        
-        for rank, class_id in enumerate(initial_candidates):
-            points = n - rank  # 1st gets n, 2nd gets n-1, etc.
-            level0_id = get_level0_ancestor(class_id, parents_dict)
-            level0_scores[level0_id] += points
-        
-        # Step 3: Select top 3 Level 0 categories (including top_class_level0)
-        sorted_level0 = sorted(level0_scores.items(), key=lambda x: x[1], reverse=True)
-        
-        # Ensure top_class_level0 is included
-        selected_level0s = {top_class_level0}
-        
-        # Add up to 2 more Level 0s
-        for level0_id, score in sorted_level0:
-            if level0_id not in selected_level0s:
-                selected_level0s.add(level0_id)
-            if len(selected_level0s) >= 2:
-                break
-        
-        # Step 4: Keep only classes from selected Level 0s
-        final_candidates = []
-        for class_id in initial_candidates:
-            level0_id = get_level0_ancestor(class_id, parents_dict)
-            if level0_id in selected_level0s:
-                final_candidates.append(class_id)
             
-        final_core_classes[doc_id] = final_candidates
+        # Step 2: Level 0 Aggregation (Sum)
+        level0_scores = defaultdict(float)
+        for c, conf in selected_candidates:
+            l0 = get_level0_ancestor(c, parents_dict)
+            level0_scores[l0] += conf
+            
+        # Step 3: Level 0 Filtering (Dynamic Ratio 0.6)
+        if not level0_scores:
+            final_core_classes[doc_id] = []
+            continue
+            
+        max_l0_score = max(level0_scores.values())
+        threshold = max_l0_score * 0.6
+        
+        kept_level0s = {l0 for l0, score in level0_scores.items() if score >= threshold}
+        
+        # Final Filter
+        final_list = [c for c, conf in selected_candidates if get_level0_ancestor(c, parents_dict) in kept_level0s]
+        final_core_classes[doc_id] = final_list
         
     return final_core_classes
 
@@ -388,7 +358,6 @@ def expand_labels(core_classes, parents_dict, children_dict, num_classes):
             
         for d in descendants:
             if d not in positives: # Should not mask if it's already positive (rare/impossible in tree)
-                # masks[i, d] = 0.0
-                pass
+                masks[i, d] = 0.0
                 
     return targets, masks
