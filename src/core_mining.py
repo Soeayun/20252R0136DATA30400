@@ -24,9 +24,9 @@ def get_full_path_text(cid, parents_dict, id2class):
 
 def generate_core_classes_sbert_reranker(
     corpus, id2class, doc_ids, parents_dict, children_dict, device, 
-    sbert_model_name="BAAI/bge-m3",
-    reranker_model_name="BAAI/bge-reranker-v2-m3",
-    batch_size=128,
+    sbert_model_name="Alibaba-NLP/gte-Qwen2-1.5B-instruct",
+    reranker_model_name="jinaai/jina-reranker-v3",
+    batch_size=64,  # Safe batch size for Jina-reranker (512 token limit)
     class2keywords=None,
     use_optimized_reranking=True  # 최적화 on/off 옵션
 ):
@@ -55,12 +55,14 @@ def generate_core_classes_sbert_reranker(
     print("Encoding Class Hierarchies...")
     class_ids = sorted(list(id2class.keys()))
     class_texts = []
+    class_keywords_map = {}  # Store selected keywords for reuse in Reranker
     
     for cid in tqdm(class_ids, desc="Encoding Classes"):
         text = get_full_path_text(cid, parents_dict, id2class)
         query_name = id2class[cid].replace('_', ' ')
         
-        # 키워드 선택 (원본 로직 유지)
+        # Select keywords using SBERT similarity
+        selected_keywords = []
         if class2keywords and id2class[cid] in class2keywords:
             raw_keywords = [k.replace('_', ' ') for k in class2keywords[id2class[cid]]]
             
@@ -75,6 +77,7 @@ def generate_core_classes_sbert_reranker(
                 text += f" ({', '.join(selected_keywords)})"
         
         class_texts.append(text)
+        class_keywords_map[cid] = selected_keywords  # Cache for Reranker
     
     class_embeddings = sbert.encode(
         class_texts, 
@@ -100,7 +103,7 @@ def generate_core_classes_sbert_reranker(
             normalize_embeddings=True
         )
         
-        hits = util.semantic_search(doc_embeddings, class_embeddings, top_k=100)
+        hits = util.semantic_search(doc_embeddings, class_embeddings, top_k=120)
         
         for idx, hit_list in enumerate(hits):
             did = batch_dids[idx]
@@ -135,15 +138,23 @@ def generate_core_classes_sbert_reranker(
             
             for cid in candidates:
                 full_path = get_full_path_text(cid, parents_dict, id2class)
-                class_text = f"Category: {full_path}"
+                
+                # Reuse keywords selected during SBERT encoding
+                selected_keywords = class_keywords_map.get(cid, [])
+                if selected_keywords:
+                    kw_text = ", ".join(selected_keywords)
+                    class_text = f"Category: {full_path}. Keywords: {kw_text}"
+                else:
+                    class_text = f"Category: {full_path}"
+                
                 all_pairs.append([class_text, doc_text])
                 pair_metadata.append((did, cid))
         
-        # 한 번에 처리 (큰 배치 사이즈)
+        # Process in batches (safe batch size to avoid OOM)
         print(f"Processing {len(all_pairs)} pairs...")
         all_scores = reranker.predict(
             all_pairs, 
-            batch_size=batch_size * 4,  # 4배 큰 배치
+            batch_size=batch_size,  # Use safe batch size (64)
             show_progress_bar=True
         )
         
@@ -167,7 +178,15 @@ def generate_core_classes_sbert_reranker(
             pairs = []
             for cid in candidates:
                 full_path = get_full_path_text(cid, parents_dict, id2class)
-                class_text = f"Category: {full_path}"
+                
+                # Reuse keywords selected during SBERT encoding
+                selected_keywords = class_keywords_map.get(cid, [])
+                if selected_keywords:
+                    kw_text = ", ".join(selected_keywords)
+                    class_text = f"Category: {full_path}. Keywords: {kw_text}"
+                else:
+                    class_text = f"Category: {full_path}"
+                
                 pairs.append([class_text, doc_text])
             
             scores = reranker.predict(pairs, batch_size=batch_size, show_progress_bar=False)
