@@ -107,6 +107,19 @@ def main():
     # --- 5. Label Expansion --- # Renumbered from 4.4 to 5
     targets, masks = core_mining.expand_labels(core_classes, parents_dict, children_dict, num_classes) # Corrected num_classes
     
+    # --- 5.5 Filter documents with Core Classes ---
+    # Only train on documents that have at least one core class
+    print("Filtering documents with Core Classes...")
+    valid_indices = [i for i, cores in enumerate(core_classes) if len(cores) > 0]
+    filtered_doc_ids = [train_doc_ids[i] for i in valid_indices]
+    filtered_targets = targets[valid_indices]
+    filtered_masks = masks[valid_indices]
+    filtered_corpus = {doc_id: train_corpus[doc_id] for doc_id in filtered_doc_ids}
+    
+    print(f"Original training docs: {len(train_doc_ids)}")
+    print(f"Docs with Core Classes: {len(filtered_doc_ids)} ({len(filtered_doc_ids)/len(train_doc_ids)*100:.1f}%)")
+    print(f"Docs without Core Classes (excluded): {len(train_doc_ids) - len(filtered_doc_ids)}")
+    
     # --- 6. Initialize Model ---
     print("Initializing Model...")
     # Initial Label Embeddings: Use BERT embeddings of class names
@@ -141,10 +154,11 @@ def main():
     # Train on Silver Labels (Core Classes) first to avoid Mode Collapse
     print("Starting Supervised Warm-up...")
     model = trainer.supervised_training_loop(
-        model, train_corpus, bert_tokenizer, 
-        targets, masks, device,
-        epochs=14, batch_size=64, lr=5e-5
+        model, filtered_corpus, bert_tokenizer, 
+        filtered_targets, filtered_masks, device, 
+        epochs=11, batch_size=64, lr=5e-5
     )
+
 
     # --- 7. Self-Training ---
     # TaxoClass uses Multi-label Self-Training with KL Divergence
@@ -188,7 +202,7 @@ def main():
         # Adaptive Thresholding
         # 1. Select classes with prob > 0.5
         p = probs[i]
-        selected = np.where(p > 0.5)[0]
+        selected = np.where(p > 0.65)[0]
         
         # 2. Constraints: At least 2, At most 3
         if len(selected) < 2:

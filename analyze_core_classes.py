@@ -1,113 +1,119 @@
 import json
-import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
+import numpy as np
 from collections import Counter
 
-def analyze_core_class_distribution(file_path, id2class_path=None):
-    """
-    Core Class 분포를 심층 분석하고 시각화합니다.
-    Args:
-        file_path: core_classes.json 파일 경로
-        id2class_path: (선택) id2class.txt 파일 경로 (클래스 이름 매핑용)
-    """
-    print(f"Loading data from: {file_path}")
-    try:
-        with open(file_path, 'r') as f:
-            data = json.load(f)
-    except Exception as e:
-        print(f"❌ Error loading JSON: {e}")
-        return
+def analyze_core_classes(json_path, output_path):
+    # Load data
+    with open(json_path, 'r') as f:
+        data = json.load(f)
 
-    # 1. 기본 통계
-    doc_ids = sorted([int(k) for k in data.keys()])
-    total_docs = len(doc_ids)
+    # Calculate number of classes per document
+    class_counts = [len(classes) for classes in data.values()]
     
-    # 각 문서당 Core Class 개수 리스트
-    counts_per_doc = [len(v) for v in data.values()]
+    # Filter out empty documents for specific plots
+    non_empty_counts = [c for c in class_counts if c > 0]
+
+    # --- Plotting ---
+    fig, axes = plt.subplots(2, 2, figsize=(16, 12))
     
-    # 모든 Core Class ID 모으기 (Flatten)
-    all_classes = []
-    for v in data.values():
-        all_classes.extend(v)
+    # 1. Distribution of Level 0 Classes per Document (Bar Chart)
+    # Count occurrences of each length
+    count_dist = Counter(class_counts)
+    max_count = max(class_counts) if class_counts else 0
+    x_values = range(max_count + 1)
+    y_values = [count_dist.get(x, 0) for x in x_values]
     
-    print("\n" + "="*40)
-    print("📊 Core Class Distribution Summary")
-    print("="*40)
-    print(f"✅ Total Documents: {total_docs}")
-    print(f"✅ Total Core Class Instances: {len(all_classes)}")
-    print("-" * 30)
+    # Limit x-axis if there are too many unique counts, or group 6+
+    # The example image shows 0-6. Let's see what our max is.
+    # If max is large, we might want to cap it at 6 or 7 for the bar chart like the example.
     
-    if not counts_per_doc:
-        print("⚠️ No data found.")
-        return
-
-    # 2. 문서당 개수 통계 (Classes per Document)
-    print(f"📉 Classes per Document Stats:")
-    print(f"   - Min: {min(counts_per_doc)}")
-    print(f"   - Max: {max(counts_per_doc)}")
-    print(f"   - Mean: {np.mean(counts_per_doc):.2f}")
-    print(f"   - Median: {np.median(counts_per_doc):.2f}")
-    print(f"   - Std Dev: {np.std(counts_per_doc):.2f}")
+    display_x = list(range(7))
+    display_y = [count_dist.get(x, 0) for x in display_x]
+    # Add 6+ if needed, but the image shows just 6. Let's stick to the data.
+    # If the data has > 6, we should probably group them or show them.
+    # The image shows "6", implying exactly 6. 
+    # Let's just plot all present counts for now, but if it's too wide, we'll truncate.
     
-    # 0개인 문서 체크
-    empty_docs = [k for k, v in data.items() if len(v) == 0]
-    print(f"   - Empty Docs (0 classes): {len(empty_docs)}")
-    if empty_docs:
-        print(f"     (Sample IDs: {empty_docs[:5]} ...)")
+    axes[0, 0].bar(x_values, y_values, color='skyblue', edgecolor='black')
+    axes[0, 0].set_title('Distribution of Level 0 Classes per Document')
+    axes[0, 0].set_xlabel('Number of Level 0 Classes')
+    axes[0, 0].set_ylabel('Number of Documents')
+    axes[0, 0].grid(axis='y', alpha=0.3)
+    axes[0, 0].set_xticks(x_values)
 
-    # 3. 클래스별 등장 빈도 (Most Common Classes)
-    class_counts = Counter(all_classes)
-    most_common = class_counts.most_common(20)
-    
-    # 클래스 이름 매핑 (id2class 파일이 있다면)
-    id2name = {}
-    if id2class_path:
-        try:
-            with open(id2class_path, 'r') as f:
-                for line in f:
-                    parts = line.strip().split('\t') # 탭이나 공백 구분 확인 필요
-                    if len(parts) >= 2:
-                        id2name[int(parts[0])] = parts[1]
-        except:
-            print("⚠️ id2class mapping skipped (file not found or format error).")
+    # 2. Distribution (Excluding Empty Documents) (Pie Chart)
+    if non_empty_counts:
+        pie_counts = Counter(non_empty_counts)
+        # Group small percentages if necessary? The image shows 1, 2, 3, 4, 5, 6.
+        labels = [f'{k} classes' for k in pie_counts.keys()]
+        sizes = pie_counts.values()
+        
+        # Sort by key to make it ordered
+        sorted_pie = sorted(pie_counts.items())
+        labels = [f'{k} classes' for k, v in sorted_pie]
+        sizes = [v for k, v in sorted_pie]
+        
+        # Use a nice color palette
+        colors = plt.cm.Set3(np.linspace(0, 1, len(sizes)))
+        
+        axes[0, 1].pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90, colors=colors)
+        axes[0, 1].set_title('Distribution (Excluding Empty Documents)')
+    else:
+        axes[0, 1].text(0.5, 0.5, 'No non-empty documents', ha='center')
 
-    print("\n🏆 Top 20 Most Frequent Core Classes:")
-    print(f"{'Class ID':<10} {'Freq':<10} {'Name (if available)':<20}")
-    print("-" * 40)
-    for cid, freq in most_common:
-        name = id2name.get(cid, "Unknown")
-        print(f"{cid:<10} {freq:<10} {name:<20}")
+    # 3. Cumulative Distribution (Line Chart)
+    # Calculate cumulative percentages
+    sorted_counts = sorted(class_counts)
+    n = len(sorted_counts)
+    if n > 0:
+        # We want the percentage of documents having <= k classes
+        # x_values are the unique counts (0, 1, 2...)
+        unique_counts = sorted(list(set(class_counts)))
+        cumulative_y = []
+        for k in unique_counts:
+            count_le_k = sum(1 for c in class_counts if c <= k)
+            cumulative_y.append(count_le_k / n * 100)
+            
+        axes[1, 0].plot(unique_counts, cumulative_y, marker='o', color='green', linewidth=2)
+        axes[1, 0].set_title('Cumulative Distribution')
+        axes[1, 0].set_xlabel('Number of Level 0 Classes')
+        axes[1, 0].set_ylabel('Cumulative Percentage (%)')
+        axes[1, 0].grid(True, alpha=0.3)
+        
+        # Add 50% and 90% lines
+        axes[1, 0].axhline(y=50, color='r', linestyle='--', alpha=0.5, label='50%')
+        axes[1, 0].axhline(y=90, color='orange', linestyle='--', alpha=0.5, label='90%')
+        axes[1, 0].legend()
+        axes[1, 0].set_xticks(unique_counts)
 
-    # 4. 시각화 (Visualization)
-    plt.figure(figsize=(15, 5))
-
-    # A. 문서당 클래스 개수 분포 (Histogram)
-    plt.subplot(1, 2, 1)
-    sns.histplot(counts_per_doc, bins=range(min(counts_per_doc), max(counts_per_doc) + 2), kde=True, color='skyblue')
-    plt.title('Distribution of # Core Classes per Document')
-    plt.xlabel('Number of Core Classes')
-    plt.ylabel('Document Count')
-    plt.axvline(np.mean(counts_per_doc), color='r', linestyle='--', label=f'Mean: {np.mean(counts_per_doc):.1f}')
-    plt.legend()
-
-    # B. 클래스별 등장 빈도 분포 (Long-tail 확인용)
-    plt.subplot(1, 2, 2)
-    sorted_counts = sorted(class_counts.values(), reverse=True)
-    plt.plot(sorted_counts, color='orange')
-    plt.title('Class Frequency Distribution (Long-tail Check)')
-    plt.xlabel('Class Rank')
-    plt.ylabel('Frequency')
-    plt.yscale('log') # 로그 스케일로 보면 Long-tail이 잘 보임
-    plt.grid(True, which="both", ls="-", alpha=0.2)
+    # 4. Histogram (Excluding Empty Documents)
+    if non_empty_counts:
+        mean_val = np.mean(non_empty_counts)
+        median_val = np.median(non_empty_counts)
+        
+        # Bins centered on integers
+        bins = np.arange(min(non_empty_counts) - 0.5, max(non_empty_counts) + 1.5, 1)
+        
+        axes[1, 1].hist(non_empty_counts, bins=bins, color='lightsalmon', edgecolor='black', alpha=0.8)
+        axes[1, 1].set_title('Histogram (Excluding Empty Documents)')
+        axes[1, 1].set_xlabel('Number of Level 0 Classes')
+        axes[1, 1].set_ylabel('Frequency')
+        axes[1, 1].grid(axis='y', alpha=0.3)
+        
+        # Add mean and median lines
+        axes[1, 1].axvline(mean_val, color='red', linestyle='--', linewidth=2, label=f'Mean: {mean_val:.2f}')
+        axes[1, 1].axvline(median_val, color='green', linestyle='--', linewidth=2, label=f'Median: {median_val}')
+        axes[1, 1].legend()
+        
+        # Set x-ticks to integers
+        axes[1, 1].set_xticks(range(min(non_empty_counts), max(non_empty_counts) + 1))
 
     plt.tight_layout()
-    plt.show()
+    plt.savefig(output_path)
+    print(f"Analysis plot saved to {output_path}")
 
-# --- 실행 ---
-# 경로를 본인 환경에 맞게 수정하세요.
-core_file = 'checkpoints/core_classes.json'
-# id2class 파일이 있다면 경로를 넣어주세요 (없으면 None)
-id_map_file = None 
-
-analyze_core_class_distribution(core_file, id_map_file)
+if __name__ == "__main__":
+    json_path = 'checkpoints/core_classes.json'
+    output_path = 'core_classes_analysis.png'
+    analyze_core_classes(json_path, output_path)

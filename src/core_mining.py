@@ -22,6 +22,15 @@ def get_full_path_text(cid, parents_dict, id2class):
     
     return " > ".join(path[::-1])
 
+def find_level0_ancestor(cid, parents_dict):
+    """Find the Level 0 (root) ancestor of a given class"""
+    curr = cid
+    while True:
+        parents = parents_dict.get(curr, [])
+        if not parents:
+            return curr  # This is a root (Level 0)
+        curr = parents[0]  # Follow first parent
+
 def generate_core_classes_sbert_reranker(
     corpus, id2class, doc_ids, parents_dict, children_dict, device, 
     sbert_model_name="BAAI/bge-m3",
@@ -264,12 +273,59 @@ def identify_confident_core_classes(doc_candidates, parents_dict, children_dict)
             # Filter by Threshold (Min-Max Scaled)
             # Need to retrieve the raw NLI score for 'c' from 'candidates'
             raw_score = candidates.get(c, 0.0) 
-            if raw_score > 0.5005:
+            if raw_score > 0.5006:
                 final_candidates.append(c)
 
-            if len(final_candidates) >= 15: # Top-3 제한 추가
+            if len(final_candidates) >= 7: # Top-3 제한 추가
                 break
 
+        # --- Level 0 Filtering ---
+        # If document has 3+ Level 0 classes, keep only top-2 Level 0 classes
+        if len(final_candidates) > 0:
+            # Calculate max score per Level 0 class
+            level0_scores = {}
+            for c in final_candidates:
+                lv0 = find_level0_ancestor(c, parents_dict)
+                raw_score = candidates.get(c, 0.0)
+                level0_scores[lv0] = max(level0_scores.get(lv0, 0.0), raw_score)
+            
+            num_level0 = len(level0_scores)
+            
+            if num_level0 >= 3:
+                # Keep top-2 Level 0 classes
+                top2_level0 = sorted(level0_scores.items(), 
+                                    key=lambda x: x[1], reverse=True)[:2]
+                top2_ids = {lv0 for lv0, _ in top2_level0}
+                
+                # Filter candidates
+                final_candidates = [c for c in final_candidates 
+                                   if find_level0_ancestor(c, parents_dict) in top2_ids]
+            elif num_level0 == 0:
+                # No valid Level 0 ancestors found - clear candidates
+                final_candidates = []
+            # If num_level0 == 1 or 2, keep all candidates as-is
+        
+        # --- Count Ratio Filtering (AFTER Level 0 filtering) ---
+        # If 2 Level 0s remain and 1st has 2x more classes, keep only 1st
+        if len(final_candidates) > 0:
+            # Re-calculate counts after filtering
+            level0_counts_final = defaultdict(int)
+            for c in final_candidates:
+                lv0 = find_level0_ancestor(c, parents_dict)
+                level0_counts_final[lv0] += 1
+            
+            if len(level0_counts_final) == 2:
+                sorted_lv0 = sorted(level0_counts_final.items(), 
+                                   key=lambda x: x[1], reverse=True)
+                first_count = sorted_lv0[0][1]
+                second_count = sorted_lv0[1][1]
+                ratio = first_count / second_count
+                
+                if ratio > 1.0:
+                    # Keep only 1st Level 0
+                    top1_id = sorted_lv0[0][0]
+                    final_candidates = [c for c in final_candidates 
+                                       if find_level0_ancestor(c, parents_dict) == top1_id]
             
         final_core_classes[doc_id] = final_candidates
         
