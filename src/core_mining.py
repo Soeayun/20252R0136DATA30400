@@ -387,7 +387,7 @@ def expand_labels(core_classes, parents_dict, children_dict, num_classes):
             
         for d in descendants:
             if d not in positives: # Should not mask if it's already positive (rare/impossible in tree)
-                # masks[i, d] = 0.0
+                #masks[i, d] = 0.0
                 pass
                 
     return targets, masks

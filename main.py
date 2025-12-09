@@ -111,11 +111,31 @@ def main():
         for doc_id in train_doc_ids: # Use train_doc_ids
             core_classes.append(confident_core_classes.get(doc_id, []))
 
-    # --- 5. Label Expansion --- # Renumbered from 4.4 to 5
-    targets, masks = core_mining.expand_labels(core_classes, parents_dict, children_dict, num_classes) # Corrected num_classes
+    # --- 5. Pre-filter documents with 0 or 2 Level 0 classes ---
+    print("Filtering documents by Level 0 class count...")
+    excluded_level0_count = 0
+    for i, cores in enumerate(core_classes):
+        if len(cores) > 0:
+            # Count unique Level 0 ancestors
+            level0_classes = set()
+            for c in cores:
+                lv0 = core_mining.find_level0_ancestor(c, parents_dict)
+                level0_classes.add(lv0)
+            
+            num_level0 = len(level0_classes)
+            
+            # Exclude documents with 0 or 2 Level 0 classes
+            if num_level0 == 0 or num_level0 == 2:
+                core_classes[i] = []  # Clear core classes for this document
+                excluded_level0_count += 1
     
-    # --- 5.5 Filter documents with Core Classes ---
-    # Only train on documents that have at least one core class
+    print(f"Excluded {excluded_level0_count} docs with 0 or 2 Level 0 classes")
+    
+    # --- 5.5. Label Expansion ---
+    targets, masks = core_mining.expand_labels(core_classes, parents_dict, children_dict, num_classes)
+    
+    # --- 5.6 Filter documents with Core Classes ---
+    # Only train on documents that have at least one core class (after Level 0 filtering)
     print("Filtering documents with Core Classes...")
     valid_indices = [i for i, cores in enumerate(core_classes) if len(cores) > 0]
     filtered_doc_ids = [train_doc_ids[i] for i in valid_indices]
