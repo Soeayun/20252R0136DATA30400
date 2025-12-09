@@ -311,8 +311,9 @@ def identify_confident_core_classes(doc_candidates, parents_dict, children_dict)
             # If num_level0 == 1 or 2, keep all candidates as-is
         
         # --- Count Ratio Filtering (AFTER Level 0 filtering) ---
-        # If 2 Level 0s remain and 1st has 2x more classes, keep only 1st
-        # ELSE (ratio <= 2): Mark as ambiguous for LLM refinement
+        # Send to LLM if: Level 0 = 1 or 2
+        # - Level 0 = 1: LLM decides if this is the right class
+        # - Level 0 = 2: LLM decides which one(s) to keep
         if len(final_candidates) > 0:
             # Re-calculate counts after filtering
             level0_counts_final = defaultdict(int)
@@ -320,20 +321,26 @@ def identify_confident_core_classes(doc_candidates, parents_dict, children_dict)
                 lv0 = find_level0_ancestor(c, parents_dict)
                 level0_counts_final[lv0] += 1
             
-            if len(level0_counts_final) == 2:
-                sorted_lv0 = sorted(level0_counts_final.items(), 
-                                   key=lambda x: x[1], reverse=True)
-                first_count = sorted_lv0[0][1]
-                second_count = sorted_lv0[1][1]
-                ratio = first_count / second_count
-                
-                if ratio > 10:
-                    # Keep only 1st Level 0 (확실한 경우)
-                    top1_id = sorted_lv0[0][0]
-                    final_candidates = [c for c in final_candidates 
-                                       if find_level0_ancestor(c, parents_dict) == top1_id]
+            # Send to LLM if Level 0 = 1 or 2
+            if len(level0_counts_final) in [1, 2]:
+                if len(level0_counts_final) == 2:
+                    # Check ratio for Level 0 = 2 cases
+                    sorted_lv0 = sorted(level0_counts_final.items(), 
+                                       key=lambda x: x[1], reverse=True)
+                    first_count = sorted_lv0[0][1]
+                    second_count = sorted_lv0[1][1]
+                    ratio = first_count / second_count
+                    
+                    if ratio > 10:
+                        # Very confident - keep only 1st Level 0
+                        top1_id = sorted_lv0[0][0]
+                        final_candidates = [c for c in final_candidates 
+                                           if find_level0_ancestor(c, parents_dict) == top1_id]
+                    else:
+                        # Ambiguous - send to LLM
+                        ambiguous_doc_ids.append(doc_id)
                 else:
-                    # ratio <= 2: Ambiguous! Needs LLM judgment
+                    # Level 0 = 1: Also send to LLM for verification
                     ambiguous_doc_ids.append(doc_id)
             
         final_core_classes[doc_id] = final_candidates

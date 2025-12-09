@@ -56,7 +56,7 @@ def main():
     print("\n[3] Running LLM refinement...")
     
     # Set batch size
-    batch_size = 20  # Can be adjusted: 10, 20, 30, etc.
+    batch_size = 29  # Can be adjusted: 10, 20, 30, etc.
     
     print("  Settings:")
     print(f"    - Max API calls: 1,000")
