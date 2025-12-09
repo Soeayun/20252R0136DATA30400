@@ -89,7 +89,7 @@ def main():
     # 4. Load Checkpoint
     # Find the latest checkpoint
     latest_ckpt = None
-    for i in range(11, 0, -1): # Check up to 10 iterations
+    for i in range(22, 0, -1): # Check up to 10 iterations
         ckpt_path = os.path.join(CHECKPOINT_DIR, f'warmup_epoch_{i}.pth')
         if os.path.exists(ckpt_path):
             latest_ckpt = ckpt_path
@@ -129,7 +129,7 @@ def main():
     for i in range(len(test_doc_ids)):
         # Adaptive Thresholding Logic
         p = probs[i]
-        selected = np.where(p > 0.65)[0]
+        selected = np.where(p > 0.5)[0]
         
         if len(selected) < 2:
             selected = np.argsort(p)[-2:]

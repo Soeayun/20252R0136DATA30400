@@ -163,7 +163,7 @@ def main():
     model = trainer.supervised_training_loop(
         model, filtered_corpus, bert_tokenizer, 
         filtered_targets, filtered_masks, device, 
-        epochs=11, batch_size=64, lr=5e-5
+        epochs=22, batch_size=64, lr=5e-5
     )
 
 
