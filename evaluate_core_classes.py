@@ -33,6 +33,8 @@ with open('ground_truth_100samples.json', 'r') as f:
 # Load current core classes
 with open('checkpoints/core_classes.json', 'r') as f:
     core_classes = json.load(f)
+with open('checkpoints/core_classes_llm_refined.json', 'r') as f:
+    core_classes= json.load(f)
 
 print("="*120)
 print("GROUND TRUTH EVALUATION - 100 SAMPLES")

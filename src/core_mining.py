@@ -206,6 +206,10 @@ def identify_confident_core_classes(doc_candidates, parents_dict, children_dict)
     conf(D, c) = sim(D,c) - max(sim(D, parents), sim(D, siblings))
     tau_c = median({conf(D', c) for all D' where c in candidates})
     Select c if conf(D, c) > tau_c
+    
+    Returns:
+        final_core_classes: {doc_id: [core_class1, core_class2, ...]}
+        ambiguous_doc_ids: [doc_id1, doc_id2, ...] where ratio <= 2 (needs LLM)
     """
     print("Identifying Confident Core Classes...")
     
@@ -248,8 +252,9 @@ def identify_confident_core_classes(doc_candidates, parents_dict, children_dict)
         else:
             class_thresholds[c] = 0.0 # Should not happen if c is in candidates
             
-    # 3. Filter and Top-3 Selection
+    # 3. Filter and Top-K Selection
     final_core_classes = {} # {doc_id: [core_class1, core_class2]}
+    ambiguous_doc_ids = []  # Track docs needing LLM refinement
     
     for doc_id, confs in doc_confidences.items():
         # [Fix] Retrieve candidates for the current document
@@ -276,7 +281,7 @@ def identify_confident_core_classes(doc_candidates, parents_dict, children_dict)
             if raw_score > 0.5006:
                 final_candidates.append(c)
 
-            if len(final_candidates) >= 7: # Top-3 제한 추가
+            if len(final_candidates) >= 10: # Top-3 제한 추가
                 break
 
         # --- Level 0 Filtering ---
@@ -307,6 +312,7 @@ def identify_confident_core_classes(doc_candidates, parents_dict, children_dict)
         
         # --- Count Ratio Filtering (AFTER Level 0 filtering) ---
         # If 2 Level 0s remain and 1st has 2x more classes, keep only 1st
+        # ELSE (ratio <= 2): Mark as ambiguous for LLM refinement
         if len(final_candidates) > 0:
             # Re-calculate counts after filtering
             level0_counts_final = defaultdict(int)
@@ -321,15 +327,23 @@ def identify_confident_core_classes(doc_candidates, parents_dict, children_dict)
                 second_count = sorted_lv0[1][1]
                 ratio = first_count / second_count
                 
-                if ratio > 1.0:
-                    # Keep only 1st Level 0
+                if ratio > 2:
+                    # Keep only 1st Level 0 (확실한 경우)
                     top1_id = sorted_lv0[0][0]
                     final_candidates = [c for c in final_candidates 
                                        if find_level0_ancestor(c, parents_dict) == top1_id]
+                else:
+                    # ratio <= 2: Ambiguous! Needs LLM judgment
+                    ambiguous_doc_ids.append(doc_id)
             
         final_core_classes[doc_id] = final_candidates
+    
+    print(f"\n📊 Core Class Statistics:")
+    print(f"   Total documents: {len(final_core_classes)}")
+    print(f"   Ambiguous (ratio ≤ 2): {len(ambiguous_doc_ids)} docs → LLM refinement needed")
+    print(f"   Confident: {len(final_core_classes) - len(ambiguous_doc_ids)} docs")
         
-    return final_core_classes
+    return final_core_classes, ambiguous_doc_ids
 
 # 
 

@@ -75,8 +75,10 @@ def analyze_level0_distribution():
     
     # Load core classes
     print("\nLoading core classes...")
-    with open('checkpoints/core_classes.json', 'r') as f:
+    with open('checkpoints/core_classes_llm_refined.json', 'r') as f:
         core_classes = json.load(f)
+    #with open('checkpoints/core_classes.json', 'r') as f:
+    #    core_classes = json.load(f)
     
     # Analyze level 0 distribution
     level0_counts = []  # Number of distinct level 0 classes per document

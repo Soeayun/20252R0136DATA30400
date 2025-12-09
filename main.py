@@ -43,7 +43,8 @@ def main():
     # For now, let's focus on Train Corpus for Silver Label Generation.
     
     # --- 4. Core Class Mining ---
-    CORE_CLASSES_CACHE = os.path.join("checkpoints", "core_classes.json")
+    # CORE_CLASSES_CACHE = os.path.join("checkpoints", "core_classes.json")
+    CORE_CLASSES_CACHE = os.path.join("checkpoints", "core_classes_llm_refined.json")
     train_doc_ids = sorted(list(train_corpus.keys())) # Ensure train_doc_ids is defined for the new section
     
     if os.path.exists(CORE_CLASSES_CACHE):
@@ -90,7 +91,7 @@ def main():
                 json.dump(doc_candidates, f)
         
         # 4.2 Confident Core Class Identification
-        confident_core_classes = core_mining.identify_confident_core_classes(
+        confident_core_classes, ambiguous_doc_ids = core_mining.identify_confident_core_classes(
             doc_candidates, parents_dict, children_dict
         )
         
@@ -98,6 +99,12 @@ def main():
         print(f"Saved Core Classes to {CORE_CLASSES_CACHE}")
         with open(CORE_CLASSES_CACHE, 'w') as f:
             json.dump(confident_core_classes, f)
+        
+        # Save ambiguous doc IDs for LLM refinement
+        AMB_IDS_CACHE = os.path.join("checkpoints", "ambiguous_doc_ids.json")
+        with open(AMB_IDS_CACHE, 'w') as f:
+            json.dump(ambiguous_doc_ids, f)
+        print(f"Saved {len(ambiguous_doc_ids)} ambiguous doc IDs to {AMB_IDS_CACHE}")
             
         # Convert to list of lists for next steps
         core_classes = []
