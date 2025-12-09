@@ -27,17 +27,15 @@ with open('Amazon_products/classes.txt', 'r') as f:
             id2class[int(parts[0])] = parts[1]
 
 # Load ground truth
-with open('ground_truth_100samples.json', 'r') as f:
+with open('ground_truth_150samples.json', 'r') as f:
     ground_truth = json.load(f)
 
 # Load current core classes
-with open('checkpoints/core_classes.json', 'r') as f:
-    core_classes = json.load(f)
 with open('checkpoints/core_classes_llm_refined.json', 'r') as f:
-    core_classes= json.load(f)
+    core_classes = json.load(f)
 
 print("="*120)
-print("GROUND TRUTH EVALUATION - 100 SAMPLES")
+print("GROUND TRUTH EVALUATION - 150 SAMPLES")
 print("="*120)
 print()
 
