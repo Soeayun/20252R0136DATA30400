@@ -54,13 +54,17 @@ def main():
     
     # Run LLM refinement (no need for Level 0 mapping - direct class selection!)
     print("\n[3] Running LLM refinement...")
+    
+    # Set batch size
+    batch_size = 20  # Can be adjusted: 10, 20, 30, etc.
+    
     print("  Settings:")
     print(f"    - Max API calls: 1,000")
-    print(f"    - Batch size: 10 documents per call")
+    print(f"    - Batch size: {batch_size} documents per call")
     print(f"    - Parallel calls: 10 (balanced for rate limits)")
     print(f"    - Target: {len(ambiguous_doc_ids)} ambiguous docs (ratio ≤ 2)")
     print(f"    - Task: Select 0-3 true core classes from up to 10 candidates")
-    print(f"    - Expected API calls: {(len(ambiguous_doc_ids) + 9) // 10}")
+    print(f"    - Expected API calls: {(len(ambiguous_doc_ids) + batch_size - 1) // batch_size}")
     print(f"    - Rate limit: 200K TPM (with auto-retry)")
     
     input("\n⏸️  Press Enter to start LLM refinement (this will use API credits)...")
@@ -72,7 +76,7 @@ def main():
         id2class=id2class,
         ambiguous_doc_ids=ambiguous_doc_ids,
         max_api_calls=1000,
-        batch_size=10,
+        batch_size=batch_size,  # Use variable
         checkpoint_path="checkpoints/llm_refinement_checkpoint.json"
     )
     

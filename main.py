@@ -43,7 +43,7 @@ def main():
     # For now, let's focus on Train Corpus for Silver Label Generation.
     
     # --- 4. Core Class Mining ---
-    # CORE_CLASSES_CACHE = os.path.join("checkpoints", "core_classes.json")
+    #CORE_CLASSES_CACHE = os.path.join("checkpoints", "core_classes.json")
     CORE_CLASSES_CACHE = os.path.join("checkpoints", "core_classes_llm_refined.json")
     train_doc_ids = sorted(list(train_corpus.keys())) # Ensure train_doc_ids is defined for the new section
     

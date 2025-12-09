@@ -30,7 +30,7 @@ if not openai.api_key:
 
 API_MODEL = "gpt-4o-mini"
 MAX_API_CALLS = 1000
-BATCH_SIZE = 10
+BATCH_SIZE = 20
 MAX_PARALLEL_CALLS = 10  # 10 parallel calls to balance speed and rate limits
 
 

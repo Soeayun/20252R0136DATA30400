@@ -327,7 +327,7 @@ def identify_confident_core_classes(doc_candidates, parents_dict, children_dict)
                 second_count = sorted_lv0[1][1]
                 ratio = first_count / second_count
                 
-                if ratio > 2:
+                if ratio > 10:
                     # Keep only 1st Level 0 (확실한 경우)
                     top1_id = sorted_lv0[0][0]
                     final_candidates = [c for c in final_candidates 
