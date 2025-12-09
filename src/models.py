@@ -35,10 +35,15 @@ class LabelGCN(nn.Module):
         # adj: (num_classes, num_classes) sparse tensor
         
         for i, layer in enumerate(self.layers):
+            identity = x  # Save input for skip connection
+            
             # Message Passing: AX
             x = torch.sparse.mm(adj, x)
             # Linear Transform: XW
             x = layer(x)
+            
+            # Skip Connection (Residual)
+            x = x + identity
             
             # Activation & Dropout (except last layer)
             if i < len(self.layers) - 1:
