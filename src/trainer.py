@@ -211,7 +211,7 @@ def self_training_loop(model, train_corpus, test_corpus, tokenizer,
     for iteration in range(start_iteration, num_iterations):
         print(f"\n--- Iteration {iteration + 1}/{num_iterations} ---")
         
-        # 1. Calculate Class Frequencies (f_j) once per iteration
+        # 1. Calculate initial Class Frequencies (f_j)
         # These cached statistics are used to normalize Q distribution
         print("Calculating Class Frequencies (Cached Statistics)...")
         logits, _ = predict(model, full_dataloader, device)
@@ -236,24 +236,26 @@ def self_training_loop(model, train_corpus, test_corpus, tokenizer,
         
         for epoch in range(epochs_per_iter):
             epoch_loss = 0
-            
-            # Update f_j at the start of each epoch for freshness
-            if epoch > 0:
-                print(f"  Updating f_j for epoch {epoch+1}...")
-                model.eval()
-                with torch.no_grad():
-                    temp_logits, _ = predict(model, full_dataloader, device)
-                    temp_probs = torch.sigmoid(torch.tensor(temp_logits)).numpy()
-                    f_j = temp_probs.sum(axis=0)
-                    f_j = np.maximum(f_j, 1e-8)
-                    f_j_tensor = torch.tensor(f_j, dtype=torch.float).to(device)
-                    f_j_neg = N_docs - f_j_tensor
-                    f_j_neg = torch.maximum(f_j_neg, torch.tensor(1e-8).to(device))
-                model.train()
+            batch_count = 0
             
             for batch in tqdm(st_dataloader, desc=f"ST Epoch {epoch+1}/{epochs_per_iter}"):
                 input_ids = batch['input_ids'].to(device)
                 attention_mask = batch['attention_mask'].to(device)
+                
+                # --- Update f_j every 25 batches (as per paper) ---
+                if batch_count > 0 and batch_count % 100 == 0:
+                    print(f"\n  Updating f_j at batch {batch_count}...")
+                    # Re-calculate class frequencies from current model predictions
+                    model.eval()
+                    with torch.no_grad():
+                        temp_logits, _ = predict(model, full_dataloader, device)
+                        temp_probs = torch.sigmoid(torch.tensor(temp_logits)).numpy()
+                        f_j = temp_probs.sum(axis=0)
+                        f_j = np.maximum(f_j, 1e-8)
+                        f_j_tensor = torch.tensor(f_j, dtype=torch.float).to(device)
+                        f_j_neg = N_docs - f_j_tensor
+                        f_j_neg = torch.maximum(f_j_neg, torch.tensor(1e-8).to(device))
+                    model.train()
                 
                 optimizer.zero_grad()
                 logits = model(input_ids, attention_mask)
@@ -281,6 +283,7 @@ def self_training_loop(model, train_corpus, test_corpus, tokenizer,
                 optimizer.step()
                 
                 epoch_loss += loss.item()
+                batch_count += 1
             
             avg_loss = epoch_loss / len(st_dataloader)
             print(f"Iter {iteration+1}, Epoch {epoch+1} - ST Loss: {avg_loss:.4f}")

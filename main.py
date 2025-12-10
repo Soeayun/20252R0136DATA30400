@@ -304,21 +304,21 @@ def main():
     # - Soft selection: Q distribution auto-weights by confidence
     # - No hard threshold, down-weights uncertain predictions
     # - More aligned with paper's original approach
-    # - Updates cached statistics (f_j) once per epoch (efficient)
+    # - Updates cached statistics (f_j) every 25 batches (as per paper)
     # - Dynamic Q computed per batch from current predictions
     from src import test_taxoclass_training
     
-    model = test_taxoclass_training.taxoclass_test_corpus_training(
-        model=model,
-        tokenizer=bert_tokenizer,
-        device=device,
-        current_labeled_corpus=current_labeled_corpus,
-        test_corpus=test_corpus,
-        num_iterations=1,      # More iterations for frequent Q updates
-        epochs_per_iter=1,     # Fewer epochs to prevent stale Q
-        batch_size=32,
-        lr=1e-5
-    )
+   # model = test_taxoclass_training.taxoclass_test_corpus_training(
+   #     model=model,
+   #     tokenizer=bert_tokenizer,
+   #     device=device,
+   #     current_labeled_corpus=current_labeled_corpus,
+   #     test_corpus=test_corpus,
+   #     num_iterations=1,      # More iterations for frequent Q updates
+   #     epochs_per_iter=1,     # Fewer epochs to prevent stale Q
+   #     batch_size=32,
+   #     lr=1e-5
+   # )
     
     print(f"\n{'='*80}")
     print(f"All Self-Training Complete")
