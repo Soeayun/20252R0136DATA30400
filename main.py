@@ -269,30 +269,56 @@ def main():
     print(f"Train Corpus Self-Training Complete - {iteration+1} iterations")
     print(f"{'='*80}")
 
-    # --- 8. Iterative Test Corpus Self-Training (High Confidence) ---
-    # Uncomment the line below to enable test corpus self-training
+    # --- 8. Test Corpus Self-Training ---
+    # Choose ONE of the following methods:
+    
+    # METHOD 1: Hard Selection (Iterative, Top-N per iteration)
+    # - Selects top 1500 highest confidence docs per iteration
+    # - Uses hard labels (0 or 1)
+    # - More conservative, processes data incrementally
     from src import test_corpus_training
     
-    model, current_labeled_doc_ids, current_labeled_corpus, current_labeled_targets, current_labeled_masks, used_test_doc_ids = \
-        test_corpus_training.iterative_test_corpus_training(
-            model=model,
-            tokenizer=bert_tokenizer,
-            device=device,
-            current_labeled_doc_ids=current_labeled_doc_ids,
-            current_labeled_corpus=current_labeled_corpus,
-            current_labeled_targets=current_labeled_targets,
-            current_labeled_masks=current_labeled_masks,
-            test_corpus=test_corpus,
-            parents_dict=parents_dict,
-            children_dict=children_dict,
-            num_classes=len(id2class),
-            num_iterations=3,      # Number of test corpus iterations
-            docs_per_iteration=1500,  # Documents per iteration
-            threshold=0.995,       # High confidence threshold
-            epochs=3,              # Training epochs per iteration
-            batch_size=64,
-            lr=3e-5
-        )
+    #model, current_labeled_doc_ids, current_labeled_corpus, current_labeled_targets, current_labeled_masks, used_test_doc_ids = \
+    #    test_corpus_training.iterative_test_corpus_training(
+    #        model=model,
+    #        tokenizer=bert_tokenizer,
+    #        device=device,
+    #        current_labeled_doc_ids=current_labeled_doc_ids,
+    #        current_labeled_corpus=current_labeled_corpus,
+    #        current_labeled_targets=current_labeled_targets,
+    #        current_labeled_masks=current_labeled_masks,
+    #        test_corpus=test_corpus,
+    #        parents_dict=parents_dict,
+    #        children_dict=children_dict,
+    #        num_classes=len(id2class),
+    #        num_iterations=3,      # Number of test corpus iterations
+    #        docs_per_iteration=1500,  # Documents per iteration
+    #        threshold=0.995,       # High confidence threshold
+    #        epochs=3,              # Training epochs per iteration
+    #        batch_size=64,
+    #        lr=3e-5
+    #    )
+    
+    # METHOD 2: TaxoClass Original (Soft Selection with KL Divergence)
+    # - Uses ALL test documents
+    # - Soft selection: Q distribution auto-weights by confidence
+    # - No hard threshold, down-weights uncertain predictions
+    # - More aligned with paper's original approach
+    # - Updates cached statistics (f_j) once per epoch (efficient)
+    # - Dynamic Q computed per batch from current predictions
+    from src import test_taxoclass_training
+    
+    model = test_taxoclass_training.taxoclass_test_corpus_training(
+        model=model,
+        tokenizer=bert_tokenizer,
+        device=device,
+        current_labeled_corpus=current_labeled_corpus,
+        test_corpus=test_corpus,
+        num_iterations=1,      # More iterations for frequent Q updates
+        epochs_per_iter=1,     # Fewer epochs to prevent stale Q
+        batch_size=32,
+        lr=1e-5
+    )
     
     print(f"\n{'='*80}")
     print(f"All Self-Training Complete")

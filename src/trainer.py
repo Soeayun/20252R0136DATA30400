@@ -211,38 +211,47 @@ def self_training_loop(model, train_corpus, test_corpus, tokenizer,
     for iteration in range(start_iteration, num_iterations):
         print(f"\n--- Iteration {iteration + 1}/{num_iterations} ---")
         
-        # 1. Predict P on all data
+        # 1. Calculate Class Frequencies (f_j) once per iteration
+        # These cached statistics are used to normalize Q distribution
+        print("Calculating Class Frequencies (Cached Statistics)...")
         logits, _ = predict(model, full_dataloader, device)
         probs = torch.sigmoid(torch.tensor(logits)).numpy()
         
-        # 2. Calculate Class Frequencies (Cached Statistics)
-        # Instead of fixing Q for the whole epoch, we fix the normalization factor f_j = sum_i p_ij
-        # and update Q dynamically for each batch using the current model predictions.
-        print("Calculating Class Frequencies (Cached Statistics)...")
-        # probs shape: (N, C)
-        # f_j shape: (C,)
-        f_j = probs.sum(axis=0)
-        
-        # Avoid division by zero
-        f_j = np.maximum(f_j, 1e-8)
-        
-        # Convert to torch tensor for use in training loop
+        # f_j = sum of probabilities for each class across all documents
+        f_j = probs.sum(axis=0)  # shape: (C,)
+        f_j = np.maximum(f_j, 1e-8)  # Avoid division by zero
         f_j_tensor = torch.tensor(f_j, dtype=torch.float).to(device)
         
-        # 3. Train with Dynamic Q
-        # We iterate over the dataset, but we don't use the pre-calculated targets_q.
-        # Instead, we calculate Q on the fly.
+        # Calculate negative frequency (for binary normalization)
+        N_docs = len(all_doc_ids)
+        f_j_neg = N_docs - f_j_tensor
+        f_j_neg = torch.maximum(f_j_neg, torch.tensor(1e-8).to(device))
         
-        # Create dataset without targets (we compute them on the fly)
+        # 2. Train with Dynamic Q
+        # Q is computed dynamically per batch from current predictions
         st_dataset = TextDataset(all_doc_ids, all_corpus, tokenizer, targets=None, masks=None, max_len=128)
         st_dataloader = DataLoader(st_dataset, batch_size=batch_size, shuffle=True)
         
         model.train()
-        total_loss = 0
         
         for epoch in range(epochs_per_iter):
             epoch_loss = 0
-            for batch in tqdm(st_dataloader, desc=f"ST Training Epoch {epoch+1}"):
+            
+            # Update f_j at the start of each epoch for freshness
+            if epoch > 0:
+                print(f"  Updating f_j for epoch {epoch+1}...")
+                model.eval()
+                with torch.no_grad():
+                    temp_logits, _ = predict(model, full_dataloader, device)
+                    temp_probs = torch.sigmoid(torch.tensor(temp_logits)).numpy()
+                    f_j = temp_probs.sum(axis=0)
+                    f_j = np.maximum(f_j, 1e-8)
+                    f_j_tensor = torch.tensor(f_j, dtype=torch.float).to(device)
+                    f_j_neg = N_docs - f_j_tensor
+                    f_j_neg = torch.maximum(f_j_neg, torch.tensor(1e-8).to(device))
+                model.train()
+            
+            for batch in tqdm(st_dataloader, desc=f"ST Epoch {epoch+1}/{epochs_per_iter}"):
                 input_ids = batch['input_ids'].to(device)
                 attention_mask = batch['attention_mask'].to(device)
                 
@@ -250,17 +259,12 @@ def self_training_loop(model, train_corpus, test_corpus, tokenizer,
                 logits = model(input_ids, attention_mask)
                 
                 # --- Dynamic Q Calculation (Binary DEC with Cached Statistics) ---
-                # P: Current predictions
-                current_probs = torch.sigmoid(logits) # (Batch, C)
+                # P: Current predictions for this batch
+                current_probs = torch.sigmoid(logits)  # (Batch, C)
                 
-                # Q Calculation:
-                # We adapt DEC formula for Multi-label (Binary) classification.
-                # q_ij = (p_ij^2 / f_j) / ( (p_ij^2 / f_j) + ((1-p_ij)^2 / (N - f_j)) )
-                # This balances sharpening based on class frequency f_j.
-                
-                N_docs = len(all_doc_ids)
-                f_j_neg = N_docs - f_j_tensor
-                f_j_neg = torch.maximum(f_j_neg, torch.tensor(1e-8).to(device))
+                # Q Calculation (per paper):
+                # q_ij = (p_ij^2 / f_j) / ((p_ij^2 / f_j) + ((1-p_ij)^2 / (N - f_j)))
+                # This sharpens high-confidence predictions and down-weights uncertain ones
                 
                 # Positive term: p^2 / f
                 q_pos = (current_probs ** 2) / f_j_tensor
@@ -268,10 +272,10 @@ def self_training_loop(model, train_corpus, test_corpus, tokenizer,
                 # Negative term: (1-p)^2 / (N-f)
                 q_neg = ((1 - current_probs) ** 2) / f_j_neg
                 
-                # Normalized Target Q
+                # Normalized Target Q (soft labels)
                 batch_targets = q_pos / (q_pos + q_neg)
                 
-                # Calculate Loss
+                # Calculate Loss: KL(Q||P) ≡ BCE(Q, logits) when Q is constant
                 loss = st_criterion(logits, batch_targets)
                 loss.backward()
                 optimizer.step()
