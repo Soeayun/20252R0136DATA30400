@@ -169,78 +169,134 @@ def main():
         epochs=11, batch_size=64, lr=5e-5
     )
 
-    # --- 7. Self-Training with Unlabeled Documents ---
+    # --- 7. Iterative Self-Training with Unlabeled Documents ---
     print("\n" + "="*80)
-    print("Self-Training Phase")
+    print("Iterative Self-Training Phase")
     print("="*80)
     
     from src import self_training
     
-    # Identify documents with NO core classes (excluded from warm-up)
-    unlabeled_indices = self_training.identify_unlabeled_documents(
-        confident_core_classes, 
-        train_doc_ids
-    )
+    # Configuration
+    NUM_ITERATIONS = 2  # Number of self-training iterations
+    EPOCHS_PER_ITERATION = 3  # Epochs for each re-training
     
-    print(f"\n📊 Unlabeled Documents: {len(unlabeled_indices):,} ({len(unlabeled_indices)/len(train_doc_ids)*100:.1f}%)")
+    # Start with warmup data as labeled dataitera
+    current_labeled_doc_ids = filtered_doc_ids
+    current_labeled_corpus = filtered_corpus
+    current_labeled_targets = filtered_targets
+    current_labeled_masks = filtered_masks
     
-    if len(unlabeled_indices) > 0:
-        # Prepare unlabeled data
-        unlabeled_doc_ids = [train_doc_ids[i] for i in unlabeled_indices]
+    # Track already labeled documents (warmup + pseudo from all iterations)
+    already_labeled_set = set(filtered_doc_ids)
+    
+    for iteration in range(NUM_ITERATIONS):
+        print(f"\n{'='*80}")
+        print(f"Self-Training Iteration {iteration + 1}/{NUM_ITERATIONS}")
+        print(f"{'='*80}")
+        
+        # Identify remaining unlabeled documents
+        unlabeled_doc_ids = [did for did in train_doc_ids if did not in already_labeled_set]
+        
+        if len(unlabeled_doc_ids) == 0:
+            print("\n⚠️  No more unlabeled documents. Stopping self-training.")
+            break
+        
+        print(f"\n📊 Remaining Unlabeled: {len(unlabeled_doc_ids):,} ({len(unlabeled_doc_ids)/len(train_doc_ids)*100:.1f}%)")
+        print(f"   Already Labeled: {len(already_labeled_set):,}")
+        
         unlabeled_corpus = {did: train_corpus[did] for did in unlabeled_doc_ids}
         
-        print(f"Unlabeled pool: {len(unlabeled_doc_ids):,} documents")
-        
-        # Perform self-training
+        # Perform self-training iteration
         combined_doc_ids, combined_corpus, combined_targets, combined_masks, stats, pseudo_predictions = \
             self_training.self_training_iteration(
                 model=model,
                 tokenizer=bert_tokenizer,
                 device=device,
-                train_doc_ids=filtered_doc_ids,
-                train_corpus=filtered_corpus,
-                train_targets=filtered_targets,
-                train_masks=filtered_masks,
+                train_doc_ids=current_labeled_doc_ids,
+                train_corpus=current_labeled_corpus,
+                train_targets=current_labeled_targets,
+                train_masks=current_labeled_masks,
                 unlabeled_doc_ids=unlabeled_doc_ids,
                 unlabeled_corpus=unlabeled_corpus,
                 parents_dict=parents_dict,
-                children_dict=children_dict,  # For label expansion
-                num_classes=len(id2class),      # Total number of classes
-                min_threshold=0.85,  # High confidence required
-                min_num_classes=2,   # At least 2 classes must pass threshold
+                children_dict=children_dict,
+                num_classes=len(id2class),
+                min_threshold=0.85,
+                min_num_classes=2,
                 batch_size=32,
                 verbose=True
             )
         
-        # Save pseudo-label predictions
-        PSEUDO_LABELS_PATH = "checkpoints/pseudo_labels.json"
+        # Save pseudo-label predictions for this iteration
+        PSEUDO_LABELS_PATH = f"checkpoints/pseudo_labels_iter{iteration+1}.json"
         with open(PSEUDO_LABELS_PATH, 'w') as f:
             json.dump(pseudo_predictions, f, indent=2)
-        print(f"\n💾 Saved pseudo-label predictions to {PSEUDO_LABELS_PATH}")
+        print(f"\n💾 Saved iteration {iteration+1} pseudo-labels to {PSEUDO_LABELS_PATH}")
         
-        # Re-train with combined data if pseudo-labels were generated
+        # Re-train if pseudo-labels were generated
         if stats.get('num_pseudo', 0) > 0:
             print(f"\n{'='*80}")
-            print(f"Re-training with Combined Dataset")
+            print(f"Re-training with Combined Dataset (Iteration {iteration+1})")
             print(f"{'='*80}")
             
             model = trainer.supervised_training_loop(
                 model, combined_corpus, bert_tokenizer,
                 combined_targets, combined_masks, device,
-                epochs=6,  # Fewer epochs for fine-tuning
+                epochs=EPOCHS_PER_ITERATION,
                 batch_size=64,
-                lr=2e-5,  # Lower learning rate
-                checkpoint_prefix='retrain'  # Use different checkpoint name
+                lr=2e-5,
+                checkpoint_prefix=f'retrain_iter{iteration+1}'
             )
             
-            print(f"\n✅ Self-training completed!")
-            print(f"   Data increase: +{stats['num_pseudo']:,} ({stats['num_pseudo']/stats['num_original']*100:.1f}%)")
+            # Update labeled data for next iteration
+            current_labeled_doc_ids = combined_doc_ids
+            current_labeled_corpus = combined_corpus
+            current_labeled_targets = combined_targets
+            current_labeled_masks = combined_masks
+            
+            # Update already labeled set
+            already_labeled_set.update(combined_doc_ids)
+            
+            print(f"\n✅ Iteration {iteration+1} completed!")
+            print(f"   Pseudo-labels added: +{stats['num_pseudo']:,}")
+            print(f"   Total labeled: {len(already_labeled_set):,} ({len(already_labeled_set)/len(train_doc_ids)*100:.1f}%)")
             print(f"   Selection rate: {stats['selection_rate']*100:.1f}%")
         else:
-            print("\n⚠️  No pseudo-labels met the criteria. Skipping re-training.")
-    else:
-        print("\n⚠️  No unlabeled documents found. Skipping self-training.")
+            print(f"\n⚠️  No pseudo-labels met the criteria in iteration {iteration+1}. Stopping.")
+            break
+    
+    print(f"\n{'='*80}")
+    print(f"Train Corpus Self-Training Complete - {iteration+1} iterations")
+    print(f"{'='*80}")
 
+    # --- 8. Iterative Test Corpus Self-Training (High Confidence) ---
+    # Uncomment the line below to enable test corpus self-training
+    from src import test_corpus_training
+    
+    model, current_labeled_doc_ids, current_labeled_corpus, current_labeled_targets, current_labeled_masks, used_test_doc_ids = \
+        test_corpus_training.iterative_test_corpus_training(
+            model=model,
+            tokenizer=bert_tokenizer,
+            device=device,
+            current_labeled_doc_ids=current_labeled_doc_ids,
+            current_labeled_corpus=current_labeled_corpus,
+            current_labeled_targets=current_labeled_targets,
+            current_labeled_masks=current_labeled_masks,
+            test_corpus=test_corpus,
+            parents_dict=parents_dict,
+            children_dict=children_dict,
+            num_classes=len(id2class),
+            num_iterations=3,      # Number of test corpus iterations
+            docs_per_iteration=1500,  # Documents per iteration
+            threshold=0.995,       # High confidence threshold
+            epochs=3,              # Training epochs per iteration
+            batch_size=64,
+            lr=3e-5
+        )
+    
+    print(f"\n{'='*80}")
+    print(f"All Self-Training Complete")
+    print(f"{'='*80}")
     
     # Save Final Model
     MODEL_PATH = "checkpoints/taxoclass_model.pth"
