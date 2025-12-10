@@ -67,8 +67,7 @@ def generate_pseudo_labels(model, dataloader, device,
             input_ids = batch['input_ids'].to(device)
             attention_mask = batch['attention_mask'].to(device)
             
-            outputs = model(input_ids=input_ids, attention_mask=attention_mask)
-            logits = outputs['logits']
+            logits = model(input_ids=input_ids, attention_mask=attention_mask)
             
             all_logits.append(logits.cpu())
             all_doc_ids.extend(batch['doc_id'].tolist())
@@ -98,7 +97,7 @@ def generate_pseudo_labels(model, dataloader, device,
             'selected_classes': high_conf_indices,
             'confidences': probs[i][high_conf_mask].tolist() if num_high_conf > 0 else [],
             'num_classes': int(num_high_conf),
-            'accepted': num_high_conf >= min_num_classes
+            'accepted': bool(num_high_conf >= min_num_classes)
         }
         
         # Check if at least min_num_classes pass threshold

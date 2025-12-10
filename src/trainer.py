@@ -116,11 +116,14 @@ def evaluate(model, dataloader, device, true_labels=None):
     # Placeholder for now
     pass
 
-def supervised_training_loop(model, train_corpus, tokenizer, targets, masks, device, epochs=3, batch_size=32, lr=5e-5):
+def supervised_training_loop(model, train_corpus, tokenizer, targets, masks, device, epochs=3, batch_size=32, lr=5e-5, checkpoint_prefix='warmup'):
     """
     Step 3 of TaxoClass: Train classifier f(.) with Eq. (8) (BCE Loss)
     This serves as a warm-up phase using Silver Labels (Core Classes).
     Includes checkpointing to resume training.
+    
+    Args:
+        checkpoint_prefix: Prefix for checkpoint files ('warmup' or 'retrain')
     """
     print("\n=== Starting Supervised Warm-up (Silver Labels) ===")
     
@@ -128,20 +131,20 @@ def supervised_training_loop(model, train_corpus, tokenizer, targets, masks, dev
     os.makedirs(checkpoint_dir, exist_ok=True)
     
     start_epoch = 0
-    # Check for existing checkpoints
+    # Check for existing checkpoints with prefix
     for i in range(epochs, 0, -1):
-        ckpt_path = os.path.join(checkpoint_dir, f'warmup_epoch_{i}.pth')
+        ckpt_path = os.path.join(checkpoint_dir, f'{checkpoint_prefix}_epoch_{i}.pth')
         if os.path.exists(ckpt_path):
-            print(f"Found warm-up checkpoint: {ckpt_path}. Resuming from Epoch {i+1}...")
+            print(f"Found {checkpoint_prefix} checkpoint: {ckpt_path}. Resuming from Epoch {i+1}...")
             model.load_state_dict(torch.load(ckpt_path, map_location=device))
             start_epoch = i
             break
             
     if start_epoch >= epochs:
-        print("Warm-up already completed.")
+        print(f"{checkpoint_prefix.capitalize()} already completed.")
         return model
     
-    doc_ids = sorted(list(train_corpus.keys()))
+    doc_ids = list(train_corpus.keys())  # Preserve order to match targets/masks
     dataset = TextDataset(doc_ids, train_corpus, tokenizer, targets=targets, masks=masks, max_len=128)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
     
@@ -152,12 +155,12 @@ def supervised_training_loop(model, train_corpus, tokenizer, targets, masks, dev
         avg_loss = train_epoch(model, dataloader, optimizer, device)
         print(f"Epoch {epoch+1} Loss: {avg_loss:.4f}")
         
-        # Save checkpoint
-        ckpt_path = os.path.join(checkpoint_dir, f'warmup_epoch_{epoch+1}.pth')
+        # Save checkpoint with prefix
+        ckpt_path = os.path.join(checkpoint_dir, f'{checkpoint_prefix}_epoch_{epoch+1}.pth')
         torch.save(model.state_dict(), ckpt_path)
-        print(f"Saved warm-up checkpoint: {ckpt_path}")
+        print(f"Saved {checkpoint_prefix} checkpoint: {ckpt_path}")
         
-    print("=== Supervised Warm-up Completed ===\n")
+    print(f"=== {checkpoint_prefix.capitalize()} Completed ===\n")
     return model
 
 def self_training_loop(model, train_corpus, test_corpus, tokenizer, 

@@ -53,6 +53,7 @@ def main():
             # Load and convert keys back to int (JSON keys are strings)
             loaded_core = json.load(f)
             core_classes_dict = {int(k): v for k, v in loaded_core.items()} # Renamed to avoid conflict
+            confident_core_classes = core_classes_dict  # Store for self-training phase
             
             # We need a list of lists for compatibility with existing code
             # core_classes dict: {doc_id: [class_id1, ...]}
@@ -165,7 +166,7 @@ def main():
     model = trainer.supervised_training_loop(
         model, filtered_corpus, bert_tokenizer, 
         filtered_targets, filtered_masks, device, 
-        epochs=20, batch_size=64, lr=5e-5
+        epochs=11, batch_size=64, lr=5e-5
     )
 
     # --- 7. Self-Training with Unlabeled Documents ---
@@ -226,9 +227,10 @@ def main():
             model = trainer.supervised_training_loop(
                 model, combined_corpus, bert_tokenizer,
                 combined_targets, combined_masks, device,
-                epochs=3,  # Fewer epochs for fine-tuning
+                epochs=6,  # Fewer epochs for fine-tuning
                 batch_size=64,
-                lr=2e-5  # Lower learning rate
+                lr=2e-5,  # Lower learning rate
+                checkpoint_prefix='retrain'  # Use different checkpoint name
             )
             
             print(f"\n✅ Self-training completed!")
