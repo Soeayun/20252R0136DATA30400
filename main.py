@@ -203,6 +203,8 @@ def main():
                 unlabeled_doc_ids=unlabeled_doc_ids,
                 unlabeled_corpus=unlabeled_corpus,
                 parents_dict=parents_dict,
+                children_dict=children_dict,  # For label expansion
+                num_classes=len(id2class),      # Total number of classes
                 min_threshold=0.85,  # High confidence required
                 min_num_classes=2,   # At least 2 classes must pass threshold
                 batch_size=32,

@@ -103,8 +103,22 @@ def generate_pseudo_labels(model, dataloader, device,
         
         # Check if at least min_num_classes pass threshold
         if num_high_conf >= min_num_classes:
-            # Create pseudo-label
-            pseudo_label = (probs[i] > min_threshold).astype(np.float32)
+            # Limit to top-3 classes (hierarchical multi-label constraint)
+            if num_high_conf > 3:
+                # Get top-3 highest confidence classes
+                top3_indices = np.argsort(probs[i])[-3:]
+                pseudo_label = np.zeros_like(probs[i], dtype=np.float32)
+                pseudo_label[top3_indices] = 1.0
+                
+                # Update prediction info
+                all_predictions[str(doc_id)]['selected_classes'] = top3_indices.tolist()
+                all_predictions[str(doc_id)]['confidences'] = probs[i][top3_indices].tolist()
+                all_predictions[str(doc_id)]['num_classes'] = 3
+                all_predictions[str(doc_id)]['limited_to_top3'] = True
+            else:
+                # Keep all classes above threshold (already ≤ 3)
+                pseudo_label = (probs[i] > min_threshold).astype(np.float32)
+                all_predictions[str(doc_id)]['limited_to_top3'] = False
             
             # Create mask (all ones for simplicity)
             mask = np.ones_like(pseudo_label)
@@ -114,7 +128,8 @@ def generate_pseudo_labels(model, dataloader, device,
             selected_indices.append(i)
             
             # Store average confidence of selected classes
-            conf = probs[i][high_conf_mask].mean()
+            selected_mask = pseudo_label > 0
+            conf = probs[i][selected_mask].mean()
             confidences.append(conf)
     
     pseudo_targets = np.array(pseudo_targets) if pseudo_targets else np.array([])
@@ -158,6 +173,8 @@ def self_training_iteration(model, tokenizer, device,
                            train_doc_ids, train_corpus, train_targets, train_masks,
                            unlabeled_doc_ids, unlabeled_corpus,
                            parents_dict,
+                           children_dict=None,
+                           num_classes=None,
                            min_threshold=0.85,
                            min_num_classes=2,
                            batch_size=32,
@@ -170,17 +187,20 @@ def self_training_iteration(model, tokenizer, device,
         tokenizer: BERT tokenizer
         device: torch device
         train_doc_ids, train_corpus, train_targets, train_masks: Original training data
-        unlabeled_doc_ids, unlabeled_corpus: Unlabeled data (Level 0 = 2)
-        parents_dict: Hierarchy information
+        unlabeled_doc_ids, unlabeled_corpus: Unlabeled data
+        parents_dict: Hierarchy information (required)
+        children_dict: Children relationships (for expansion)
+        num_classes: Total number of classes (for expansion)
         min_threshold: Confidence threshold
         min_num_classes: Minimum classes requirement
         batch_size: Batch size for inference
         verbose: Print progress
     
     Returns:
-        tuple: (combined_doc_ids, combined_corpus, combined_targets, combined_masks, stats)
+        tuple: (combined_doc_ids, combined_corpus, combined_targets, combined_masks, stats, all_predictions)
     """
     from . import trainer  # Import here to avoid circular dependency
+    from . import core_mining  # For label expansion
     
     print("\n" + "="*80)
     print("Self-Training Iteration")
@@ -198,8 +218,8 @@ def self_training_iteration(model, tokenizer, device,
         shuffle=False
     )
     
-    # Generate pseudo-labels
-    pseudo_targets, pseudo_masks, selected_indices, confidences, all_predictions = generate_pseudo_labels(
+    # Generate pseudo-labels (core classes only, top-3 limited)
+    pseudo_targets_core, pseudo_masks_core, selected_indices, confidences, all_predictions = generate_pseudo_labels(
         model=model,
         dataloader=unlabeled_dataloader,
         device=device,
@@ -216,6 +236,31 @@ def self_training_iteration(model, tokenizer, device,
     # Select pseudo-labeled documents
     pseudo_doc_ids = [unlabeled_doc_ids[i] for i in selected_indices]
     pseudo_corpus = {did: unlabeled_corpus[did] for did in pseudo_doc_ids}
+    
+    # --- Expand pseudo-labels to include parents ---
+    if children_dict is not None and num_classes is not None:
+        print(f"\n🌳 Expanding pseudo-labels hierarchically...")
+        
+        # Convert pseudo_targets to core class list format for expansion
+        pseudo_core_classes = []
+        for i in range(len(pseudo_targets_core)):
+            core_ids = np.where(pseudo_targets_core[i] > 0)[0].tolist()
+            pseudo_core_classes.append(core_ids)
+        
+        # Expand labels
+        pseudo_targets, pseudo_masks = core_mining.expand_labels(
+            pseudo_core_classes,
+            parents_dict,
+            children_dict,
+            num_classes
+        )
+        
+        print(f"   Core classes: {pseudo_targets_core.sum():.0f} total")
+        print(f"   After expansion: {pseudo_targets.sum():.0f} total (+{(pseudo_targets.sum() - pseudo_targets_core.sum()):.0f} parents)")
+    else:
+        print(f"\n⚠️  Skipping label expansion (missing children_dict or num_classes)")
+        pseudo_targets = pseudo_targets_core
+        pseudo_masks = pseudo_masks_core
     
     # Combine datasets
     combined_doc_ids, combined_corpus, combined_targets, combined_masks = combine_datasets(
