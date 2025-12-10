@@ -111,25 +111,7 @@ def main():
         for doc_id in train_doc_ids: # Use train_doc_ids
             core_classes.append(confident_core_classes.get(doc_id, []))
 
-    # --- 5. Pre-filter documents with 0 or 2 Level 0 classes ---
-    print("Filtering documents by Level 0 class count...")
-    excluded_level0_count = 0
-    for i, cores in enumerate(core_classes):
-        if len(cores) > 0:
-            # Count unique Level 0 ancestors
-            level0_classes = set()
-            for c in cores:
-                lv0 = core_mining.find_level0_ancestor(c, parents_dict)
-                level0_classes.add(lv0)
-            
-            num_level0 = len(level0_classes)
-            
-            # Exclude documents with 0 or 2 Level 0 classes
-            if num_level0 == 0 or num_level0 == 2:
-                core_classes[i] = []  # Clear core classes for this document
-                excluded_level0_count += 1
-    
-    print(f"Excluded {excluded_level0_count} docs with 0 or 2 Level 0 classes")
+  
     
     # --- 5.5. Label Expansion ---
     targets, masks = core_mining.expand_labels(core_classes, parents_dict, children_dict, num_classes)
@@ -179,29 +161,82 @@ def main():
     
     # --- 6.5 Supervised Warm-up (Step 3) ---
     # Train on Silver Labels (Core Classes) first to avoid Mode Collapse
-    print("Starting Supervised Warm-up...")
+    print("Starting Supervised Warm-up...") 
     model = trainer.supervised_training_loop(
         model, filtered_corpus, bert_tokenizer, 
         filtered_targets, filtered_masks, device, 
         epochs=20, batch_size=64, lr=5e-5
     )
 
+    # --- 7. Self-Training with Unlabeled Documents ---
+    print("\n" + "="*80)
+    print("Self-Training Phase")
+    print("="*80)
+    
+    from src import self_training
+    
+    # Identify documents with NO core classes (excluded from warm-up)
+    unlabeled_indices = self_training.identify_unlabeled_documents(
+        confident_core_classes, 
+        train_doc_ids
+    )
+    
+    print(f"\n📊 Unlabeled Documents: {len(unlabeled_indices):,} ({len(unlabeled_indices)/len(train_doc_ids)*100:.1f}%)")
+    
+    if len(unlabeled_indices) > 0:
+        # Prepare unlabeled data
+        unlabeled_doc_ids = [train_doc_ids[i] for i in unlabeled_indices]
+        unlabeled_corpus = {did: train_corpus[did] for did in unlabeled_doc_ids}
+        
+        print(f"Unlabeled pool: {len(unlabeled_doc_ids):,} documents")
+        
+        # Perform self-training
+        combined_doc_ids, combined_corpus, combined_targets, combined_masks, stats, pseudo_predictions = \
+            self_training.self_training_iteration(
+                model=model,
+                tokenizer=bert_tokenizer,
+                device=device,
+                train_doc_ids=filtered_doc_ids,
+                train_corpus=filtered_corpus,
+                train_targets=filtered_targets,
+                train_masks=filtered_masks,
+                unlabeled_doc_ids=unlabeled_doc_ids,
+                unlabeled_corpus=unlabeled_corpus,
+                parents_dict=parents_dict,
+                min_threshold=0.85,  # High confidence required
+                min_num_classes=2,   # At least 2 classes must pass threshold
+                batch_size=32,
+                verbose=True
+            )
+        
+        # Save pseudo-label predictions
+        PSEUDO_LABELS_PATH = "checkpoints/pseudo_labels.json"
+        with open(PSEUDO_LABELS_PATH, 'w') as f:
+            json.dump(pseudo_predictions, f, indent=2)
+        print(f"\n💾 Saved pseudo-label predictions to {PSEUDO_LABELS_PATH}")
+        
+        # Re-train with combined data if pseudo-labels were generated
+        if stats.get('num_pseudo', 0) > 0:
+            print(f"\n{'='*80}")
+            print(f"Re-training with Combined Dataset")
+            print(f"{'='*80}")
+            
+            model = trainer.supervised_training_loop(
+                model, combined_corpus, bert_tokenizer,
+                combined_targets, combined_masks, device,
+                epochs=3,  # Fewer epochs for fine-tuning
+                batch_size=64,
+                lr=2e-5  # Lower learning rate
+            )
+            
+            print(f"\n✅ Self-training completed!")
+            print(f"   Data increase: +{stats['num_pseudo']:,} ({stats['num_pseudo']/stats['num_original']*100:.1f}%)")
+            print(f"   Selection rate: {stats['selection_rate']*100:.1f}%")
+        else:
+            print("\n⚠️  No pseudo-labels met the criteria. Skipping re-training.")
+    else:
+        print("\n⚠️  No unlabeled documents found. Skipping self-training.")
 
-    # --- 7. Self-Training ---
-    # TaxoClass uses Multi-label Self-Training with KL Divergence
-    # We use both Train and Test corpus (Transductive) as Unlabeled Data
-    # [DISABLED] Skipping self-training, using supervised warm-up model only
-    # print("Starting Self-Training...")
-    # model = trainer.self_training_loop(
-    #     model, train_corpus, test_corpus, bert_tokenizer,
-    #     targets, masks, # Initial targets/masks from Core Classes
-    #     parents_dict, children_dict, len(id2class),
-    #     device,
-    #     num_iterations=1,
-    #     epochs_per_iter=1,
-    #     batch_size=64,
-    #     lr=1e-5 # Lower LR for self-training
-    # )
     
     # Save Final Model
     MODEL_PATH = "checkpoints/taxoclass_model.pth"
