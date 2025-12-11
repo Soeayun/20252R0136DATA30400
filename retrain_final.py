@@ -111,7 +111,7 @@ def main():
     print("Generating predictions for test corpus...")
     test_pseudo_predictions = {}
     
-    threshold = 0.95
+    threshold = 0.99
     min_classes = 2
     max_classes = 3
     
@@ -203,14 +203,30 @@ def main():
     # Prepare test pseudo-labeled documents
     test_pseudo_doc_ids = []
     test_pseudo_core_classes = []
+    skipped_multi_level0 = 0
     
     for doc_id, pred in test_pseudo_predictions.items():
         if pred['accepted']:
+            selected_classes = pred['selected_classes']
+            
+            # Filter: If 3 core classes all have different Level 0 ancestors, skip
+            if len(selected_classes) == 3:
+                level0_ancestors = set()
+                for cid in selected_classes:
+                    level0 = core_mining.find_level0_ancestor(cid, parents_dict)
+                    level0_ancestors.add(level0)
+                
+                # If all 3 have different Level 0 ancestors, skip (unreliable)
+                if len(level0_ancestors) == 3:
+                    skipped_multi_level0 += 1
+                    continue
+            
             doc_id_int = int(doc_id)
             test_pseudo_doc_ids.append(doc_id_int)
-            test_pseudo_core_classes.append(pred['selected_classes'])
+            test_pseudo_core_classes.append(selected_classes)
     
     print(f"Accepted test pseudo-labels: {len(test_pseudo_doc_ids):,}")
+    print(f"   Skipped (3 classes, all different Level0): {skipped_multi_level0:,}")
     
     # Expand test pseudo-labels
     if len(test_pseudo_doc_ids) > 0:
@@ -266,7 +282,7 @@ def main():
     print("="*80)
     
     # Training configuration
-    epochs = 11
+    epochs = 17
     batch_size = 64
     lr = 5e-5
     checkpoint_dir = "checkpoints_final"
@@ -281,7 +297,23 @@ def main():
     
     optimizer = torch.optim.AdamW(fresh_model.parameters(), lr=lr)
     
-    for epoch in range(epochs):
+    # Check for existing checkpoints to resume from
+    start_epoch = 0
+    for i in range(epochs, 0, -1):
+        ckpt_path = os.path.join(checkpoint_dir, f'final_epoch_{i}.pth')
+        if os.path.exists(ckpt_path):
+            print(f"📂 Found existing checkpoint: {ckpt_path}")
+            checkpoint = torch.load(ckpt_path, map_location=device)
+            fresh_model.load_state_dict(checkpoint['model_state_dict'])
+            optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+            start_epoch = checkpoint['epoch']
+            print(f"   Resuming from epoch {start_epoch + 1}")
+            break
+    
+    if start_epoch == 0:
+        print("Starting training from scratch...")
+    
+    for epoch in range(start_epoch, epochs):
         avg_loss = trainer.train_epoch(fresh_model, dataloader, optimizer, device)
         print(f"Epoch {epoch+1}/{epochs} Loss: {avg_loss:.4f}")
         

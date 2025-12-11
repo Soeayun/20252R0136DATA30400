@@ -18,7 +18,7 @@ def main():
     TRAIN_DATA = 'Amazon_products/train/train_corpus.txt'
     TEST_DATA = 'Amazon_products/test/test_corpus.txt'
     TAXONOMY = 'Amazon_products/class_hierarchy.txt'
-    CHECKPOINT_DIR = 'checkpoints'
+    CHECKPOINT_DIR = 'checkpoints_final'
     
     # 1. Load Data
     # 1. Load Data
@@ -90,7 +90,7 @@ def main():
     # Find the latest checkpoint
     latest_ckpt = None
     for i in range(17, 0, -1): # Check up to 10 iterations
-        ckpt_path = os.path.join(CHECKPOINT_DIR, f'retrain_test_iter1_epoch_{i}.pth')
+        ckpt_path = os.path.join(CHECKPOINT_DIR, f'final_epoch_{i}.pth')
         if os.path.exists(ckpt_path):
             latest_ckpt = ckpt_path
             print(f"Found latest checkpoint: {latest_ckpt}")
