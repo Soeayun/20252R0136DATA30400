@@ -125,13 +125,18 @@ def iterative_test_corpus_training(
                 print(f"\n⚠️  No documents passed threshold in test iteration {test_iter+1}. Stopping.")
                 break
             
-            # Sort by confidence and select top N
-            doc_confidences.sort(key=lambda x: x[2], reverse=True)
+            # Random sampling from candidates (instead of top-N)
+            # This maintains distribution diversity rather than only selecting extreme cases
+            import random
             num_to_select = min(docs_per_iteration, len(doc_confidences))
-            top_indices = [item[0] for item in doc_confidences[:num_to_select]]
-            top_doc_ids = [item[1] for item in doc_confidences[:num_to_select]]
             
-            # Filter pseudo data to top N
+            # Random sample instead of sorted top-N
+            sampled_items = random.sample(doc_confidences, num_to_select)
+            top_indices = [item[0] for item in sampled_items]
+            top_doc_ids = [item[1] for item in sampled_items]
+            sampled_confidences = [item[2] for item in sampled_items]
+            
+            # Filter pseudo data to randomly selected docs
             filtered_pseudo_targets = pseudo_targets[top_indices]
             filtered_pseudo_masks = pseudo_masks[top_indices]
             filtered_pseudo_corpus = {doc_id: test_corpus[doc_id] for doc_id in top_doc_ids}
@@ -143,10 +148,11 @@ def iterative_test_corpus_training(
             combined_targets = np.vstack([current_labeled_targets, filtered_pseudo_targets])
             combined_masks = np.vstack([current_labeled_masks, filtered_pseudo_masks])
             
-            print(f"\n✅ Pseudo-label Filtering Complete:")
+            print(f"\n✅ Random Sampling Complete:")
             print(f"   Candidates (threshold {threshold}): {len(doc_confidences):,}")
-            print(f"   Selected for training: {num_to_select}")
-            print(f"   Confidence range: {doc_confidences[min(num_to_select-1, len(doc_confidences)-1)][2]:.4f} - {doc_confidences[0][2]:.4f}")
+            print(f"   Randomly selected: {num_to_select}")
+            print(f"   Confidence range: {min(sampled_confidences):.4f} - {max(sampled_confidences):.4f}")
+            print(f"   Mean confidence: {np.mean(sampled_confidences):.4f}")
             print(f"   New total dataset size: {len(combined_doc_ids):,} (+{num_to_select})")
             
             # Re-train with selected test documents

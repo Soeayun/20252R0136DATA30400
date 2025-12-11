@@ -278,26 +278,26 @@ def main():
     # - More conservative, processes data incrementally
     from src import test_corpus_training
     
-    #model, current_labeled_doc_ids, current_labeled_corpus, current_labeled_targets, current_labeled_masks, used_test_doc_ids = \
-    #    test_corpus_training.iterative_test_corpus_training(
-    #        model=model,
-    #        tokenizer=bert_tokenizer,
-    #        device=device,
-    #        current_labeled_doc_ids=current_labeled_doc_ids,
-    #        current_labeled_corpus=current_labeled_corpus,
-    #        current_labeled_targets=current_labeled_targets,
-    #        current_labeled_masks=current_labeled_masks,
-    #        test_corpus=test_corpus,
-    #        parents_dict=parents_dict,
-    #        children_dict=children_dict,
-    #        num_classes=len(id2class),
-    #        num_iterations=3,      # Number of test corpus iterations
-    #        docs_per_iteration=1500,  # Documents per iteration
-    #        threshold=0.995,       # High confidence threshold
-    #        epochs=3,              # Training epochs per iteration
-    #        batch_size=64,
-    #        lr=3e-5
-    #    )
+    model, current_labeled_doc_ids, current_labeled_corpus, current_labeled_targets, current_labeled_masks, used_test_doc_ids = \
+    test_corpus_training.iterative_test_corpus_training(
+        model=model,
+        tokenizer=bert_tokenizer,
+        device=device,
+        current_labeled_doc_ids=current_labeled_doc_ids,
+        current_labeled_corpus=current_labeled_corpus,
+        current_labeled_targets=current_labeled_targets,
+        current_labeled_masks=current_labeled_masks,
+        test_corpus=test_corpus,
+        parents_dict=parents_dict,
+        children_dict=children_dict,
+        num_classes=len(id2class),
+        num_iterations=3,      # Number of test corpus iterations
+        docs_per_iteration=1200,  # Documents per iteration
+        threshold=0.8,         # Lower threshold for broader pool, random sampling
+        epochs=3,              # Training epochs per iteration
+        batch_size=64,
+        lr=2e-5
+    )
     
     # METHOD 2: TaxoClass Original (Soft Selection with KL Divergence)
     # - Uses ALL test documents

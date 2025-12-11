@@ -90,7 +90,7 @@ def main():
     # Find the latest checkpoint
     latest_ckpt = None
     for i in range(17, 0, -1): # Check up to 10 iterations
-        ckpt_path = os.path.join(CHECKPOINT_DIR, f'retrain_epoch_{i}.pth')
+        ckpt_path = os.path.join(CHECKPOINT_DIR, f'retrain_test_iter3_epoch_{i}.pth')
         if os.path.exists(ckpt_path):
             latest_ckpt = ckpt_path
             print(f"Found latest checkpoint: {latest_ckpt}")
