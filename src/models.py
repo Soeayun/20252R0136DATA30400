@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from transformers import AutoModel
-import geoopt
 
 class DocumentEncoder(nn.Module):
     """
@@ -20,86 +19,47 @@ class DocumentEncoder(nn.Module):
         cls_emb = outputs.last_hidden_state[:, 0, :]
         return self.fc(cls_emb)
 
-class LabelHGCN(nn.Module):
+class LabelGCN(nn.Module):
     """
-    Hyperbolic GCN for Label Encoder using Poincaré Ball.
-    Better for hierarchical structure than Euclidean GCN.
-    Uses learnable curvature for adaptive hyperbolic geometry.
+    GCN-based Label Encoder.
     """
-    def __init__(self, emb_dim, num_layers=2, dropout=0.5, c=1.0):
+    def __init__(self, emb_dim, num_layers=2, dropout=0.5):
         super().__init__()
-        
-        # Learnable curvature parameter
-        self.c = nn.Parameter(torch.tensor([c], dtype=torch.float32))
-        
-        # Hyperbolic layers
         self.layers = nn.ModuleList()
         for _ in range(num_layers):
-            # Linear transformation in tangent space
             self.layers.append(nn.Linear(emb_dim, emb_dim))
-        
         self.dropout = dropout
-        self.num_layers = num_layers
 
     def forward(self, x, adj):
-        """
-        Args:
-            x: (num_classes, emb_dim) - Node features in Euclidean space
-            adj: (num_classes, num_classes) - Adjacency matrix (sparse)
-        
-        Returns:
-            x: (num_classes, emb_dim) - Node embeddings in hyperbolic space
-        """
-        # Calculate curvature c (keep as Tensor for gradient flow!)
-        curv = F.softplus(self.c) + 1e-5
-        
-        # [CRITICAL] Pass Tensor curv directly to PoincareBall
-        # geoopt supports Tensor c internally, allowing gradients to flow
-        # through geometric operations (expmap, logmap, projx)
-        manifold = geoopt.PoincareBall(c=curv)
-        
-        # Project initial embeddings to Poincaré ball
-        x = manifold.expmap0(x)
+        # x: (num_classes, emb_dim)
+        # adj: (num_classes, num_classes) sparse tensor
         
         for i, layer in enumerate(self.layers):
-            # 1. Project to tangent space at origin
-            x_tan = manifold.logmap0(x)
+            identity = x  # Save input for skip connection
             
-            # 2. Graph convolution in tangent space
-            # Message passing: A @ X
-            x_tan = torch.sparse.mm(adj, x_tan)
+            # Message Passing: AX
+            x = torch.sparse.mm(adj, x)
+            # Linear Transform: XW
+            x = layer(x)
             
-            # 3. Linear transformation
-            x_tan = layer(x_tan)
+            # Skip Connection (Residual)
+            x = x + identity
             
-            # 4. Activation & Dropout (except last layer)
-            if i < self.num_layers - 1:
-                x_tan = F.relu(x_tan)
-                x_tan = F.dropout(x_tan, p=self.dropout, training=self.training)
-            
-            # 5. Project back to Poincaré ball
-            x = manifold.expmap0(x_tan)
-            
-            # 6. Ensure points stay in the ball
-            x = manifold.projx(x)
-        
-        # Project back to Euclidean for compatibility
-        x = manifold.logmap0(x)
+            # Activation & Dropout (except last layer)
+            if i < len(self.layers) - 1:
+                x = F.relu(x)
+                x = F.dropout(x, p=self.dropout, training=self.training)
         
         return x
 
 class TaxoClassModel(nn.Module):
     """
-    Dual Encoder Model: Document Encoder + Label HGCN.
-    Uses Hyperbolic geometry for better hierarchical structure modeling.
+    Dual Encoder Model: Document Encoder + Label GCN.
     """
-    def __init__(self, num_classes, label_emb_init, adj, model_name='bert-base-uncased', 
-                 hidden_dim=768, num_gcn_layers=2, dropout=0.5, hyperbolic_c=1.0):
+    def __init__(self, num_classes, label_emb_init, adj, model_name='bert-base-uncased', hidden_dim=768, num_gcn_layers=2, dropout=0.5):
         super().__init__()
         self.doc_encoder = DocumentEncoder(model_name, hidden_dim)
-        
-        # Use HGCN instead of GCN for hierarchical structure
-        self.label_gcn = LabelHGCN(hidden_dim, num_gcn_layers, dropout, c=hyperbolic_c)
+        self.label_gcn = LabelGCN(hidden_dim, num_gcn_layers, dropout)
         
         # Label Embeddings (Learnable)
         # Initialize with pre-computed BERT embeddings of class names
@@ -112,7 +72,7 @@ class TaxoClassModel(nn.Module):
         # 1. Encode Documents
         doc_emb = self.doc_encoder(input_ids, attention_mask)
         
-        # 2. Encode Labels (HGCN in Poincaré ball)
+        # 2. Encode Labels (GCN)
         label_emb = self.label_gcn(self.label_embeddings, self.adj)
         
         # 3. Compute Logits (Dot Product)

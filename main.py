@@ -166,7 +166,7 @@ def main():
     model = trainer.supervised_training_loop(
         model, filtered_corpus, bert_tokenizer, 
         filtered_targets, filtered_masks, device, 
-        epochs=17, batch_size=64, lr=5e-5
+        epochs=11, batch_size=64, lr=5e-5
     )
 
     # --- 7. Iterative Self-Training with Unlabeled Documents ---
@@ -293,7 +293,7 @@ def main():
         num_classes=len(id2class),
         num_iterations=3,      # Number of test corpus iterations
         docs_per_iteration=300,  # Documents per iteration
-        threshold=0.90,         # Lower threshold for broader pool, random sampling
+        threshold=0.85,         # Lower threshold for broader pool, random sampling
         epochs=3,              # Training epochs per iteration
         batch_size=64,
         lr=2e-5
