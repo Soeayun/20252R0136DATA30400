@@ -24,13 +24,13 @@ class LabelHGCN(nn.Module):
     """
     Hyperbolic GCN for Label Encoder using Poincaré Ball.
     Better for hierarchical structure than Euclidean GCN.
+    Uses learnable curvature for adaptive hyperbolic geometry.
     """
     def __init__(self, emb_dim, num_layers=2, dropout=0.5, c=1.0):
         super().__init__()
         
-        # Poincaré ball manifold with learnable curvature
-        self.manifold = geoopt.PoincareBall(c=c)
-        self.c = nn.Parameter(torch.tensor([c]))  # Learnable curvature
+        # Learnable curvature parameter
+        self.c = nn.Parameter(torch.tensor([c], dtype=torch.float32))
         
         # Hyperbolic layers
         self.layers = nn.ModuleList()
@@ -48,14 +48,22 @@ class LabelHGCN(nn.Module):
             adj: (num_classes, num_classes) - Adjacency matrix (sparse)
         
         Returns:
-            x: (num_classes, emb_dim) - Node embeddings in Poincaré ball
+            x: (num_classes, emb_dim) - Node embeddings in hyperbolic space
         """
+        # Calculate curvature c (keep as Tensor for gradient flow!)
+        curv = F.softplus(self.c) + 1e-5
+        
+        # [CRITICAL] Pass Tensor curv directly to PoincareBall
+        # geoopt supports Tensor c internally, allowing gradients to flow
+        # through geometric operations (expmap, logmap, projx)
+        manifold = geoopt.PoincareBall(c=curv)
+        
         # Project initial embeddings to Poincaré ball
-        x = self.manifold.expmap0(x, c=self.c)
+        x = manifold.expmap0(x)
         
         for i, layer in enumerate(self.layers):
             # 1. Project to tangent space at origin
-            x_tan = self.manifold.logmap0(x, c=self.c)
+            x_tan = manifold.logmap0(x)
             
             # 2. Graph convolution in tangent space
             # Message passing: A @ X
@@ -70,13 +78,13 @@ class LabelHGCN(nn.Module):
                 x_tan = F.dropout(x_tan, p=self.dropout, training=self.training)
             
             # 5. Project back to Poincaré ball
-            x = self.manifold.expmap0(x_tan, c=self.c)
+            x = manifold.expmap0(x_tan)
             
             # 6. Ensure points stay in the ball
-            x = self.manifold.projx(x, c=self.c)
+            x = manifold.projx(x)
         
         # Project back to Euclidean for compatibility
-        x = self.manifold.logmap0(x, c=self.c)
+        x = manifold.logmap0(x)
         
         return x
 
