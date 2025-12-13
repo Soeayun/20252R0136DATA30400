@@ -24,7 +24,7 @@ def main():
     print("\n[1] Loading data...")
     id2class, class2id = load_classes("Amazon_products/classes.txt")
     edges = load_hierarchy("Amazon_products/class_hierarchy.txt")
-    train_corpus = load_corpus("Amazon_products/train/train_corpus.txt")
+    train_corpus = load_corpus("Amazon_products/test/test_corpus.txt")
     
     print(f"  - Loaded {len(id2class)} classes")
     print(f"  - Loaded {len(edges)} hierarchy edges")
@@ -56,7 +56,7 @@ def main():
     print("\n[3] Running LLM refinement...")
     
     # Set batch size
-    batch_size = 29  # Can be adjusted: 10, 20, 30, etc.
+    batch_size = 22  # Can be adjusted: 10, 20, 30, etc.
     
     print("  Settings:")
     print(f"    - Max API calls: 1,000")

@@ -25,13 +25,13 @@ def main():
     id2class, class2id = utils.load_classes(CLASSES_PATH)
     edges = utils.load_hierarchy(HIERARCHY_PATH)
     class2keywords = utils.load_keywords(KEYWORDS_PATH)
-    train_corpus = utils.load_corpus(TRAIN_PATH)
-    test_corpus = utils.load_corpus(TEST_PATH)
+    #train_corpus = utils.load_corpus(TRAIN_PATH)
+    train_corpus = utils.load_corpus(TEST_PATH)
     
     num_classes = len(id2class)
     print(f"Loaded {num_classes} classes.")
-    print(f"Loaded {len(train_corpus)} training docs.")
-    print(f"Loaded {len(test_corpus)} test docs.")
+    #print(f"Loaded {len(train_corpus)} training docs.")
+    print(f"Loaded {len(train_corpus)} test docs.")
     
     # 3. Build Graph
     print("Building Graph...")
@@ -53,6 +53,37 @@ def main():
             # Load and convert keys back to int (JSON keys are strings)
             loaded_core = json.load(f)
             core_classes_dict = {int(k): v for k, v in loaded_core.items()} # Renamed to avoid conflict
+            
+            # --- Post-processing: Limit Level 0 to max 2 ---
+            print("Post-processing: Limiting Level 0 classes to max 2...")
+            filtered_count = 0
+            for doc_id, classes in core_classes_dict.items():
+                if not classes or len(classes) == 0:
+                    continue
+                
+                # Find Level 0 ancestor for each class
+                level0_to_classes = {}  # {level0_id: [class_ids]}
+                for cid in classes:
+                    lv0 = core_mining.find_level0_ancestor(cid, parents_dict)
+                    if lv0 not in level0_to_classes:
+                        level0_to_classes[lv0] = []
+                    level0_to_classes[lv0].append(cid)
+                
+                # If more than 2 Level 0, keep top 2 by class count
+                if len(level0_to_classes) > 2:
+                    # Sort by number of classes under each Level 0 (descending)
+                    sorted_lv0 = sorted(level0_to_classes.items(), 
+                                       key=lambda x: len(x[1]), reverse=True)[:2]
+                    top2_lv0_ids = {lv0 for lv0, _ in sorted_lv0}
+                    
+                    # Filter classes to keep only those under top 2 Level 0
+                    filtered_classes = [c for c in classes 
+                                       if core_mining.find_level0_ancestor(c, parents_dict) in top2_lv0_ids]
+                    core_classes_dict[doc_id] = filtered_classes
+                    filtered_count += 1
+            
+            print(f"  -> Filtered {filtered_count} documents with 3+ Level 0 classes")
+            
             confident_core_classes = core_classes_dict  # Store for self-training phase
             
             # We need a list of lists for compatibility with existing code
@@ -166,7 +197,7 @@ def main():
     model = trainer.supervised_training_loop(
         model, filtered_corpus, bert_tokenizer, 
         filtered_targets, filtered_masks, device, 
-        epochs=11, batch_size=64, lr=5e-5
+        epochs=30, batch_size=64, lr=5e-5
     )
 
     # --- 7. Iterative Self-Training with Unlabeled Documents ---
@@ -278,26 +309,26 @@ def main():
     # - More conservative, processes data incrementally
     from src import test_corpus_training
     
-    model, current_labeled_doc_ids, current_labeled_corpus, current_labeled_targets, current_labeled_masks, used_test_doc_ids = \
-    test_corpus_training.iterative_test_corpus_training(
-        model=model,
-        tokenizer=bert_tokenizer,
-        device=device,
-        current_labeled_doc_ids=current_labeled_doc_ids,
-        current_labeled_corpus=current_labeled_corpus,
-        current_labeled_targets=current_labeled_targets,
-        current_labeled_masks=current_labeled_masks,
-        test_corpus=test_corpus,
-        parents_dict=parents_dict,
-        children_dict=children_dict,
-        num_classes=len(id2class),
-        num_iterations=3,      # Number of test corpus iterations
-        docs_per_iteration=300,  # Documents per iteration
-        threshold=0.85,         # Lower threshold for broader pool, random sampling
-        epochs=3,              # Training epochs per iteration
-        batch_size=64,
-        lr=2e-5
-    )
+    #model, current_labeled_doc_ids, current_labeled_corpus, current_labeled_targets, current_labeled_masks, used_test_doc_ids = \
+    #test_corpus_training.iterative_test_corpus_training(
+    #    model=model,
+    #    tokenizer=bert_tokenizer,
+    #    device=device,
+    #    current_labeled_doc_ids=current_labeled_doc_ids,
+    #    current_labeled_corpus=current_labeled_corpus,
+    #    current_labeled_targets=current_labeled_targets,
+    #    current_labeled_masks=current_labeled_masks,
+    #    test_corpus=test_corpus,
+    #    parents_dict=parents_dict,
+    #    children_dict=children_dict,
+    #    num_classes=len(id2class),
+    #    num_iterations=3,      # Number of test corpus iterations
+    #    docs_per_iteration=300,  # Documents per iteration
+    #    threshold=0.85,         # Lower threshold for broader pool, random sampling
+    #    epochs=3,              # Training epochs per iteration
+    #    batch_size=64,
+    #    lr=2e-5
+    #)
     
     # METHOD 2: TaxoClass Original (Soft Selection with KL Divergence)
     # - Uses ALL test documents
@@ -331,8 +362,8 @@ def main():
     
     # 7. Final Prediction on Test Set
     print("Generating predictions for Test Set...")
-    test_doc_ids = sorted(list(test_corpus.keys()))
-    test_dataset = trainer.TextDataset(test_doc_ids, test_corpus, bert_tokenizer)
+    test_doc_ids = sorted(list(train_corpus.keys()))
+    test_dataset = trainer.TextDataset(test_doc_ids, train_corpus, bert_tokenizer)
     test_dataloader = torch.utils.data.DataLoader(test_dataset, batch_size=32, shuffle=False)
     
     logits, _ = trainer.predict(model, test_dataloader, device)

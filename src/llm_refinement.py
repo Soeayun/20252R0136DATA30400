@@ -30,7 +30,7 @@ if not openai.api_key:
 
 API_MODEL = "gpt-4o-mini"
 MAX_API_CALLS = 1000
-BATCH_SIZE = 29
+BATCH_SIZE = 25
 MAX_PARALLEL_CALLS = 10  # 10 parallel calls to balance speed and rate limits
 
 
@@ -135,13 +135,9 @@ def call_llm_batch_sync(doc_batch: List[tuple]) -> Dict:
         return selections
     
     except Exception as e:
-        print(f"\n⚠️ LLM API Error: {e}")
-        # Fallback: keep top 2 by score
-        fallback = {}
-        for i, did in enumerate(doc_ids):
-            top2 = [c[0] for c in candidates_list[i][:2]]
-            fallback[did] = top2
-        return fallback
+        print(f"\n❌ LLM API Error: {e}")
+        print("Stopping execution due to API failure.")
+        raise SystemExit(1)
 
 
 async def call_llm_batch_async(doc_batch: List[tuple], executor: ThreadPoolExecutor) -> Dict:
