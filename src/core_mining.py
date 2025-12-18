@@ -211,146 +211,149 @@ def identify_confident_core_classes(doc_candidates, parents_dict, children_dict)
         final_core_classes: {doc_id: [core_class1, core_class2, ...]}
         ambiguous_doc_ids: [doc_id1, doc_id2, ...] where ratio <= 2 (needs LLM)
     """
-    print("Identifying Confident Core Classes...")
+    print("Identifying Confident Core Classes (Simplified - Top 15, score > 0.5006)...")
     
-    # 1. Calculate Raw Confidence Scores
-    # doc_confidences: {doc_id: {class_id: conf_score}}
-    doc_confidences = {}
+    # === SIMPLIFIED VERSION ===
+    # Just keep top 15 classes with score > 0.5006, no median threshold or Level 0 filtering
     
-    # [Modified] Removed Min-Max Scaling to preserve absolute probability values
-    # doc_candidates = scaled_doc_candidates
+    final_core_classes = {}
+    ambiguous_doc_ids = []  # All docs go to LLM for final selection
     
-    # Also collect scores per class for median calculation
-    # class_conf_distribution: {class_id: [conf_score1, conf_score2, ...]}
-    class_conf_distribution = defaultdict(list)
-    
-    for doc_id, candidates in tqdm(doc_candidates.items(), desc="Calc Confidence"):
-        doc_confidences[doc_id] = {}
-        
-        for c, score in candidates.items():
-            # Get Parent Scores
-            parents = parents_dict.get(c, [])
-            parent_scores = [candidates.get(p, 0.0) for p in parents] # 0.0 if parent not in candidates
-            max_parent = max(parent_scores) if parent_scores else 0.0
-            
-            # Get Sibling Scores
-            siblings = utils.get_siblings(c, parents_dict, children_dict)
-            sibling_scores = [candidates.get(s, 0.0) for s in siblings] # 0.0 if sibling not in candidates (filtered out)
-            max_sibling = max(sibling_scores) if sibling_scores else 0.0
-            
-            # Conf(D, c)
-            conf = score - max(max_parent, max_sibling)
-            
-            doc_confidences[doc_id][c] = conf
-            class_conf_distribution[c].append(conf)
-            
-    # 2. Calculate Median Thresholds
-    class_thresholds = {}
-    for c, scores in class_conf_distribution.items():
-        if scores:
-            class_thresholds[c] = np.median(scores)
-        else:
-            class_thresholds[c] = 0.0 # Should not happen if c is in candidates
-            
-    # 3. Filter and Top-K Selection
-    final_core_classes = {} # {doc_id: [core_class1, core_class2]}
-    ambiguous_doc_ids = []  # Track docs needing LLM refinement
-    
-    for doc_id, confs in doc_confidences.items():
-        # [Fix] Retrieve candidates for the current document
-        candidates = doc_candidates[doc_id]
-        
-        # Collect candidates that pass the threshold
-        valid_candidates = []
-        for c, conf in confs.items():
-            tau = class_thresholds.get(c, 0.0)
-            if conf > tau:
-                valid_candidates.append((c, conf))
-        
-        # Sort by Confidence Score (Descending)
+    for doc_id, candidates in tqdm(doc_candidates.items(), desc="Filtering"):
+        # Filter by score threshold and sort
+        valid_candidates = [(c, score) for c, score in candidates.items() if score > 0.5006]
         valid_candidates.sort(key=lambda x: x[1], reverse=True)
         
-        # Keep Top-K
-        # [Added] Hard Filter: Raw NLI Score > 0.33
-        # Even if confidence is high relative to family, absolute score must be reasonable.
-        final_candidates = []
-        for c, conf in valid_candidates:
-            # Filter by Threshold (Min-Max Scaled)
-            # Need to retrieve the raw NLI score for 'c' from 'candidates'
-            raw_score = candidates.get(c, 0.0) 
-            if raw_score > 0.5006:
-                final_candidates.append(c)
-
-            if len(final_candidates) >= 10: # Top-3 제한 추가
-                break
-
-        # --- Level 0 Filtering ---
-        # If document has 3+ Level 0 classes, keep only top-2 Level 0 classes
-        if len(final_candidates) > 0:
-            # Calculate max score per Level 0 class
-            level0_scores = {}
-            for c in final_candidates:
-                lv0 = find_level0_ancestor(c, parents_dict)
-                raw_score = candidates.get(c, 0.0)
-                level0_scores[lv0] = max(level0_scores.get(lv0, 0.0), raw_score)
-            
-            num_level0 = len(level0_scores)
-            
-            if num_level0 >= 3:
-                # Keep top-2 Level 0 classes
-                top2_level0 = sorted(level0_scores.items(), 
-                                    key=lambda x: x[1], reverse=True)[:2]
-                top2_ids = {lv0 for lv0, _ in top2_level0}
-                
-                # Filter candidates
-                final_candidates = [c for c in final_candidates 
-                                   if find_level0_ancestor(c, parents_dict) in top2_ids]
-            elif num_level0 == 0:
-                # No valid Level 0 ancestors found - clear candidates
-                final_candidates = []
-            # If num_level0 == 1 or 2, keep all candidates as-is
+        # Keep top 15
+        final_candidates = [c for c, score in valid_candidates[:15]]
         
-        # --- Count Ratio Filtering (AFTER Level 0 filtering) ---
-        # Send to LLM if: Level 0 = 1 or 2
-        # - Level 0 = 1: LLM decides if this is the right class
-        # - Level 0 = 2: LLM decides which one(s) to keep
-        if len(final_candidates) > 0:
-            # Re-calculate counts after filtering
-            level0_counts_final = defaultdict(int)
-            for c in final_candidates:
-                lv0 = find_level0_ancestor(c, parents_dict)
-                level0_counts_final[lv0] += 1
-            
-            # Send to LLM if Level 0 = 1 or 2
-            if len(level0_counts_final) in [1, 2]:
-                if len(level0_counts_final) == 2:
-                    # Check ratio for Level 0 = 2 cases
-                    sorted_lv0 = sorted(level0_counts_final.items(), 
-                                       key=lambda x: x[1], reverse=True)
-                    first_count = sorted_lv0[0][1]
-                    second_count = sorted_lv0[1][1]
-                    ratio = first_count / second_count
-                    
-                    if ratio > 10:
-                        # Very confident - keep only 1st Level 0
-                        top1_id = sorted_lv0[0][0]
-                        final_candidates = [c for c in final_candidates 
-                                           if find_level0_ancestor(c, parents_dict) == top1_id]
-                    else:
-                        # Ambiguous - send to LLM
-                        ambiguous_doc_ids.append(doc_id)
-                else:
-                    # Level 0 = 1: Also send to LLM for verification
-                    ambiguous_doc_ids.append(doc_id)
-            
         final_core_classes[doc_id] = final_candidates
+        
+        # All docs with candidates go to LLM
+        if len(final_candidates) > 0:
+            ambiguous_doc_ids.append(doc_id)
     
     print(f"\n📊 Core Class Statistics:")
     print(f"   Total documents: {len(final_core_classes)}")
-    print(f"   Ambiguous (ratio ≤ 2): {len(ambiguous_doc_ids)} docs → LLM refinement needed")
-    print(f"   Confident: {len(final_core_classes) - len(ambiguous_doc_ids)} docs")
+    print(f"   Docs with candidates: {len(ambiguous_doc_ids)} → LLM refinement")
+    print(f"   Docs without candidates: {len(final_core_classes) - len(ambiguous_doc_ids)}")
         
     return final_core_classes, ambiguous_doc_ids
+
+    # ============================================================================
+    # === ORIGINAL VERSION (COMMENTED OUT FOR FUTURE USE) ===
+    # ============================================================================
+    #
+    # # 1. Calculate Raw Confidence Scores
+    # # doc_confidences: {doc_id: {class_id: conf_score}}
+    # doc_confidences = {}
+    # 
+    # # Also collect scores per class for median calculation
+    # # class_conf_distribution: {class_id: [conf_score1, conf_score2, ...]}
+    # class_conf_distribution = defaultdict(list)
+    # 
+    # for doc_id, candidates in tqdm(doc_candidates.items(), desc="Calc Confidence"):
+    #     doc_confidences[doc_id] = {}
+    #     
+    #     for c, score in candidates.items():
+    #         # Get Parent Scores
+    #         parents = parents_dict.get(c, [])
+    #         parent_scores = [candidates.get(p, 0.0) for p in parents]
+    #         max_parent = max(parent_scores) if parent_scores else 0.0
+    #         
+    #         # Get Sibling Scores
+    #         siblings = utils.get_siblings(c, parents_dict, children_dict)
+    #         sibling_scores = [candidates.get(s, 0.0) for s in siblings]
+    #         max_sibling = max(sibling_scores) if sibling_scores else 0.0
+    #         
+    #         # Conf(D, c)
+    #         conf = score - max(max_parent, max_sibling)
+    #         
+    #         doc_confidences[doc_id][c] = conf
+    #         class_conf_distribution[c].append(conf)
+    #         
+    # # 2. Calculate Median Thresholds
+    # class_thresholds = {}
+    # for c, scores in class_conf_distribution.items():
+    #     if scores:
+    #         class_thresholds[c] = np.median(scores)
+    #     else:
+    #         class_thresholds[c] = 0.0
+    #         
+    # # 3. Filter and Top-K Selection
+    # final_core_classes = {}
+    # ambiguous_doc_ids = []
+    # 
+    # for doc_id, confs in doc_confidences.items():
+    #     candidates = doc_candidates[doc_id]
+    #     
+    #     # Collect candidates that pass the threshold
+    #     valid_candidates = []
+    #     for c, conf in confs.items():
+    #         tau = class_thresholds.get(c, 0.0)
+    #         if conf > tau:
+    #             valid_candidates.append((c, conf))
+    #     
+    #     # Sort by Confidence Score (Descending)
+    #     valid_candidates.sort(key=lambda x: x[1], reverse=True)
+    #     
+    #     # Keep Top-K with Hard Filter: Raw NLI Score > 0.5006
+    #     final_candidates = []
+    #     for c, conf in valid_candidates:
+    #         raw_score = candidates.get(c, 0.0) 
+    #         if raw_score > 0.5006:
+    #             final_candidates.append(c)
+    #         if len(final_candidates) >= 10:
+    #             break
+    #
+    #     # --- Level 0 Filtering ---
+    #     # If document has 3+ Level 0 classes, keep only top-2 Level 0 classes
+    #     if len(final_candidates) > 0:
+    #         level0_scores = {}
+    #         for c in final_candidates:
+    #             lv0 = find_level0_ancestor(c, parents_dict)
+    #             raw_score = candidates.get(c, 0.0)
+    #             level0_scores[lv0] = max(level0_scores.get(lv0, 0.0), raw_score)
+    #         
+    #         num_level0 = len(level0_scores)
+    #         
+    #         if num_level0 >= 3:
+    #             top2_level0 = sorted(level0_scores.items(), 
+    #                                 key=lambda x: x[1], reverse=True)[:2]
+    #             top2_ids = {lv0 for lv0, _ in top2_level0}
+    #             final_candidates = [c for c in final_candidates 
+    #                                if find_level0_ancestor(c, parents_dict) in top2_ids]
+    #         elif num_level0 == 0:
+    #             final_candidates = []
+    #     
+    #     # --- Count Ratio Filtering ---
+    #     if len(final_candidates) > 0:
+    #         level0_counts_final = defaultdict(int)
+    #         for c in final_candidates:
+    #             lv0 = find_level0_ancestor(c, parents_dict)
+    #             level0_counts_final[lv0] += 1
+    #         
+    #         if len(level0_counts_final) in [1, 2]:
+    #             if len(level0_counts_final) == 2:
+    #                 sorted_lv0 = sorted(level0_counts_final.items(), 
+    #                                    key=lambda x: x[1], reverse=True)
+    #                 first_count = sorted_lv0[0][1]
+    #                 second_count = sorted_lv0[1][1]
+    #                 ratio = first_count / second_count
+    #                 
+    #                 if ratio > 10:
+    #                     top1_id = sorted_lv0[0][0]
+    #                     final_candidates = [c for c in final_candidates 
+    #                                        if find_level0_ancestor(c, parents_dict) == top1_id]
+    #                 else:
+    #                     ambiguous_doc_ids.append(doc_id)
+    #             else:
+    #                 ambiguous_doc_ids.append(doc_id)
+    #         
+    #     final_core_classes[doc_id] = final_candidates
+    # 
+    # return final_core_classes, ambiguous_doc_ids
+    # ============================================================================
 
 # 
 

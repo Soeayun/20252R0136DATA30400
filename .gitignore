@@ -41,3 +41,6 @@ checkpoints/*
 !checkpoints/.gitkeep
 !checkpoints/*.json
 
+zip.py
+zip.txt
+

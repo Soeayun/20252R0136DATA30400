@@ -53,27 +53,29 @@ def main():
     print(f"  - Loaded {len(ambiguous_doc_ids)} ambiguous doc IDs (ratio ≤ 2)")
     
     # Run LLM refinement (no need for Level 0 mapping - direct class selection!)
-    print("\n[3] Running LLM refinement...")
+    print("\n[3] Running LLM pseudo-labeling with hierarchy paths...")
     
     # Set batch size
-    batch_size = 22  # Can be adjusted: 10, 20, 30, etc.
+    batch_size = 21  # Can be adjusted: 10, 20, 30, etc.
     
     print("  Settings:")
     print(f"    - Max API calls: 1,000")
     print(f"    - Batch size: {batch_size} documents per call")
     print(f"    - Parallel calls: 10 (balanced for rate limits)")
     print(f"    - Target: {len(ambiguous_doc_ids)} ambiguous docs (ratio ≤ 2)")
-    print(f"    - Task: Select 0-3 true core classes from up to 10 candidates")
+    print(f"    - Task: Select ONE most specific category (or NONE)")
+    print(f"    - Hierarchy: Full path shown (Level0 > Level1 > Level2)")
     print(f"    - Expected API calls: {(len(ambiguous_doc_ids) + batch_size - 1) // batch_size}")
     print(f"    - Rate limit: 200K TPM (with auto-retry)")
     
-    input("\n⏸️  Press Enter to start LLM refinement (this will use API credits)...")
+    input("\n⏸️  Press Enter to start LLM pseudo-labeling (this will use API credits)...")
     
     refined_core_classes, llm_decisions = refine_core_classes_with_llm(
         core_classes_dict=core_classes,
         doc_candidates=doc_candidates,
         corpus=train_corpus,
         id2class=id2class,
+        edges=edges,  # NEW: pass hierarchy edges
         ambiguous_doc_ids=ambiguous_doc_ids,
         max_api_calls=1000,
         batch_size=batch_size,  # Use variable

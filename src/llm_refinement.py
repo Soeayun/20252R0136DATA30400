@@ -1,15 +1,16 @@
 """
-LLM-based Core Class Selection from Candidates
+LLM-based Pseudo Labeling with Hierarchy Paths
 
-Goal: Select 0-3 true core classes from up to 10 candidates
+Goal: Select exactly ONE most specific category (with full hierarchy path) or NONE
 Uses async parallel API calls for maximum speed.
+Automatically expands selected class to include all ancestor classes.
 """
 
 import json
 import os
 from tqdm import tqdm
 import openai
-from typing import Dict, List
+from typing import Dict, List, Tuple, Optional
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 import time
@@ -31,44 +32,113 @@ if not openai.api_key:
 API_MODEL = "gpt-4o-mini"
 MAX_API_CALLS = 1000
 BATCH_SIZE = 25
-MAX_PARALLEL_CALLS = 10  # 10 parallel calls to balance speed and rate limits
+MAX_PARALLEL_CALLS = 5  # 10 parallel calls to balance speed and rate limits
+
+
+# ============ Hierarchy Path Utilities ============
+
+def build_parent_mapping(edges: List[Tuple[int, int]]) -> Dict[int, int]:
+    """
+    Build child -> parent mapping from edges
+    edges: List of (parent_id, child_id)
+    """
+    child_to_parent = {}
+    for parent, child in edges:
+        child_to_parent[child] = parent
+    return child_to_parent
+
+
+def get_ancestors(class_id: int, child_to_parent: Dict[int, int]) -> List[int]:
+    """
+    Get all ancestor class IDs (including self), from leaf to root
+    Returns: [class_id, parent_id, grandparent_id, ...]
+    """
+    ancestors = [class_id]
+    current = class_id
+    while current in child_to_parent:
+        parent = child_to_parent[current]
+        ancestors.append(parent)
+        current = parent
+    return ancestors
+
+
+def build_hierarchy_path(class_id: int, child_to_parent: Dict[int, int], id2class: Dict) -> str:
+    """
+    Build full hierarchy path string for a class
+    Example: "grocery_gourmet_food > meat_poultry > jerky"
+    """
+    ancestors = get_ancestors(class_id, child_to_parent)
+    # Reverse to get root -> leaf order
+    ancestors = ancestors[::-1]
+    
+    path_names = []
+    for cid in ancestors:
+        name = id2class.get(cid, f"Class_{cid}").replace('_', ' ')
+        path_names.append(name)
+    
+    return " > ".join(path_names)
+
+
+def get_hierarchy_level(class_id: int, child_to_parent: Dict[int, int]) -> int:
+    """
+    Get the hierarchy level of a class (0 = root, 1 = child of root, etc.)
+    """
+    level = 0
+    current = class_id
+    while current in child_to_parent:
+        level += 1
+        current = child_to_parent[current]
+    return level
+
+
+# ============ Global hierarchy data (set by main function) ============
+_child_to_parent: Dict[int, int] = {}
+_id2class: Dict[int, str] = {}
+
+
+def set_hierarchy_data(edges: List[Tuple[int, int]], id2class: Dict[int, str]):
+    """Set global hierarchy data for use in prompts"""
+    global _child_to_parent, _id2class
+    _child_to_parent = build_parent_mapping(edges)
+    _id2class = id2class
 
 
 def create_llm_prompt(doc_texts: List[str], 
                      candidates_list: List[List[tuple]],
                      ) -> str:
     """
-    Create prompt for LLM to select true core classes from candidates
-    
-    Returns JSON format request
+    Create prompt for LLM to select exactly ONE category path or NONE
+    Shows full hierarchy paths for each candidate
     """
     
-    prompt = """You are an expert in product categorization. For each product review below, select the TRUE core classes that the review is genuinely about.
+    prompt = """You are an expert in product categorization. For each product review below, identify the SINGLE most specific and accurate product category.
 
 **STRICT REQUIREMENTS:**
-1. Select MAXIMUM 3 classes per review (can be 0, 1, 2, or 3)
-2. NEVER exceed 3 classes - this is a hard constraint
-3. Be conservative: only select classes you're highly confident about
-4. Consider hierarchy: if selecting "baby formula", also include "baby food" and "baby products"
-5. If uncertain about all candidates, select 0 classes
+1. Select EXACTLY ONE category path per review, OR select NONE if no category fits well
+2. Choose the MOST SPECIFIC category that accurately describes the product
+3. Be CONSERVATIVE: if uncertain, select NONE (output -1)
+4. The category must genuinely match the product in the review
 
 **Instructions:**
 - Read each review carefully
-- From the candidate classes provided, identify the most relevant ones
-- Select 0-3 classes (0 if none are truly relevant, up to 3 maximum)
-- Quality over quantity: better to select fewer accurate classes than many uncertain ones
+- Look at the full category paths provided (from general to specific)
+- Select the ONE path that best matches the product
+- If none of the paths accurately describe the product, select -1 (NONE)
 
 Respond in JSON format with EXACTLY this structure:
 {
     "selections": [
-        {"doc_id": <id>, "selected_class_ids": [id1, id2, id3], "reasoning": "brief explanation"},
+        {"doc_id": <id>, "selected_class_id": <single_id_or_-1>, "reasoning": "brief explanation"},
         ...
     ]
 }
 
-**CRITICAL: Each "selected_class_ids" array MUST contain 0 to 3 integers only. No more than 3!**
+**CRITICAL: 
+- "selected_class_id" must be a SINGLE integer (the leaf class ID) or -1 for NONE
+- Do NOT return an array, return a single integer
+- Ancestor classes will be automatically included based on your selection**
 
-Reviews and Candidates:
+Reviews and Category Paths:
 """
     
     for i, (doc_text, candidates) in enumerate(zip(doc_texts, candidates_list)):
@@ -80,10 +150,13 @@ Reviews and Candidates:
 Document {i+1}:
 Review: {truncated_text}
 
-Candidate Classes (select 0-3 most relevant, MAXIMUM 3):
+Category Paths (select ONE most accurate, or -1 if none fit):
 """
         for cid, cname, score in candidates:
-            prompt += f"  - ID {cid}: {cname} (score: {score:.3f})\n"
+            # Build full hierarchy path
+            path = build_hierarchy_path(cid, _child_to_parent, _id2class)
+            level = get_hierarchy_level(cid, _child_to_parent)
+            prompt += f"  - [ID {cid}] (Level {level}): {path}\n"
     
     return prompt
 
@@ -121,16 +194,22 @@ def call_llm_batch_sync(doc_batch: List[tuple]) -> Dict:
         
         result = json.loads(response.choices[0].message.content)
         
-        # Map results back to doc_ids
+        # Map results back to doc_ids (single ID only, expansion done in main.py)
         selections = {}
         for i, selection in enumerate(result.get("selections", [])):
             if i < len(doc_ids):
-                selected_ids = selection.get("selected_class_ids", [])
-                # Ensure 0-3 classes
-                if len(selected_ids) > 3:
-                    selected_ids = selected_ids[:3]
+                selected_id = selection.get("selected_class_id", -1)
                 
-                selections[doc_ids[i]] = selected_ids
+                # Handle case where LLM returns array instead of single int
+                if isinstance(selected_id, list):
+                    selected_id = selected_id[0] if selected_id else -1
+                
+                if selected_id == -1 or selected_id is None:
+                    # No selection - empty list
+                    selections[doc_ids[i]] = []
+                else:
+                    # Return only the single selected ID (ancestors added in main.py)
+                    selections[doc_ids[i]] = [selected_id]
         
         return selections
     
@@ -153,6 +232,7 @@ def refine_core_classes_with_llm(
     doc_candidates: Dict,
     corpus: Dict,
     id2class: Dict,
+    edges: List[Tuple[int, int]],  # NEW: hierarchy edges
     ambiguous_doc_ids: List[int],
     max_api_calls: int = MAX_API_CALLS,
     batch_size: int = BATCH_SIZE,
@@ -160,15 +240,21 @@ def refine_core_classes_with_llm(
     checkpoint_path: str = "checkpoints/llm_refinement_checkpoint.json"
 ):
     """
-    Main function: Use LLM to select true core classes from candidates (PARALLEL)
+    Main function: Use LLM to select ONE most specific category with hierarchy path
     
     Args:
+        edges: List of (parent_id, child_id) tuples for hierarchy
         ambiguous_doc_ids: Docs needing LLM judgment (ratio <= 2 cases)
         max_parallel: Maximum number of parallel API calls
+    
+    Returns selected class + all ancestor classes automatically.
     """
     
+    # Initialize hierarchy data for prompts
+    set_hierarchy_data(edges, id2class)
+    
     print("=" * 100)
-    print("LLM-based Core Class Selection (Parallel Processing)")
+    print("LLM-based Pseudo Labeling with Hierarchy Paths")
     print("=" * 100)
     
     # Load checkpoint
