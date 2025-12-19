@@ -67,7 +67,7 @@ def main():
             continue
         
         # Sort by score and take top 20
-        sorted_candidates = sorted(candidates_dict.items(), key=lambda x: float(x[1]), reverse=True)[:20]
+        sorted_candidates = sorted(candidates_dict.items(), key=lambda x: float(x[1]), reverse=True)[:25]
         
         candidates = []
         for cid_str, score in sorted_candidates:
@@ -88,8 +88,8 @@ def main():
         return
     
     # Settings
-    BATCH_SIZE = 18  # 15 docs per batch
-    MAX_API_CALLS = 143
+    BATCH_SIZE = 25  # 15 docs per batch
+    MAX_API_CALLS = 101
     
     # Split into batches
     batches = []
@@ -115,7 +115,7 @@ def main():
     from concurrent.futures import ThreadPoolExecutor
     from src.llm_refinement import call_llm_batch_async
     
-    MAX_PARALLEL = 5
+    MAX_PARALLEL = 3
     
     llm_selections = {}
     start_time = time.time()
