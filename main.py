@@ -189,7 +189,7 @@ def main():
     adj = utils.build_adjacency_matrix(len(id2class), edges).to(device)
     
     # Create Full Model
-    model = models.TaxoClassModel(len(id2class), label_emb_init, adj, model_name="microsoft/deberta-v3-base").to(device)
+    model = models.TaxoClassModel(len(id2class), label_emb_init, adj, model_name="microsoft/deberta-v3-base", use_gat=True).to(device)
     
     # --- 6.5 Supervised Warm-up (Step 3) ---
     # Train on Silver Labels (Core Classes) first to avoid Mode Collapse
@@ -197,7 +197,7 @@ def main():
     model = trainer.supervised_training_loop(
         model, filtered_corpus, bert_tokenizer, 
         filtered_targets, filtered_masks, device, 
-        epochs=30, batch_size=64, lr=5e-5
+        epochs=40, batch_size=64, lr=5e-5
     )
 
     # --- 7. Iterative Self-Training with Unlabeled Documents ---

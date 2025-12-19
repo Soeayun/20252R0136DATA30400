@@ -84,13 +84,13 @@ def main():
     
     # 3. Initialize Model
     print("Initializing TaxoClassModel...")
-    model = models.TaxoClassModel(len(id2class), label_emb_init, adj, model_name="microsoft/deberta-v3-base").to(device)
+    model = models.TaxoClassModel(len(id2class), label_emb_init, adj, model_name="microsoft/deberta-v3-base", use_gat=True).to(device)
     
     # 4. Load Checkpoint
     # Find the latest checkpoint
     latest_ckpt = None
-    for i in range(30, 0, -1): # Check up to 10 iterations
-        ckpt_path = os.path.join(CHECKPOINT_DIR, f'retrain_iter1_epoch_{i}.pth')
+    for i in range(40, 0, -1): # Check up to 10 iterations
+        ckpt_path = os.path.join(CHECKPOINT_DIR, f'retrain_iter2_epoch_{i}.pth')
         if os.path.exists(ckpt_path):
             latest_ckpt = ckpt_path
             print(f"Found latest checkpoint: {latest_ckpt}")
