@@ -134,7 +134,7 @@ OPENAI_API_KEY=your-api-key-here
 - **Document Encoder:** DeBERTa-v3-base (768-dim)
 - **Label Encoder:** 2-Layer GAT (4 heads, skip connection)
 - **Training:** 
-  - Supervised warm-up with silver labels (30 epochs)
+  - Supervised warm-up with silver labels (40 epochs)
   - Self-training with pseudo-labels (2 iterations)
 - **Loss:** Binary Cross-Entropy with Logits
 
@@ -144,13 +144,6 @@ OPENAI_API_KEY=your-api-key-here
 - **Constraints:** 2-3 labels per document
 - **Output:** `submission.csv`
 
-## 📊 Results
-
-| Metric | Score |
-|--------|-------|
-| Sample F1-Score | 0.64 |
-| Level 0 F1-Score | 0.88 |
-| Exact Match Rate | 0.33 |
 
 ## 📝 References
 
@@ -158,6 +151,4 @@ OPENAI_API_KEY=your-api-key-here
 - **BGE-M3:** BAAI General Embedding
 - **DeBERTa:** Microsoft DeBERTa-v3
 
-## 👤 Author
 
-- **Student ID:** 20252R0136DATA30400
