@@ -85,6 +85,16 @@ Each step checks for cached files and skips if already computed.
 
 **⚠️ Note**: The OPENAI_API_KEY is **required** for LLM refinement. The script will exit with an error if the API key is not found and `core_classes_llm_refined.json` doesn't exist.
 
+### Training from Scratch
+
+If you want to train the model from scratch (without using pre-computed checkpoints), delete all files in the `checkpoints/` directory:
+
+```bash
+rm -rf checkpoints/*
+```
+
+Then run `uv run main.py` to start the full pipeline from the beginning.
+
 ## ⚙️ Configuration
 
 ### LLM Refinement Setup
@@ -95,11 +105,6 @@ Create a `.env` file with your OpenAI API key:
 OPENAI_API_KEY=your-api-key-here
 ```
 
-### Pre-computed Files (Google Drive)
-
-If the checkpoint files are too large for GitHub, download from:
-- **Model Checkpoints:** [Google Drive Link](https://drive.google.com/...)
-- **Pre-computed Labels:** Included in `checkpoints/` directory
 
 ## 🛠️ Implementation Details
 
