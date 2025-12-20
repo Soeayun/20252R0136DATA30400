@@ -1,88 +1,158 @@
-# Hierarchical Multi-Label Text Classification (TaxoClass Implementation)
+# TaxoClass: Hierarchical Multi-Label Text Classification
 
-This repository contains the implementation of a **Hierarchical Multi-Label Text Classification** system for Amazon product reviews. The project is based on the **TaxoClass** framework, which leverages a class taxonomy and label names to classify documents without requiring labeled training data (Zero-shot / Weakly-supervised setting).
+This repository implements a **Hierarchical Multi-Label Text Classification** system for Amazon product reviews, based on the **TaxoClass** framework with LLM-based refinement.
 
 ## 📌 Project Overview
 
-*   **Task:** Classify unlabeled product reviews into 531 hierarchical categories.
-*   **Method:** LLM-Free TaxoClass Framework (Core Class Mining + Self-Training).
-*   **Key Features:**
-    *   **Core Class Mining:** Generates initial "Silver Labels" using **RoBERTa-MNLI** (Semantic Entailment) and **BM25** (Lexical Matching).
-    *   **Hierarchical Label Expansion:** Expands labels to include ancestor nodes (Positive) and masks descendant nodes to handle hierarchy.
-    *   **Dual Encoder Model:** Uses **BERT** for document embedding and **GCN (Graph Convolutional Network)** for label embedding.
-    *   **Self-Training:** Iteratively refines the model using its own high-confidence predictions.
+- **Task:** Classify unlabeled product reviews into 531 hierarchical categories
+- **Method:** TaxoClass Framework + LLM Refinement + Self-Training
+- **Key Components:**
+  - **SBERT + Reranker:** Initial candidate retrieval using BGE-M3
+  - **LLM Refinement:** GPT-4o-mini for pseudo-label selection
+  - **DeBERTa + GAT:** Document encoding with Graph Attention Network for label hierarchy
+  - **Self-Training:** Iterative refinement with high-confidence predictions
 
 ## 📂 Repository Structure
 
 ```
 .
-├── Amazon_products/       # Dataset directory
-│   ├── classes.txt        # List of 531 classes
-│   ├── class_hierarchy.txt # Parent-Child relationships
-│   ├── class_related_keywords.txt # Keywords for each class
-│   ├── train/             # Unlabeled training corpus
-│   └── test/              # Test corpus
-├── src/                   # Source code
-│   ├── core_mining.py     # Silver Label Generation (BM25 + NLI)
-│   ├── models.py          # BERT + GCN Model Architecture
-│   ├── trainer.py         # Training Loop & Hierarchical Loss
-│   └── utils.py           # Data Loading & Graph Construction
-├── main.py                # Main execution script
-├── pyproject.toml         # Dependency management (uv)
-└── README.md              # Project documentation
+├── Amazon_products/           # Dataset directory
+│   ├── classes.txt            # 531 class names
+│   ├── class_hierarchy.txt    # Parent-Child edges
+│   ├── class_related_keywords.txt
+│   ├── train/                 # Training corpus
+│   └── test/                  # Test corpus
+├── src/                       # Source code
+│   ├── core_mining.py         # SBERT + Reranker + Candidate filtering
+│   ├── models.py              # DeBERTa + GAT Model Architecture
+│   ├── trainer.py             # Training Loop
+│   ├── llm_refinement.py      # LLM-based pseudo labeling
+│   ├── self_training.py       # Self-training iteration
+│   └── utils.py               # Data Loading & Graph Construction
+├── checkpoints/               # Model checkpoints & cached files
+├── main.py                    # Main training script
+├── predict_submission.py      # Prediction script
+├── run_llm_refinement.py      # LLM refinement script
+├── run_pipeline.sh            # Full pipeline script
+├── pyproject.toml             # Dependencies (uv)
+└── README.md
 ```
 
-## 🚀 How to Run
+## 🚀 Quick Start (Reproducibility)
 
-### 1. Prerequisites
+### Prerequisites
 
-This project uses `uv` for dependency management. Make sure you have Python 3.9+ installed.
+- Python 3.10+
+- CUDA-capable GPU (recommended)
+- `uv` package manager
 
 ```bash
-# Install uv if you haven't already
+# Install uv if not already installed
 pip install uv
 ```
 
-### 2. Install Dependencies
+### Run the Full Pipeline
 
 ```bash
+# Clone the repository
+git clone https://github.com/Soeayun/20252R0136DATA30400.git
+cd 20252R0136DATA30400
+
+# Install dependencies
 uv sync
+
+# Set up OpenAI API key (REQUIRED for LLM refinement)
+echo "OPENAI_API_KEY=your-api-key-here" > .env
+
+# Run the complete pipeline
+uv run main.py
+
+# Generate final predictions
+uv run predict_submission.py
 ```
 
-### 3. Run the Pipeline
+### What `main.py` Does Automatically
 
-The `main.py` script executes the entire pipeline:
-1.  Loads data and builds the class hierarchy graph.
-2.  Generates Silver Labels using BM25 and RoBERTa-MNLI.
-3.  Trains the TaxoClass model (BERT + GCN) with Self-Training.
-4.  Predicts on the Test set and saves `submission.csv`.
+The script handles all stages with caching:
+
+1. **Step 4.1**: Generate doc candidates (SBERT + Reranker) → `doc_candidates.json`
+2. **Step 4.2**: Identify core classes → `core_classes.json`
+3. **Step 4.3**: LLM refinement (**REQUIRED**) → `core_classes_llm_refined.json`
+4. **Step 4.4**: Post-processing (Level 0 limit)
+5. **Step 5+**: Model training with self-training
+
+Each step checks for cached files and skips if already computed.
+
+**⚠️ Note**: The OPENAI_API_KEY is **required** for LLM refinement. The script will exit with an error if the API key is not found and `core_classes_llm_refined.json` doesn't exist.
+
+## ⚙️ Configuration
+
+### LLM Refinement Setup
+
+Create a `.env` file with your OpenAI API key:
 
 ```bash
-uv run main.py
+OPENAI_API_KEY=your-api-key-here
 ```
+
+### Pre-computed Files (Google Drive)
+
+If the checkpoint files are too large for GitHub, download from:
+- **Model Checkpoints:** [Google Drive Link](https://drive.google.com/...)
+- **Pre-computed Labels:** Included in `checkpoints/` directory
 
 ## 🛠️ Implementation Details
 
-### Phase 1: Core Class Mining (Silver Label Generation)
-*   Calculates **BM25 scores** between documents and class queries (Class Name + Keywords).
-*   Calculates **Entailment scores** using `roberta-large-mnli` for Top-K candidates from BM25.
-*   Combines scores to select the most probable **Core Class**.
+### Phase 1: Core Class Mining
 
-### Phase 2: Hierarchical Label Expansion
-*   **Positive (+):** Core Class + All Ancestors.
-*   **Masked (?):** All Descendants of the Core Class (excluded from loss calculation).
-*   **Negative (-):** All other classes.
+1. **SBERT Retrieval** (BGE-M3)
+   - Encode documents and class hierarchy paths
+   - Retrieve Top-100 candidates per document
+
+2. **Cross-Encoder Reranking** (BGE-Reranker-v2-M3)
+   - Re-score candidates with full context
+   - Filter by score threshold (>0.5)
+
+3. **Candidate Filtering**
+   - Keep Top-15 candidates per document
+   - All candidates sent to LLM for final selection
+
+### Phase 2: LLM Refinement
+
+- **Model:** GPT-4o-mini
+- **Task:** Select exactly ONE category from hierarchy paths, or NONE
+- **Prompt:** Shows full hierarchy path (e.g., "beauty > hair care > styling tools")
+- **Output:** Single class ID or -1 (none), ancestors auto-included
 
 ### Phase 3: Model Training
-*   **Document Encoder:** `bert-base-uncased`
-*   **Label Encoder:** 2-Layer GCN with normalized adjacency matrix.
-*   **Loss Function:** Hierarchical Binary Cross Entropy (masked).
-*   **Self-Training:** Updates Core Classes based on model predictions and retrains.
+
+- **Document Encoder:** DeBERTa-v3-base (768-dim)
+- **Label Encoder:** 2-Layer GAT (4 heads, skip connection)
+- **Training:** 
+  - Supervised warm-up with silver labels (30 epochs)
+  - Self-training with pseudo-labels (2 iterations)
+- **Loss:** Binary Cross-Entropy with Logits
+
+### Phase 4: Prediction
+
+- **Thresholding:** Classes with probability > 0.65
+- **Constraints:** 2-3 labels per document
+- **Output:** `submission.csv`
+
+## 📊 Results
+
+| Metric | Score |
+|--------|-------|
+| Sample F1-Score | 0.64 |
+| Level 0 F1-Score | 0.88 |
+| Exact Match Rate | 0.33 |
 
 ## 📝 References
-*   **TaxoClass: Hierarchical Multi-Label Text Classification Using Only Class Names** (Shen et al., NAACL 2021)
-*   Project Guidelines: `final_project.md`
+
+- **TaxoClass:** Shen et al., "Hierarchical Multi-Label Text Classification Using Only Class Names" (NAACL 2021)
+- **BGE-M3:** BAAI General Embedding
+- **DeBERTa:** Microsoft DeBERTa-v3
 
 ## 👤 Author
-*   **Student ID:** 20252R0136DATA30400
-*   **Team Name:** (Your AWS Account ID)
+
+- **Student ID:** 20252R0136DATA30400

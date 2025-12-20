@@ -68,7 +68,9 @@ def main():
     print(f"    - Expected API calls: {(len(ambiguous_doc_ids) + batch_size - 1) // batch_size}")
     print(f"    - Rate limit: 200K TPM (with auto-retry)")
     
-    input("\n⏸️  Press Enter to start LLM pseudo-labeling (this will use API credits)...")
+    # Allow auto-confirm via environment variable for automated pipelines
+    if os.getenv("AUTO_CONFIRM", "").lower() != "true":
+        input("\n⏸️  Press Enter to start LLM pseudo-labeling (this will use API credits)...")
     
     refined_core_classes, llm_decisions = refine_core_classes_with_llm(
         core_classes_dict=core_classes,

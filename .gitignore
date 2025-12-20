@@ -22,7 +22,7 @@ env/
 
 # Models
 *.pt
-*.pth
+
 *.ckpt
 models/
 

@@ -42,106 +42,134 @@ def main():
     # Note: We can also use Test Corpus for Transductive Learning (Self-Training on Test)
     # For now, let's focus on Train Corpus for Silver Label Generation.
     
-    # --- 4. Core Class Mining ---
-    #CORE_CLASSES_CACHE = os.path.join("checkpoints", "core_classes.json")
-    CORE_CLASSES_CACHE = os.path.join("checkpoints", "core_classes_llm_refined.json")
-    train_doc_ids = sorted(list(train_corpus.keys())) # Ensure train_doc_ids is defined for the new section
+    # --- 4. Core Class Mining (Unified Pipeline) ---
+    # Cache paths
+    DOC_CANDIDATES_CACHE = os.path.join("checkpoints", "doc_candidates.json")
+    CORE_CLASSES_CACHE = os.path.join("checkpoints", "core_classes.json")
+    CORE_CLASSES_LLM_CACHE = os.path.join("checkpoints", "core_classes_llm_refined.json")
+    AMB_IDS_CACHE = os.path.join("checkpoints", "ambiguous_doc_ids.json")
     
-    if os.path.exists(CORE_CLASSES_CACHE):
-        print(f"Loading Core Classes from {CORE_CLASSES_CACHE}...")
-        with open(CORE_CLASSES_CACHE, 'r') as f:
-            # Load and convert keys back to int (JSON keys are strings)
-            loaded_core = json.load(f)
-            core_classes_dict = {int(k): v for k, v in loaded_core.items()} # Renamed to avoid conflict
-            
-            # --- Post-processing: Limit Level 0 to max 2 ---
-            print("Post-processing: Limiting Level 0 classes to max 2...")
-            filtered_count = 0
-            for doc_id, classes in core_classes_dict.items():
-                if not classes or len(classes) == 0:
-                    continue
-                
-                # Find Level 0 ancestor for each class
-                level0_to_classes = {}  # {level0_id: [class_ids]}
-                for cid in classes:
-                    lv0 = core_mining.find_level0_ancestor(cid, parents_dict)
-                    if lv0 not in level0_to_classes:
-                        level0_to_classes[lv0] = []
-                    level0_to_classes[lv0].append(cid)
-                
-                # If more than 2 Level 0, keep top 2 by class count
-                if len(level0_to_classes) > 2:
-                    # Sort by number of classes under each Level 0 (descending)
-                    sorted_lv0 = sorted(level0_to_classes.items(), 
-                                       key=lambda x: len(x[1]), reverse=True)[:2]
-                    top2_lv0_ids = {lv0 for lv0, _ in sorted_lv0}
-                    
-                    # Filter classes to keep only those under top 2 Level 0
-                    filtered_classes = [c for c in classes 
-                                       if core_mining.find_level0_ancestor(c, parents_dict) in top2_lv0_ids]
-                    core_classes_dict[doc_id] = filtered_classes
-                    filtered_count += 1
-            
-            print(f"  -> Filtered {filtered_count} documents with 3+ Level 0 classes")
-            
-            confident_core_classes = core_classes_dict  # Store for self-training phase
-            
-            # We need a list of lists for compatibility with existing code
-            # core_classes dict: {doc_id: [class_id1, ...]}
-            # We need to ensure the order matches doc_ids
-            core_classes = [] # This will be the list of lists
-            for doc_id in train_doc_ids: # Use train_doc_ids
-                core_classes.append(core_classes_dict.get(doc_id, []))
-            
+    train_doc_ids = sorted(list(train_corpus.keys()))
+    
+    # Create checkpoints directory if not exists
+    os.makedirs("checkpoints", exist_ok=True)
+    
+    # --- Step 4.1: Generate Doc Candidates (SBERT + Reranker) ---
+    if os.path.exists(DOC_CANDIDATES_CACHE):
+        print(f"[Step 4.1] Loading Doc Candidates from {DOC_CANDIDATES_CACHE}...")
+        with open(DOC_CANDIDATES_CACHE, 'r') as f:
+            loaded_candidates = json.load(f)
+            doc_candidates = {int(k): {int(ck): cv for ck, cv in v.items()} for k, v in loaded_candidates.items()}
     else:
-        print("Starting Core Class Mining...")
-        
-        DOC_CANDIDATES_CACHE = os.path.join("checkpoints", "doc_candidates.json")
-        
-        if os.path.exists(DOC_CANDIDATES_CACHE):
-            print(f"Loading Doc Candidates from {DOC_CANDIDATES_CACHE}...")
-            with open(DOC_CANDIDATES_CACHE, 'r') as f:
-                loaded_candidates = json.load(f)
-                # Convert keys back to int (JSON keys are strings)
-                doc_candidates = {}
-                for k, v in loaded_candidates.items():
-                    # v is {class_id: score}
-                    doc_candidates[int(k)] = {int(ck): cv for ck, cv in v.items()}
+        print("[Step 4.1] Generating Doc Candidates (SBERT + Reranker)...")
+        doc_candidates = core_mining.generate_core_classes_sbert_reranker(
+            train_corpus, id2class, train_doc_ids, parents_dict, children_dict, device,
+            sbert_model_name="BAAI/bge-m3",
+            reranker_model_name="BAAI/bge-reranker-v2-m3",
+            batch_size=32,
+            class2keywords=class2keywords
+        )
+        with open(DOC_CANDIDATES_CACHE, 'w') as f:
+            json.dump(doc_candidates, f)
+        print(f"  ✓ Saved to {DOC_CANDIDATES_CACHE}")
+    
+    # --- Step 4.2: Identify Core Classes ---
+    if os.path.exists(CORE_CLASSES_CACHE):
+        print(f"[Step 4.2] Loading Core Classes from {CORE_CLASSES_CACHE}...")
+        with open(CORE_CLASSES_CACHE, 'r') as f:
+            confident_core_classes = {int(k): v for k, v in json.load(f).items()}
+        # Load ambiguous doc IDs if exists
+        if os.path.exists(AMB_IDS_CACHE):
+            with open(AMB_IDS_CACHE, 'r') as f:
+                ambiguous_doc_ids = json.load(f)
         else:
-            # Option 3: SBERT Retrieval + Reranker (State-of-the-Art Approach)
-            doc_candidates = core_mining.generate_core_classes_sbert_reranker(
-                train_corpus, id2class, train_doc_ids, parents_dict, children_dict, device,
-                sbert_model_name="BAAI/bge-m3",
-                reranker_model_name="BAAI/bge-reranker-v2-m3",
-                batch_size=32,
-                class2keywords=class2keywords
-            )
-            
-            # Save Candidates Checkpoint
-            print(f"Saved Doc Candidates to {DOC_CANDIDATES_CACHE}")
-            with open(DOC_CANDIDATES_CACHE, 'w') as f:
-                json.dump(doc_candidates, f)
-        
-        # 4.2 Confident Core Class Identification
+            ambiguous_doc_ids = []
+    else:
+        print("[Step 4.2] Identifying Core Classes...")
         confident_core_classes, ambiguous_doc_ids = core_mining.identify_confident_core_classes(
             doc_candidates, parents_dict, children_dict
         )
-        
-        # Save checkpoints
-        print(f"Saved Core Classes to {CORE_CLASSES_CACHE}")
         with open(CORE_CLASSES_CACHE, 'w') as f:
             json.dump(confident_core_classes, f)
-        
-        # Save ambiguous doc IDs for LLM refinement
-        AMB_IDS_CACHE = os.path.join("checkpoints", "ambiguous_doc_ids.json")
         with open(AMB_IDS_CACHE, 'w') as f:
             json.dump(ambiguous_doc_ids, f)
-        print(f"Saved {len(ambiguous_doc_ids)} ambiguous doc IDs to {AMB_IDS_CACHE}")
-            
-        # Convert to list of lists for next steps
-        core_classes = []
-        for doc_id in train_doc_ids: # Use train_doc_ids
-            core_classes.append(confident_core_classes.get(doc_id, []))
+        print(f"  ✓ Saved {len(confident_core_classes)} docs to {CORE_CLASSES_CACHE}")
+        print(f"  ✓ Saved {len(ambiguous_doc_ids)} ambiguous doc IDs to {AMB_IDS_CACHE}")
+    
+    # --- Step 4.3: LLM Refinement (REQUIRED) ---
+    if os.path.exists(CORE_CLASSES_LLM_CACHE):
+        print(f"[Step 4.3] Loading LLM-refined Core Classes from {CORE_CLASSES_LLM_CACHE}...")
+        with open(CORE_CLASSES_LLM_CACHE, 'r') as f:
+            core_classes_dict = {int(k): v for k, v in json.load(f).items()}
+    else:
+        # LLM refinement is REQUIRED - check for API key
+        from dotenv import load_dotenv
+        load_dotenv()
+        
+        if not os.getenv("OPENAI_API_KEY"):
+            print("\n" + "=" * 80)
+            print("❌ ERROR: OPENAI_API_KEY not found!")
+            print("=" * 80)
+            print("LLM refinement is REQUIRED to generate core_classes_llm_refined.json")
+            print("\nPlease create a .env file with your OpenAI API key:")
+            print('  echo "OPENAI_API_KEY=your-key-here" > .env')
+            print("\nThen run main.py again.")
+            print("=" * 80)
+            import sys
+            sys.exit(1)
+        
+        print(f"[Step 4.3] Running LLM Refinement on {len(ambiguous_doc_ids)} ambiguous docs...")
+        print("  ⚠ This is REQUIRED and will use API credits.")
+        
+        from src.llm_refinement import refine_core_classes_with_llm
+        
+        refined_core_classes, llm_decisions = refine_core_classes_with_llm(
+            core_classes_dict=confident_core_classes,
+            doc_candidates=doc_candidates,
+            corpus=train_corpus,
+            id2class=id2class,
+            ambiguous_doc_ids=ambiguous_doc_ids,
+            edges=edges,
+            max_api_calls=1000,
+            batch_size=20,
+            max_parallel=5
+        )
+        
+        core_classes_dict = refined_core_classes
+        
+        with open(CORE_CLASSES_LLM_CACHE, 'w') as f:
+            json.dump(core_classes_dict, f)
+        print(f"  ✓ Saved LLM-refined classes to {CORE_CLASSES_LLM_CACHE}")
+    
+    # --- Post-processing: Limit Level 0 to max 2 ---
+    print("[Step 4.4] Post-processing: Limiting Level 0 classes to max 2...")
+    filtered_count = 0
+    for doc_id, classes in core_classes_dict.items():
+        if not classes or len(classes) == 0:
+            continue
+        
+        # Find Level 0 ancestor for each class
+        level0_to_classes = {}
+        for cid in classes:
+            lv0 = core_mining.find_level0_ancestor(cid, parents_dict)
+            if lv0 not in level0_to_classes:
+                level0_to_classes[lv0] = []
+            level0_to_classes[lv0].append(cid)
+        
+        # If more than 2 Level 0, keep top 2 by class count
+        if len(level0_to_classes) > 2:
+            sorted_lv0 = sorted(level0_to_classes.items(), key=lambda x: len(x[1]), reverse=True)[:2]
+            top2_lv0_ids = {lv0 for lv0, _ in sorted_lv0}
+            filtered_classes = [c for c in classes if core_mining.find_level0_ancestor(c, parents_dict) in top2_lv0_ids]
+            core_classes_dict[doc_id] = filtered_classes
+            filtered_count += 1
+    
+    print(f"  → Filtered {filtered_count} documents with 3+ Level 0 classes")
+    
+    # Convert to list of lists for next steps
+    core_classes = []
+    for doc_id in train_doc_ids:
+        core_classes.append(core_classes_dict.get(doc_id, []))
 
   
     
@@ -208,8 +236,9 @@ def main():
     from src import self_training
     
     # Configuration
-    NUM_ITERATIONS = 2  # Number of self-training iterations
+    NUM_ITERATIONS = 1  # Number of self-training iterations
     EPOCHS_PER_ITERATION = 3  # Epochs for each re-training
+    iteration = 0  # Initialize for print statement at the end
     
     # Start with warmup data as labeled dataitera
     current_labeled_doc_ids = filtered_doc_ids
@@ -301,13 +330,7 @@ def main():
     print(f"{'='*80}")
 
     # --- 8. Test Corpus Self-Training ---
-    # Choose ONE of the following methods:
-    
-    # METHOD 1: Hard Selection (Iterative, Top-N per iteration)
-    # - Selects top 1500 highest confidence docs per iteration
-    # - Uses hard labels (0 or 1)
-    # - More conservative, processes data incrementally
-    from src import test_corpus_training
+    # (Commented out - not used in current pipeline)
     
     #model, current_labeled_doc_ids, current_labeled_corpus, current_labeled_targets, current_labeled_masks, used_test_doc_ids = \
     #test_corpus_training.iterative_test_corpus_training(
@@ -331,13 +354,7 @@ def main():
     #)
     
     # METHOD 2: TaxoClass Original (Soft Selection with KL Divergence)
-    # - Uses ALL test documents
-    # - Soft selection: Q distribution auto-weights by confidence
-    # - No hard threshold, down-weights uncertain predictions
-    # - More aligned with paper's original approach
-    # - Updates cached statistics (f_j) every 25 batches (as per paper)
-    # - Dynamic Q computed per batch from current predictions
-    from src import test_taxoclass_training
+    # (Commented out - not used in current pipeline)
     
    # model = test_taxoclass_training.taxoclass_test_corpus_training(
    #     model=model,
