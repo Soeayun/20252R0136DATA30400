@@ -21,10 +21,9 @@ env/
 
 
 # Models
-*.pt
 
-*.ckpt
-models/
+
+
 
 
 # Logs
@@ -37,7 +36,7 @@ wandb/
 !studentID_final.csv
 
 # Checkpoints
-checkpoints/*
+
 !checkpoints/.gitkeep
 !checkpoints/*.json
 
