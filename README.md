@@ -129,6 +129,11 @@ OPENAI_API_KEY=your-api-key-here
 - **Prompt:** Shows full hierarchy path (e.g., "beauty > hair care > styling tools")
 - **Output:** Single class ID or -1 (none), ancestors auto-included
 
+**📁 LLM Files:**
+- **Prompt Implementation:** `src/llm_refinement.py` (see `create_llm_prompt()` function)
+- **LLM Output:** `checkpoints/core_classes_llm_refined.json`
+- **API Usage:** Less than 1000 API calls (batch processing with 20 docs per call, approximately using 943 api call)
+
 ### Phase 3: Model Training
 
 - **Document Encoder:** DeBERTa-v3-base (768-dim)
