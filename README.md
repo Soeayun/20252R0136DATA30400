@@ -2,6 +2,9 @@
 
 This repository implements a **Hierarchical Multi-Label Text Classification** system for Amazon product reviews, based on the **TaxoClass** framework with LLM-based refinement.
 
+**Fourth Place in Kaggle competition and selected as one of the best reports in this class**
+https://www.kaggle.com/competitions/big-data-analysis-final-project
+
 ## 📌 Project Overview
 
 - **Task:** Classify unlabeled product reviews into 531 hierarchical categories
